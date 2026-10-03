@@ -332,6 +332,9 @@ namespace Remcoposer64.Core
                         while (eventNode != null)
                         {
                             MIDIEvent ev = eventNode.Value;
+                            Encoding encoding;
+                            byte[] bytes;
+                            string strFromByte;
                             switch (ev.Type)
                             {
                                 case MIDIEventType.NoteON:
@@ -362,12 +365,48 @@ namespace Remcoposer64.Core
                                 case MIDIEventType.MetaTextEvent:
                                     ev.Type = MIDIEventType.Memo;
 
-                                    byte[] bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    Encoding encoding = Common.GetCode(bytes);
+                                    encoding = Common.GetCode(bytes);
                                     if(encoding == null) encoding = Encoding.UTF8;
-                                    string strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    ((MIDIMemoEvent)ev).Text = strFromByte;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.MetaTrackName:
+                                    ev.Type = MIDIEventType.Memo;
+
+                                    bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
+
+                                    encoding = Common.GetCode(bytes);
+                                    if (encoding == null) encoding = Encoding.UTF8;
+                                    strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    ((MIDIMemoEvent)ev).Text = strFromByte;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.MetaProgramName:
+                                    ev.Type = MIDIEventType.Memo;
+
+                                    bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
+
+                                    encoding = Common.GetCode(bytes);
+                                    if (encoding == null) encoding = Encoding.UTF8;
+                                    strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    ((MIDIMemoEvent)ev).Text = strFromByte;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.MetaCopyrightNotice:
+                                    ev.Type = MIDIEventType.Memo;
+
+                                    bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
+
+                                    encoding = Common.GetCode(bytes);
+                                    if (encoding == null) encoding = Encoding.UTF8;
+                                    strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
                                     ev.MIDIMessage = null;
                                     break;
@@ -375,6 +414,10 @@ namespace Remcoposer64.Core
                                     ((MIDISysExEvent)ev).Data = ev.MIDIMessage;
                                     ((MIDISysExEvent)ev).Name = $"No.{sysExCount}";
                                     sysExCount++;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.MetaTempo:
+                                    ev.Type = MIDIEventType.MetaTempo;
                                     ev.MIDIMessage = null;
                                     break;
                                 default:
@@ -519,6 +562,7 @@ namespace Remcoposer64.Core
             int len = 0;
             byte[] nam = null;
             string strFromByte = "";
+            Encoding enc;
             switch (cmd)
             {
                 case 0x01://テキスト
@@ -529,7 +573,7 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    //strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
                     break;
                 case 0x02://著作権表示
                     len = getDelta(ref trkPtr, bs, msg);
@@ -539,7 +583,9 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    enc = Common.GetCode(nam);
+                    if(enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam).Replace("\0", "");
                     prj.Information.Copyright = strFromByte;
                     break;
                 case 0x03://曲名或いはトラック名
@@ -550,7 +596,9 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    enc = Common.GetCode(nam);
+                    if(enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam).Replace("\0", "");
                     if ((format == 0 || (format == 1 && trk.Number == 0)) && !titleSW)
                     {
                         prj.Information.Title = strFromByte;
@@ -569,7 +617,9 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    enc = Common.GetCode(nam);
+                    if (enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam).Replace("\0", "");
                     trk.Name = strFromByte;
                     break;
                 case 0x05://歌詞
@@ -584,7 +634,7 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    //strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
                     break;
                 case 0x20://MIDIチャンネルプリフィックス
                     len = bs[trkPtr];

@@ -23,6 +23,12 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIMemoEvent();
                 case MIDIEventType.MetaTextEvent:
                     return new MIDIMemoEvent();
+                case MIDIEventType.MetaTrackName:
+                    return new MIDIMemoEvent();
+                case MIDIEventType.MetaProgramName:
+                    return new MIDIMemoEvent();
+                case MIDIEventType.MetaCopyrightNotice:
+                    return new MIDIMemoEvent();
                 case MIDIEventType.Meta:
                     return new MIDIMetaEvent();
                 case MIDIEventType.MetaEndOfTrack:

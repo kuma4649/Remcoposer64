@@ -875,7 +875,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 case MIDIEventType.MetaChannelPrefix:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaCopyrightNotice:
-                    return mdlMetaEvent;
+                    return mdlMemoEvent;
                 case MIDIEventType.MetaCuePoint:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaDeviceName:
@@ -891,7 +891,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 case MIDIEventType.MetaPortPrefix:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaProgramName:
-                    return mdlMetaEvent;
+                    return mdlMemoEvent;
                 case MIDIEventType.MetaSeqNumber:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaSequencerSpecific:
@@ -903,7 +903,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 case MIDIEventType.MetaTimeSignature:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaTrackName:
-                    return mdlMetaEvent;
+                    return mdlMemoEvent;
             }
 
             return null;

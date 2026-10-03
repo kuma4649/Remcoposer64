@@ -89,7 +89,8 @@ namespace Remcoposer64.App.form
             string trkNm = trk != null ? trk.Name.Trim() : "(Unknown)";
             string prtNm = prt != null ? prt.Name.Trim() : "(Unknown)";
             string upd = stepEditorPanel1.UpdateFlg ? "*" : "";
-            this.Text = $"Step Editor - ( {trkNm} : {prtNm} ){upd}";
+            this.Text = $"{trkNm} : {prtNm} {upd}";
+            //this.Text = $"Step Editor - ( {trkNm} : {prtNm} ){upd}";
 
             tsslIsOverwrite.Text = stepEditorPanel1.OverwriteMode ? "OVR" : "INS";
         }
