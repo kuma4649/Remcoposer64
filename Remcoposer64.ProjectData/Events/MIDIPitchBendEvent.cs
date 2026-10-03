@@ -18,6 +18,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupPitchValue;
         public static int oPitchValue;
 
+        public MIDIPitchBendEvent()
+        {
+            Type = MIDIEventType.PitchBend;
+        }
+
         public int GetDisplayValue()
         {
             return PitchBendCenteredMode

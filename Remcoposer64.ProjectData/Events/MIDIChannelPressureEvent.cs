@@ -17,6 +17,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupPressureValue;
         public static int oPressureValue;
 
+        public MIDIChannelPressureEvent()
+        {
+            Type = MIDIEventType.ChannelAfterTouch;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIChannelPressureEvent()

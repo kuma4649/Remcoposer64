@@ -10,6 +10,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupMeasureTotalST;
         public static int oldMeasureTotalST;
 
+        public MIDIBarLineEvent()
+        {
+            Type = MIDIEventType.BarLine;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIBarLineEvent()

@@ -13,6 +13,11 @@ namespace Remcoposer64.ProjectData.Events
         public byte[] backupData;
         public static byte[] oldData;
 
+        public MIDIMetaEvent()
+        {
+            Type = MIDIEventType.Meta;
+        }   
+
         public override MIDIEvent Clone()
         {
             return new MIDIMetaEvent()

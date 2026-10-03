@@ -6,6 +6,11 @@ namespace Remcoposer64.ProjectData.Events
 {
     public class MIDIEndEvent : MIDIEvent
     {
+        public MIDIEndEvent()
+        {
+            Type = MIDIEventType.MetaEndOfTrack;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIEndEvent()

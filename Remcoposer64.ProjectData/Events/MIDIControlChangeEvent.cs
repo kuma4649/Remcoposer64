@@ -16,6 +16,11 @@ namespace Remcoposer64.ProjectData.Events
         public static int oControllerNumber;
         public static int oControllerValue;
 
+        public MIDIControlChangeEvent()
+        {
+            Type = MIDIEventType.ControlChange;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIControlChangeEvent()

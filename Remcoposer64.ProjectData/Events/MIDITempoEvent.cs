@@ -13,6 +13,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupTempoValue;
         public static int oTempoValue;
 
+        public MIDITempoEvent()
+        {
+            Type = MIDIEventType.MetaTempo;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDITempoEvent()

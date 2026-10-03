@@ -68,6 +68,11 @@ namespace Remcoposer64.ProjectData.Events
             "F#", "G ", "G#", "A ", "A#", "B "
         };
 
+        public MIDINoteEvent()
+        {
+            Type = MIDIEventType.NoteON;
+        }
+
         public static string KeyNumberToNoteName(int key)
         {
             int note = key % 12;

@@ -13,6 +13,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupProgramNumber;
         public static int oProgramNumber;
 
+        public MIDIProgramChangeEvent()
+        {
+            Type = MIDIEventType.ProgramChange;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIProgramChangeEvent()

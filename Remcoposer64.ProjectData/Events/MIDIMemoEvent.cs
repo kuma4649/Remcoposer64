@@ -12,6 +12,7 @@ namespace Remcoposer64.ProjectData.Events
 
         public MIDIMemoEvent()
         {
+            Type = MIDIEventType.Memo;
             virVal = " ";//編集モードに入っていることを示すために、virValを空白に設定
         }
 

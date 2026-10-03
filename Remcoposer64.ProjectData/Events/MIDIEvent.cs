@@ -27,6 +27,16 @@
         public string MeasString => editing ? "- :" : $"{Meas + 1}:";
         public string StepString => editing ? "- :" : $"{Step + 1}:";
 
+        public MIDIEvent()
+        {
+            Type = MIDIEventType.None;
+            Meas = 0;
+            Step = 0;
+            ST = 0;
+            //GT = 0;
+            MIDIMessage = null;
+        }
+
         public abstract MIDIEvent Clone();
 
         public virtual void CopyFrom(MIDIEvent other)

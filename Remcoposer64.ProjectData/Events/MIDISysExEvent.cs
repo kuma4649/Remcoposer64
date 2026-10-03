@@ -15,6 +15,11 @@ namespace Remcoposer64.ProjectData.Events
         public string backupName;
         public static string oName;
 
+        public MIDISysExEvent()
+        {
+            Type = MIDIEventType.SysExF0;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDISysExEvent()

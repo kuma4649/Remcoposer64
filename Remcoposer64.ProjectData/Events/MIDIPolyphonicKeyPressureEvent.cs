@@ -19,6 +19,11 @@ namespace Remcoposer64.ProjectData.Events
         public int backupPressure;
         public static int oPressure;
 
+        public MIDIPolyphonicKeyPressureEvent()
+        {
+            Type = MIDIEventType.KeyAfterTouch;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDIPolyphonicKeyPressureEvent()

@@ -13,6 +13,11 @@ namespace Remcoposer64.ProjectData.Events
         public LinkedListNode<MIDIEvent> backupRepeatMeasBeforeNode;
         public static LinkedListNode<MIDIEvent> oRepeatMeasBeforeNode;
 
+        public MIDISameMeasEvent()
+        {
+            Type = MIDIEventType.SameMeas;
+        }
+
         public override MIDIEvent Clone()
         {
             return new MIDISameMeasEvent()
