@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Command\" />
+    <Folder Include="EventArgs\" />
+    <Folder Include="Events\" />
+    <Folder Include="Render\" />
+    <Folder Include="Resource\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Vortice.Direct2D1" Version="3.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Remcoposer64.ProjectData\Remcoposer64.ProjectData.csproj" />
+    <ProjectReference Include="..\Remcoposer64.SysExEditorPanel\Remcoposer64.SysExEditorPanel.csproj" />
+    <ProjectReference Include="..\Remcoposer64.UndoRedoManager\Remcoposer64.UndoRedoManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resource\rFont_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\rFont_08.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\rFont_12.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\rFont_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
