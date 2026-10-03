@@ -114,7 +114,7 @@ namespace Remcoposer64.App
                 if (part == null)
                     return;
 
-                frmStepEditor frm = new frmStepEditor(part.Value, undoMng);
+                frmStepEditor frm = new frmStepEditor(trk, part.Value, undoMng);
                 frm.Show();
             };
 

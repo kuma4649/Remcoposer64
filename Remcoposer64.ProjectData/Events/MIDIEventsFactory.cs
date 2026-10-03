@@ -21,6 +21,8 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIPolyphonicKeyPressureEvent();
                 case MIDIEventType.Memo:
                     return new MIDIMemoEvent();
+                case MIDIEventType.MetaTextEvent:
+                    return new MIDIMemoEvent();
                 case MIDIEventType.Meta:
                     return new MIDIMetaEvent();
                 case MIDIEventType.MetaEndOfTrack:

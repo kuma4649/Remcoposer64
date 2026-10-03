@@ -13,10 +13,10 @@ namespace Remcoposer64.StepEditorPanelControl.Render
     public class UIMemoEvent : UIEvent
     {
         private static readonly FBColor Cursor = new(Color.Black, Color.White);
-        private static readonly FBColor Normal = new(Color.White, Color.DarkBlue);
+        private static readonly FBColor Normal = new(Color.White, Color.FromArgb(0xff,0x00,0x00,0x44));
         private static readonly FBColor Select = new(Color.Black, Color.Gray);
         private static readonly FBColor EventCursor = new(Color.White, Color.Black);
-        private static readonly FBColor EventNormal = new(Color.White, Color.DarkBlue);
+        private static readonly FBColor EventNormal = new(Color.White, Color.FromArgb(0xff, 0x00, 0x00, 0x44));
         private static readonly FBColor EventSelect = new(Color.Black, Color.Gray);
         private static readonly FBColor EventCursorEdit = new(Color.Yellow, Color.Black);
         private static readonly FBColor EventCursorDefault = new(Color.Gray, Color.Black);

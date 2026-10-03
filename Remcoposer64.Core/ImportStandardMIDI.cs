@@ -119,7 +119,7 @@ namespace Remcoposer64.Core
                     prtAry[i] = new MIDIPart();
                     prtAry[i].Name = string.Format(Common.cntSMF0DefaultPartName, i + 1);
                     trk[i].insertPart(0, prtAry[i]);
-                    prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
+                    //prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
                 }
             }
             else
@@ -149,7 +149,7 @@ namespace Remcoposer64.Core
                     prtAry[i] = new MIDIPart();
                     prtAry[i].Name = string.Format(Common.cntSMF1DefaultPartName, i + 1);
                     trk[i].insertPart(0, prtAry[i]);
-                    prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
+                    //prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
                 }
             }
 
@@ -325,6 +325,7 @@ namespace Remcoposer64.Core
                 try
                 {
                     LinkedListNode<MIDIPart> prt = track.Value.getStartPartNode();
+                    int sysExCount = 0;
                     while (prt != null)
                     {
                         LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
@@ -336,6 +337,13 @@ namespace Remcoposer64.Core
                                 case MIDIEventType.NoteON:
                                     ((MIDINoteEvent)ev).KeyNumber = ev.MIDIMessage[1];
                                     ((MIDINoteEvent)ev).Vel = ev.MIDIMessage[2];
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.NoteOff:
+                                    ((MIDINoteEvent)ev).KeyNumber = ev.MIDIMessage[1];
+                                    ((MIDINoteEvent)ev).GT = 0;
+                                    ((MIDINoteEvent)ev).Vel = ev.MIDIMessage[2];
+                                    ev.Type = MIDIEventType.NoteON;
                                     ev.MIDIMessage = null;
                                     break;
                                 case MIDIEventType.ControlChange:
@@ -350,6 +358,27 @@ namespace Remcoposer64.Core
                                 case MIDIEventType.PitchBend:
                                     ((MIDIPitchBendEvent)ev).PitchValue = (short)((ev.MIDIMessage[2] << 7) | ev.MIDIMessage[1]);
                                     ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.MetaTextEvent:
+                                    ev.Type = MIDIEventType.Memo;
+
+                                    byte[] bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
+
+                                    Encoding encoding = Common.GetCode(bytes);
+                                    if(encoding == null) encoding = Encoding.UTF8;
+                                    string strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    ((MIDIMemoEvent)ev).Text = strFromByte;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                case MIDIEventType.SysExF0:
+                                    ((MIDISysExEvent)ev).Data = ev.MIDIMessage;
+                                    ((MIDISysExEvent)ev).Name = $"No.{sysExCount}";
+                                    sysExCount++;
+                                    ev.MIDIMessage = null;
+                                    break;
+                                default:
+                                    Log.Write(LogLevel.Warning, "StandardMIDI変換時の未実装イベントタイプ:{0}", ev.Type);
                                     break;
                             }
                             eventNode = prt.Value.getNextEventNode(eventNode);

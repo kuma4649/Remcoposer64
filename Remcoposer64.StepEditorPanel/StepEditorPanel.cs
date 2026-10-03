@@ -98,6 +98,10 @@ namespace Remcoposer64.StepEditorPanelControl
             }
         }
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool UpdateFlg { get; set; } = false;
+
         public MIDIEvent backupEvent;
         internal bool imeComposing = false;
 
@@ -781,6 +785,8 @@ namespace Remcoposer64.StepEditorPanelControl
 
             cursor.EventNode = eventManager.FirstEvent;
             cursor.Index = 0;
+
+            UpdateFlg = false;
 
             RefreshScrollBar();
         }
