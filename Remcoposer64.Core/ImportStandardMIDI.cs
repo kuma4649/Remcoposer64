@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.Core
 {
@@ -86,7 +87,7 @@ namespace Remcoposer64.Core
             #region プロジェクトの初期設定
 
             prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
-            prj.Information.Title = Common.cntNoTitle;
+            prj.Information.Title = Common.Common.cntNoTitle;
             prj.Information.Tempo = 120;
             prj.Information.TimeBase = delta;
             prj.Information.BeatDen = 4;
@@ -102,22 +103,22 @@ namespace Remcoposer64.Core
                 for (int i = 0; i < 16; i++)
                 {
                     trk[i] = new MIDITrack();
-                    trk[i].Name = string.Format(Common.cntSMF0DefaultTrackName, i + 1);
-                    trk[i].OutDeviceName = setting.MIDIOutDeviceList[stDevNum].DevName;
-                    trk[i].OutDeviceNumber = setting.MIDIOutDeviceList[stDevNum].DevNumber;
-                    trk[i].OutUserDeviceName = setting.MIDIOutDeviceList[stDevNum].UsrName;
-                    trk[i].OutUserDeviceNumber = setting.MIDIOutDeviceList[stDevNum].UsrNumber;
+                    trk[i].Name = string.Format(Common.Common.cntSMF0DefaultTrackName, i + 1);
+                    //trk[i].OutDeviceName = setting.midiOut.lstMidiOutInfo[0][stDevNum].name;
+                    //trk[i].OutDeviceNumber = setting.midiOut.lstMidiOutInfo[0][stDevNum].id;
+                    //trk[i].OutUserDeviceName = setting.midiOut.lstMidiOutInfo[0][stDevNum].userDeviceName;
+                    //trk[i].OutUserDeviceNumber = setting.midiOut.lstMidiOutInfo[0][stDevNum].userDeviceNumber;
                     trk[i].OutChannel = i;
-                    trk[i].InDeviceName = Common.cntNullDevice;
-                    trk[i].InDeviceNumber = null;
-                    trk[i].InUserDeviceNumber = null;
-                    trk[i].InUserDeviceName = Common.cntNullDevice;
+                    //trk[i].InDeviceName = Common.cntNullDevice;
+                    //trk[i].InDeviceNumber = null;
+                    //trk[i].InUserDeviceNumber = null;
+                    //trk[i].InUserDeviceName = Common.cntNullDevice;
                     trk[i].InChannel = null;
                     trkStep[i] = 0;
                     prj.insertTrack(i, trk[i]);
                     trk[i].clearAllPartMemory();
                     prtAry[i] = new MIDIPart();
-                    prtAry[i].Name = string.Format(Common.cntSMF0DefaultPartName, i + 1);
+                    prtAry[i].Name = string.Format(Common.Common.cntSMF0DefaultPartName, i + 1);
                     trk[i].insertPart(0, prtAry[i]);
                     //prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
                 }
@@ -131,23 +132,23 @@ namespace Remcoposer64.Core
                 {
                     trk[i] = new MIDITrack();
                     trk[i].Name = (i == 0)
-                        ? Common.cntSMF1ConductorTrackName
-                        : string.Format(Common.cntSMF1DefaultTrackName, i + 1);
-                    trk[i].OutDeviceName = setting.MIDIOutDeviceList[stDevNum].DevName;
-                    trk[i].OutDeviceNumber = setting.MIDIOutDeviceList[stDevNum].DevNumber;
-                    trk[i].OutUserDeviceNumber = setting.MIDIOutDeviceList[stDevNum].UsrNumber;
-                    trk[i].OutUserDeviceName = setting.MIDIOutDeviceList[stDevNum].UsrName;
+                        ? Common.Common.cntSMF1ConductorTrackName
+                        : string.Format(Common.Common.cntSMF1DefaultTrackName, i + 1);
+                    //trk[i].OutDeviceName = setting.MIDIOutDeviceList[stDevNum].DevName;
+                    //trk[i].OutDeviceNumber = setting.MIDIOutDeviceList[stDevNum].DevNumber;
+                    //trk[i].OutUserDeviceNumber = setting.MIDIOutDeviceList[stDevNum].UsrNumber;
+                    //trk[i].OutUserDeviceName = setting.MIDIOutDeviceList[stDevNum].UsrName;
                     trk[i].OutChannel = i % 16;
-                    trk[i].InDeviceName = Common.cntNullDevice;
-                    trk[i].InDeviceNumber = null;
-                    trk[i].InUserDeviceNumber = null;
-                    trk[i].InUserDeviceName = Common.cntNullDevice;
+                    //trk[i].InDeviceName = Common.cntNullDevice;
+                    //trk[i].InDeviceNumber = null;
+                    //trk[i].InUserDeviceNumber = null;
+                    //trk[i].InUserDeviceName = Common.cntNullDevice;
                     trk[i].InChannel = null;
                     trkStep[i] = 0;
                     prj.insertTrack(i, trk[i]);
                     trk[i].clearAllPartMemory();
                     prtAry[i] = new MIDIPart();
-                    prtAry[i].Name = string.Format(Common.cntSMF1DefaultPartName, i + 1);
+                    prtAry[i].Name = string.Format(Common.Common.cntSMF1DefaultPartName, i + 1);
                     trk[i].insertPart(0, prtAry[i]);
                     //prtAry[i].insertEventNode(null, 0, MIDIEventType.NoteOff, new byte[3] { 0x80, 60, 0 }, 100);
                 }
@@ -368,7 +369,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(bytes);
                                     if(encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -380,7 +381,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(bytes);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -392,7 +393,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(bytes);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -404,7 +405,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(bytes);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -583,7 +584,7 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.GetCode(nam);
+                    enc = Common.Common.GetCode(nam);
                     if(enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     prj.Information.Copyright = strFromByte;
@@ -596,7 +597,7 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.GetCode(nam);
+                    enc = Common.Common.GetCode(nam);
                     if(enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     if ((format == 0 || (format == 1 && trk.Number == 0)) && !titleSW)
@@ -617,7 +618,7 @@ namespace Remcoposer64.Core
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.GetCode(nam);
+                    enc = Common.Common.GetCode(nam);
                     if (enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     trk.Name = strFromByte;
@@ -646,9 +647,9 @@ namespace Remcoposer64.Core
                     msg.Add(bs[trkPtr++]);
                     if (format == 1)
                     {
-                        int dev = (stDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
-                        trk.OutUserDeviceNumber = setting.MIDIOutDeviceList[dev].UsrNumber;
-                        trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
+                        //int dev = (stDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
+                        //trk.OutUserDeviceNumber = setting.MIDIOutDeviceList[dev].UsrNumber;
+                        //trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
                     }
                     msg.Add(bs[trkPtr++]);
                     break;

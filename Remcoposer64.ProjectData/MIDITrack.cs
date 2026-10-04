@@ -1,6 +1,9 @@
-﻿using Remcoposer64.ProjectData.Events;
+﻿using Remcoposer64.Common;
+using Remcoposer64.ProjectData.Events;
+using System.ComponentModel;
 using System.Drawing;
 using System.Xml.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Remcoposer64.ProjectData
 {
@@ -118,116 +121,12 @@ namespace Remcoposer64.ProjectData
                 return _Comment;
             }
         }
-        public int? OutDeviceNumber
-        {
-            set
-            {
-                _OutDeviceNumber = value;
-            }
-            get
-            {
-                return _OutDeviceNumber;
-            }
-        }
-        public string OutDeviceName
-        {
-            set
-            {
-                _OutDeviceName = value;
-            }
-            get
-            {
-                return _OutDeviceName;
-            }
-        }
-        public string OutUserDeviceName
-        {
-            set
-            {
-                _OutUserDeviceName = value;
-            }
-            get
-            {
-                return _OutUserDeviceName;
-            }
-        }
-        public int? OutUserDeviceNumber
-        {
-            set
-            {
-                _OutUserDeviceNumber = value;
-            }
-            get
-            {
-                return _OutUserDeviceNumber;
-            }
-        }
-        public int? OutChannel
-        {
-            set
-            {
-                _OutChannel = value;
-            }
-            get
-            {
-                return _OutChannel;
-            }
-        }
-        public int? InDeviceNumber
-        {
-            set
-            {
-                _InDeviceNumber = value;
-            }
-            get
-            {
-                return _InDeviceNumber;
-            }
-        }
-        public string InDeviceName
-        {
-            set
-            {
-                _InDeviceName = value;
-            }
-            get
-            {
-                return _InDeviceName;
-            }
-        }
-        public int? InUserDeviceNumber
-        {
-            set
-            {
-                _InUserDeviceNumber = value;
-            }
-            get
-            {
-                return _InUserDeviceNumber;
-            }
-        }
-        public string InUserDeviceName
-        {
-            set
-            {
-                _InUserDeviceName = value;
-            }
-            get
-            {
-                return _InUserDeviceName;
-            }
-        }
-        public int? InChannel
-        {
-            set
-            {
-                _InChannel = value;
-            }
-            get
-            {
-                return _InChannel;
-            }
-        }
+
+        public Setting.midiOutInfo OutDevice { get; set; } = null;
+        public int? OutChannel { get; set; } = 0;
+        public Setting.midiInInfo InDevice { get; set; } = null;
+        public int? InChannel { get; set; } = 0;
+
         public bool Solo
         {
             set

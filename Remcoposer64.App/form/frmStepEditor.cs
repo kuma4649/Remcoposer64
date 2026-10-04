@@ -2,15 +2,7 @@
 using Remcoposer64.StepEditorPanelControl;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.SysExEditorPanel;
-using Remcoposer64.UndoRedoManager;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Remcoposer64.App.form
 {

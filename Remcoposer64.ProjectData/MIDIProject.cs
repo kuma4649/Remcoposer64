@@ -268,22 +268,22 @@ namespace Remcoposer64.ProjectData
 
         }
 
-        public void setTrackDevice4TrackNumber(int trkNumber, string devUserName, int devUserNumber, string devName, int? devNumber)
-        {
-            LinkedListNode<MIDITrack> trk = getStartTrackNode();
-            while (trk != null)
-            {
-                if (trk.Value.Number == trkNumber)
-                {
-                    trk.Value.OutUserDeviceName = devUserName;
-                    trk.Value.OutUserDeviceNumber = devUserNumber;
-                    trk.Value.OutDeviceName = devName;
-                    trk.Value.OutDeviceNumber = devNumber;
-                    break;
-                }
-                trk = trk.Next;
-            }
-        }
+        //public void setTrackDevice4TrackNumber(int trkNumber, string devUserName, int devUserNumber, string devName, int? devNumber)
+        //{
+        //    LinkedListNode<MIDITrack> trk = getStartTrackNode();
+        //    while (trk != null)
+        //    {
+        //        if (trk.Value.Number == trkNumber)
+        //        {
+        //            trk.Value.OutUserDeviceName = devUserName;
+        //            trk.Value.OutUserDeviceNumber = devUserNumber;
+        //            trk.Value.OutDeviceName = devName;
+        //            trk.Value.OutDeviceNumber = devNumber;
+        //            break;
+        //        }
+        //        trk = trk.Next;
+        //    }
+        //}
 
         public MIDITrack getTrack4TrackNumber(int trkNumber)
         {

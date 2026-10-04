@@ -1,4 +1,5 @@
 ﻿using NAudio.Midi;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.Core
 {

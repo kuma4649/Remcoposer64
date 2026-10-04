@@ -2,6 +2,7 @@ using Remcoposer64.App.form;
 using Remcoposer64.Core;
 using Remcoposer64.ProjectData;
 using Remcoposer64.UndoRedoManager;
+using Remcoposer64.Common;
 
 using System.Text;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -18,7 +19,7 @@ namespace Remcoposer64.App
         {
             InitializeComponent();
 
-            Common.SetExecutablePath(Application.ExecutablePath);
+            Common.Common.SetExecutablePath(Application.ExecutablePath);
             setting = Setting.Load();
 
             console = new frmConsole(setting);
@@ -126,7 +127,7 @@ namespace Remcoposer64.App
                 dgvTracks.Rows.Add(
                     trk.Value.Number + 1,
                     trk.Value.Name,
-                    trk.Value.OutDeviceName,
+                    "",//trk.Value.OutDeviceName,
                     trk.Value.OutChannel + 1,
                     MakePartDots(trk.Value)
                 );
@@ -160,6 +161,12 @@ namespace Remcoposer64.App
             }
 
             return new string('●', count);
+        }
+
+        private void settingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmSetting frm = new frmSetting(setting);
+            frm.Show();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Resources;
 using System.Text;
 
-namespace Remcoposer64.Core
+namespace Remcoposer64.Common
 {
     public static class Log
     {

@@ -45,6 +45,7 @@
             tsmiShowConsole = new ToolStripMenuItem();
             tabControl1 = new TabControl();
             toolStripContainer2 = new ToolStripContainer();
+            settingToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStripContainer2.ContentPanel.SuspendLayout();
             toolStripContainer2.TopToolStripPanel.SuspendLayout();
@@ -129,6 +130,7 @@
             // 
             // toolToolStripMenuItem
             // 
+            toolToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { settingToolStripMenuItem });
             toolToolStripMenuItem.Name = "toolToolStripMenuItem";
             toolToolStripMenuItem.Size = new Size(41, 20);
             toolToolStripMenuItem.Text = "&Tool";
@@ -174,6 +176,13 @@
             // 
             toolStripContainer2.TopToolStripPanel.Controls.Add(menuStrip1);
             // 
+            // settingToolStripMenuItem
+            // 
+            settingToolStripMenuItem.Name = "settingToolStripMenuItem";
+            settingToolStripMenuItem.Size = new Size(180, 22);
+            settingToolStripMenuItem.Text = "Setting";
+            settingToolStripMenuItem.Click += settingToolStripMenuItem_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -212,5 +221,6 @@
         private ToolStripMenuItem tsmiShowConsole;
         private TabControl tabControl1;
         private ToolStripContainer toolStripContainer2;
+        private ToolStripMenuItem settingToolStripMenuItem;
     }
 }
