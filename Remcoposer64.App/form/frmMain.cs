@@ -121,16 +121,18 @@ namespace Remcoposer64.App
 
             dgvTracks.Rows.Clear();
 
+            Setting.MidiOut mo = setting.midiOut;
             LinkedListNode<MIDITrack> trk = project.getStartTrackNode();
             while (trk != null)
             {
                 dgvTracks.Rows.Add(
                     trk.Value.Number + 1,
                     trk.Value.Name,
-                    "",//trk.Value.OutDeviceName,
+                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name,
                     trk.Value.OutChannel + 1,
                     MakePartDots(trk.Value)
                 );
+                dgvTracks.Rows[dgvTracks.Rows.Count - 1].Tag = trk;
 
                 trk = project.getNextTrackNode(trk);
             }
@@ -166,7 +168,30 @@ namespace Remcoposer64.App
         private void settingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmSetting frm = new frmSetting(setting);
-            frm.Show();
+            DialogResult res = frm.ShowDialog();
+            if (res != DialogResult.OK) return;
+
+            setting = frm.GetSetting();
+            setting.Save();
+
+            // MIDIデバイスの表示を更新する
+            foreach (TabPage tab in tabControl1.TabPages)
+            {
+                MIDIProject project = (MIDIProject)tab.Tag;
+                DataGridView dgv = (DataGridView)tab.Controls[0];
+
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
+                    MIDITrack trk = trkNode.Value;
+                    Setting.MidiOut mo = setting.midiOut;
+                    row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                }
+            }
+
         }
+
+
+
     }
 }

@@ -67,6 +67,13 @@
             tbcMIDIinList = new TabControl();
             tabPage3 = new TabPage();
             dgvMIDIinListA = new DataGridView();
+            dataGridViewTextBoxColumn9 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn1 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn10 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn11 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn1 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn12 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn13 = new DataGridViewTextBoxColumn();
             btnUPMIDIin_A = new Button();
             btnDownMIDIin_A = new Button();
             btnAddVSTiIn = new Button();
@@ -75,13 +82,6 @@
             btnSubMIDIin = new Button();
             btnOK = new Button();
             btnCancel = new Button();
-            dataGridViewTextBoxColumn9 = new DataGridViewTextBoxColumn();
-            dataGridViewCheckBoxColumn1 = new DataGridViewCheckBoxColumn();
-            dataGridViewTextBoxColumn10 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn11 = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn1 = new DataGridViewComboBoxColumn();
-            dataGridViewTextBoxColumn12 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn13 = new DataGridViewTextBoxColumn();
             tcSetting.SuspendLayout();
             tpOutput.SuspendLayout();
             tcDeviceCategory.SuspendLayout();
@@ -243,7 +243,7 @@
             tbcMIDIoutList.Margin = new Padding(4);
             tbcMIDIoutList.Name = "tbcMIDIoutList";
             tbcMIDIoutList.SelectedIndex = 0;
-            tbcMIDIoutList.Size = new Size(478, 229);
+            tbcMIDIoutList.Size = new Size(478, 227);
             tbcMIDIoutList.TabIndex = 4;
             // 
             // tabPage1
@@ -255,7 +255,7 @@
             tabPage1.Margin = new Padding(4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(4);
-            tabPage1.Size = new Size(470, 201);
+            tabPage1.Size = new Size(470, 199);
             tabPage1.TabIndex = 0;
             tabPage1.Tag = "0";
             tabPage1.Text = "...";
@@ -276,7 +276,7 @@
             dgvMIDIoutListA.RowHeadersVisible = false;
             dgvMIDIoutListA.RowTemplate.Height = 21;
             dgvMIDIoutListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListA.Size = new Size(428, 193);
+            dgvMIDIoutListA.Size = new Size(428, 191);
             dgvMIDIoutListA.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
@@ -357,7 +357,7 @@
             // btnDownMIDIOut_A
             // 
             btnDownMIDIOut_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_A.Location = new Point(440, 125);
+            btnDownMIDIOut_A.Location = new Point(440, 123);
             btnDownMIDIOut_A.Margin = new Padding(4);
             btnDownMIDIOut_A.Name = "btnDownMIDIOut_A";
             btnDownMIDIOut_A.Size = new Size(26, 72);
@@ -516,7 +516,7 @@
             tbcMIDIinList.Margin = new Padding(4);
             tbcMIDIinList.Name = "tbcMIDIinList";
             tbcMIDIinList.SelectedIndex = 0;
-            tbcMIDIinList.Size = new Size(478, 229);
+            tbcMIDIinList.Size = new Size(478, 227);
             tbcMIDIinList.TabIndex = 4;
             // 
             // tabPage3
@@ -528,7 +528,7 @@
             tabPage3.Margin = new Padding(4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(4);
-            tabPage3.Size = new Size(470, 201);
+            tabPage3.Size = new Size(470, 199);
             tabPage3.TabIndex = 0;
             tabPage3.Tag = "0";
             tabPage3.Text = "...";
@@ -549,93 +549,8 @@
             dgvMIDIinListA.RowHeadersVisible = false;
             dgvMIDIinListA.RowTemplate.Height = 21;
             dgvMIDIinListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIinListA.Size = new Size(428, 193);
+            dgvMIDIinListA.Size = new Size(428, 191);
             dgvMIDIinListA.TabIndex = 1;
-            // 
-            // btnUPMIDIin_A
-            // 
-            btnUPMIDIin_A.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnUPMIDIin_A.Location = new Point(440, 4);
-            btnUPMIDIin_A.Margin = new Padding(4);
-            btnUPMIDIin_A.Name = "btnUPMIDIin_A";
-            btnUPMIDIin_A.Size = new Size(26, 72);
-            btnUPMIDIin_A.TabIndex = 3;
-            btnUPMIDIin_A.Text = "↑";
-            btnUPMIDIin_A.UseVisualStyleBackColor = true;
-            // 
-            // btnDownMIDIin_A
-            // 
-            btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIin_A.Location = new Point(440, 125);
-            btnDownMIDIin_A.Margin = new Padding(4);
-            btnDownMIDIin_A.Name = "btnDownMIDIin_A";
-            btnDownMIDIin_A.Size = new Size(26, 72);
-            btnDownMIDIin_A.TabIndex = 3;
-            btnDownMIDIin_A.Text = "↓";
-            btnDownMIDIin_A.UseVisualStyleBackColor = true;
-            // 
-            // btnAddVSTiIn
-            // 
-            btnAddVSTiIn.Enabled = false;
-            btnAddVSTiIn.Location = new Point(307, 5);
-            btnAddVSTiIn.Margin = new Padding(4);
-            btnAddVSTiIn.Name = "btnAddVSTiIn";
-            btnAddVSTiIn.Size = new Size(76, 29);
-            btnAddVSTiIn.TabIndex = 5;
-            btnAddVSTiIn.Text = "Add VSTi";
-            btnAddVSTiIn.UseVisualStyleBackColor = true;
-            btnAddVSTiIn.Visible = false;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(7, 20);
-            label2.Margin = new Padding(4, 0, 4, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(63, 15);
-            label2.TabIndex = 2;
-            label2.Text = "MIDI In list";
-            // 
-            // btnAddMIDIin
-            // 
-            btnAddMIDIin.Location = new Point(138, 5);
-            btnAddMIDIin.Margin = new Padding(4);
-            btnAddMIDIin.Name = "btnAddMIDIin";
-            btnAddMIDIin.Size = new Size(76, 30);
-            btnAddMIDIin.TabIndex = 3;
-            btnAddMIDIin.Text = "↓ +";
-            btnAddMIDIin.UseVisualStyleBackColor = true;
-            // 
-            // btnSubMIDIin
-            // 
-            btnSubMIDIin.Location = new Point(222, 5);
-            btnSubMIDIin.Margin = new Padding(4);
-            btnSubMIDIin.Name = "btnSubMIDIin";
-            btnSubMIDIin.Size = new Size(77, 30);
-            btnSubMIDIin.TabIndex = 3;
-            btnSubMIDIin.Text = "-";
-            btnSubMIDIin.UseVisualStyleBackColor = true;
-            // 
-            // btnOK
-            // 
-            btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(372, 566);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(75, 23);
-            btnOK.TabIndex = 1;
-            btnOK.Text = "OK";
-            btnOK.UseVisualStyleBackColor = true;
-            // 
-            // btnCancel
-            // 
-            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(453, 566);
-            btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(75, 23);
-            btnCancel.TabIndex = 2;
-            btnCancel.Text = "Cancel";
-            btnCancel.UseVisualStyleBackColor = true;
-            btnCancel.Click += btnCancel_Click;
             // 
             // dataGridViewTextBoxColumn9
             // 
@@ -691,6 +606,96 @@
             dataGridViewTextBoxColumn13.Name = "dataGridViewTextBoxColumn13";
             dataGridViewTextBoxColumn13.ReadOnly = true;
             dataGridViewTextBoxColumn13.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // btnUPMIDIin_A
+            // 
+            btnUPMIDIin_A.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIin_A.Location = new Point(440, 4);
+            btnUPMIDIin_A.Margin = new Padding(4);
+            btnUPMIDIin_A.Name = "btnUPMIDIin_A";
+            btnUPMIDIin_A.Size = new Size(26, 72);
+            btnUPMIDIin_A.TabIndex = 3;
+            btnUPMIDIin_A.Text = "↑";
+            btnUPMIDIin_A.UseVisualStyleBackColor = true;
+            btnUPMIDIin_A.Click += btnUPMIDIin_A_Click;
+            // 
+            // btnDownMIDIin_A
+            // 
+            btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIin_A.Location = new Point(440, 123);
+            btnDownMIDIin_A.Margin = new Padding(4);
+            btnDownMIDIin_A.Name = "btnDownMIDIin_A";
+            btnDownMIDIin_A.Size = new Size(26, 72);
+            btnDownMIDIin_A.TabIndex = 3;
+            btnDownMIDIin_A.Text = "↓";
+            btnDownMIDIin_A.UseVisualStyleBackColor = true;
+            btnDownMIDIin_A.Click += btnDownMIDIin_A_Click;
+            // 
+            // btnAddVSTiIn
+            // 
+            btnAddVSTiIn.Enabled = false;
+            btnAddVSTiIn.Location = new Point(307, 5);
+            btnAddVSTiIn.Margin = new Padding(4);
+            btnAddVSTiIn.Name = "btnAddVSTiIn";
+            btnAddVSTiIn.Size = new Size(76, 29);
+            btnAddVSTiIn.TabIndex = 5;
+            btnAddVSTiIn.Text = "Add VSTi";
+            btnAddVSTiIn.UseVisualStyleBackColor = true;
+            btnAddVSTiIn.Visible = false;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(7, 20);
+            label2.Margin = new Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(63, 15);
+            label2.TabIndex = 2;
+            label2.Text = "MIDI In list";
+            // 
+            // btnAddMIDIin
+            // 
+            btnAddMIDIin.Location = new Point(138, 5);
+            btnAddMIDIin.Margin = new Padding(4);
+            btnAddMIDIin.Name = "btnAddMIDIin";
+            btnAddMIDIin.Size = new Size(76, 30);
+            btnAddMIDIin.TabIndex = 3;
+            btnAddMIDIin.Text = "↓ +";
+            btnAddMIDIin.UseVisualStyleBackColor = true;
+            btnAddMIDIin.Click += btnAddMIDIin_Click;
+            // 
+            // btnSubMIDIin
+            // 
+            btnSubMIDIin.Location = new Point(222, 5);
+            btnSubMIDIin.Margin = new Padding(4);
+            btnSubMIDIin.Name = "btnSubMIDIin";
+            btnSubMIDIin.Size = new Size(77, 30);
+            btnSubMIDIin.TabIndex = 3;
+            btnSubMIDIin.Text = "-";
+            btnSubMIDIin.UseVisualStyleBackColor = true;
+            btnSubMIDIin.Click += btnSubMIDIin_Click;
+            // 
+            // btnOK
+            // 
+            btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnOK.Location = new Point(372, 566);
+            btnOK.Name = "btnOK";
+            btnOK.Size = new Size(75, 23);
+            btnOK.TabIndex = 1;
+            btnOK.Text = "OK";
+            btnOK.UseVisualStyleBackColor = true;
+            btnOK.Click += btnOK_Click;
+            // 
+            // btnCancel
+            // 
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancel.Location = new Point(453, 566);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(75, 23);
+            btnCancel.TabIndex = 2;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click;
             // 
             // frmSetting
             // 

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Xml.Serialization;
+using static Remcoposer64.Common.Setting;
 
 namespace Remcoposer64.Common
 {
@@ -98,6 +99,7 @@ namespace Remcoposer64.Common
             public string XGReset { get; set; } = "30:F0,43,10,4C,00,00,7E,00,F7";
             public string GSReset { get; set; } = "30:F0,41,10,42,12,40,00,7F,00,41,F7";
             public string Custom { get; set; } = "";
+            public int CurrentDev { get; set; } = 0;
 
             public List<midiOutInfo[]>? lstMidiOutInfo { get; set; } = null;
 
@@ -109,6 +111,7 @@ namespace Remcoposer64.Common
                 MidiOut.XGReset = this.XGReset;
                 MidiOut.GSReset = this.GSReset;
                 MidiOut.Custom = this.Custom;
+                MidiOut.CurrentDev = this.CurrentDev;
                 MidiOut.lstMidiOutInfo = null;
                 if (this.lstMidiOutInfo != null)
                 {
@@ -162,11 +165,13 @@ namespace Remcoposer64.Common
         public class MidiIn
         {
             public List<midiInInfo[]>? lstMidiInInfo { get; set; } = null;
+            public int CurrentDev { get; set; } = 0;
 
             public MidiIn Copy()
             {
                 MidiIn MidiIn = new MidiIn();
 
+                MidiIn.CurrentDev = this.CurrentDev;
                 MidiIn.lstMidiInInfo = null;
                 if (this.lstMidiInInfo != null)
                 {

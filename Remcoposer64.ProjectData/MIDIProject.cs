@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remcoposer64.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -16,6 +17,7 @@ namespace Remcoposer64.ProjectData
         private double _RelativeTempoChangeTargetTempo = 0.0;
         private double _RelativeTempoChangeTickSlice = 0.0;
         private double _RelativeTempoChangeNowTempo = 0.0;
+        private Setting setting;
 
         public MIDIInformation Information
         {
@@ -107,12 +109,21 @@ namespace Remcoposer64.ProjectData
             }
         }
 
+        public MIDIProject(Setting setting)
+        {
+            this.setting = setting;
+            this.Information = new MIDIInformation();
+            this.Track = new LinkedList<MIDITrack>();
+            this.UserExclusive = new List<MIDIUserExclusive>();
+            this.Rythm = new List<MIDIRythm>();
+        }
+
 
         public void Load(string fn)
         {
             try
             {
-                MIDIProject Project = new MIDIProject();
+                MIDIProject Project = new MIDIProject(setting);
                 string filename = fn;
                 if (!File.Exists(filename))
                 {
@@ -298,6 +309,15 @@ namespace Remcoposer64.ProjectData
             }
 
             return trk == null ? null : trk.Value;
+        }
+
+        public void SetSetting(Setting setting)
+        {
+            this.setting = setting;
+        }
+
+        public void Reinit()
+        {
         }
     }
 

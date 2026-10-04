@@ -122,9 +122,9 @@ namespace Remcoposer64.ProjectData
             }
         }
 
-        public Setting.midiOutInfo OutDevice { get; set; } = null;
+        public int OutDevice { get; set; } = -1;
         public int? OutChannel { get; set; } = 0;
-        public Setting.midiInInfo InDevice { get; set; } = null;
+        public int InDevice { get; set; } = -1;
         public int? InChannel { get; set; } = 0;
 
         public bool Solo

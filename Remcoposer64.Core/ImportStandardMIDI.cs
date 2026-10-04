@@ -36,7 +36,7 @@ namespace Remcoposer64.Core
         //読み込み！
         public MIDIProject Load()
         {
-            MIDIProject prj = new MIDIProject();
+            MIDIProject prj = new MIDIProject(setting);
             MIDITrack[] trk = null;
             MIDIPart[] prtAry = null;
             int[] trkStep = null;
@@ -44,7 +44,8 @@ namespace Remcoposer64.Core
             int trkPtr = 14;
             int trkDatLen = 0;
             int trkTick = 0;
-            int stDevNum = 0;//このデバイスから順にトラック（或いはチャンネル）が振られる(暫定)
+            int stOutDevNum = 0;//このデバイスから順にトラック（或いはチャンネル）が振られる(暫定)
+            int stInDevNum = 0;
 
             #region ファイル読込（オンメモリバッファ）
 
@@ -103,16 +104,11 @@ namespace Remcoposer64.Core
                 for (int i = 0; i < 16; i++)
                 {
                     trk[i] = new MIDITrack();
+                    trk[i].Number = i;
                     trk[i].Name = string.Format(Common.Common.cntSMF0DefaultTrackName, i + 1);
-                    //trk[i].OutDeviceName = setting.midiOut.lstMidiOutInfo[0][stDevNum].name;
-                    //trk[i].OutDeviceNumber = setting.midiOut.lstMidiOutInfo[0][stDevNum].id;
-                    //trk[i].OutUserDeviceName = setting.midiOut.lstMidiOutInfo[0][stDevNum].userDeviceName;
-                    //trk[i].OutUserDeviceNumber = setting.midiOut.lstMidiOutInfo[0][stDevNum].userDeviceNumber;
+                    trk[i].OutDevice = stOutDevNum;
                     trk[i].OutChannel = i;
-                    //trk[i].InDeviceName = Common.cntNullDevice;
-                    //trk[i].InDeviceNumber = null;
-                    //trk[i].InUserDeviceNumber = null;
-                    //trk[i].InUserDeviceName = Common.cntNullDevice;
+                    trk[i].InDevice = stInDevNum;
                     trk[i].InChannel = null;
                     trkStep[i] = 0;
                     prj.insertTrack(i, trk[i]);
@@ -131,18 +127,13 @@ namespace Remcoposer64.Core
                 for (int i = 0; i < trkLen; i++)
                 {
                     trk[i] = new MIDITrack();
+                    trk[i].Number = i;
                     trk[i].Name = (i == 0)
                         ? Common.Common.cntSMF1ConductorTrackName
                         : string.Format(Common.Common.cntSMF1DefaultTrackName, i + 1);
-                    //trk[i].OutDeviceName = setting.MIDIOutDeviceList[stDevNum].DevName;
-                    //trk[i].OutDeviceNumber = setting.MIDIOutDeviceList[stDevNum].DevNumber;
-                    //trk[i].OutUserDeviceNumber = setting.MIDIOutDeviceList[stDevNum].UsrNumber;
-                    //trk[i].OutUserDeviceName = setting.MIDIOutDeviceList[stDevNum].UsrName;
+                    trk[i].OutDevice = i / 16;
                     trk[i].OutChannel = i % 16;
-                    //trk[i].InDeviceName = Common.cntNullDevice;
-                    //trk[i].InDeviceNumber = null;
-                    //trk[i].InUserDeviceNumber = null;
-                    //trk[i].InUserDeviceName = Common.cntNullDevice;
+                    trk[i].InDevice = i / 16;
                     trk[i].InChannel = null;
                     trkStep[i] = 0;
                     prj.insertTrack(i, trk[i]);
@@ -207,12 +198,13 @@ namespace Remcoposer64.Core
                             cmd = bs[trkPtr];
                             if (cmd == 0x2f)
                                 TrkEnd = true;
-                            msg = MetaEvent(prj, trk[(format == 0) ? 0 : trkNum], format, ref trkPtr, stDevNum, bs);
+                            msg = MetaEvent(prj, trk[(format == 0) ? 0 : trkNum], format, ref trkPtr, ref stOutDevNum, bs);
                             break;
                         default:
                             msg = setMIDIEvent(ref cmd, ref ch, ref trkPtr, bs);
                             if (format == 1)
                             {
+                                trk[trkNum].OutDevice = stOutDevNum;
                                 trk[trkNum].OutChannel = ch;
                             }
                             break;
@@ -554,7 +546,7 @@ namespace Remcoposer64.Core
             return msg.ToArray();
         }
 
-        private byte[] MetaEvent(MIDIProject prj, MIDITrack trk, int format, ref int trkPtr, int stDevNum, byte[] bs)
+        private byte[] MetaEvent(MIDIProject prj, MIDITrack trk, int format, ref int trkPtr, ref int stDevNum, byte[] bs)
         {
             List<byte> msg = new List<byte>();
 
@@ -647,7 +639,10 @@ namespace Remcoposer64.Core
                     msg.Add(bs[trkPtr++]);
                     if (format == 1)
                     {
-                        //int dev = (stDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
+                        stDevNum = msg[1];
+                        trk.OutDevice = stDevNum;
+
+                        //int dev = (stOutDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
                         //trk.OutUserDeviceNumber = setting.MIDIOutDeviceList[dev].UsrNumber;
                         //trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
                     }
