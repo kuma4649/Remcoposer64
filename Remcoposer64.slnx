@@ -8,5 +8,6 @@
   <Project Path="Remcoposer64.ProjectData/Remcoposer64.ProjectData.csproj" Id="5785ae89-35f4-4e87-9df1-93fc8e030a12" />
   <Project Path="Remcoposer64.StepEditorPanel/Remcoposer64.StepEditorPanel.csproj" Id="9206df0e-2b7c-4495-8998-08095dd01ba4" />
   <Project Path="Remcoposer64.SysExEditorPanel/Remcoposer64.SysExEditorPanel.csproj" Id="7d1d5b3a-f45c-4a3c-b198-ce2713993f94" />
+  <Project Path="Remcoposer64.Test/Remcoposer64.Test.csproj" Id="4f382f4d-f1a5-496b-99f2-2d0461c89d66" />
   <Project Path="Remcoposer64.UndoRedoManager/Remcoposer64.UndoRedoManager.csproj" Id="4045930a-4260-40b2-844b-cae10431f9f8" />
 </Solution>

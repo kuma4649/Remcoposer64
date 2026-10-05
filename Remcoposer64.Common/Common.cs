@@ -25,6 +25,8 @@ namespace Remcoposer64.Common
         // 設定ファイルを置くディレクトリパス
         public static string settingFilePath = "";
 
+        public static int DATA_SEQUENCE_FREQUENCE { get; set; } = 44100;
+
         public static string GetApplicationDataFolder(bool make = false)
         {
             try
