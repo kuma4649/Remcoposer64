@@ -42,7 +42,7 @@ namespace Remcoposer64.Core.Timer
         // 同期リセット要求
         private bool reqResetSync = false;
 
-        private RmTimerContext context;       
+        private RmTimerContext context;
 
 
 
@@ -362,3 +362,4 @@ namespace Remcoposer64.Core.Timer
 
     }
 }
+
