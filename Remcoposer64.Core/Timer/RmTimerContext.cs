@@ -57,6 +57,7 @@
         /// </summary>
         public Func<int> SendStopFrame { get; set; }
 
+        public double SeqSpeedDelta { get; set; } = 1.0;
 
         // ------------------------------------------------------------
         // その他
@@ -67,5 +68,14 @@
         /// 例：音源初期化、外部デバイスとの同期、MIDIデータ準備など。
         /// </summary>
         public Action WaitSync { get; set; }
+
+        public void SetTempo(int tempoUSec)
+        {
+            // 500000 μsec = 120 BPM を基準とする
+            double bpm = 60000000.0 / tempoUSec;
+
+            // SeqSpeedDelta を BPM に応じて変更
+            SeqSpeedDelta = bpm / 120.0;
+        }
     }
 }

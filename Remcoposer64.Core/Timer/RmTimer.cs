@@ -22,7 +22,7 @@ namespace Remcoposer64.Core.Timer
 
         // シーケンス進行速度（テンポ変化などに使用）
         private double SeqSpeed = 0.0;
-        private double SeqSpeedDelta = 1.0;
+        //private double SeqSpeedDelta = 1.0;
 
         // スレッド制御フラグ
         protected volatile bool Start = false;
@@ -245,10 +245,10 @@ namespace Remcoposer64.Core.Timer
             }
 
             // シーケンス進行速度の調整
-            SeqSpeed += SeqSpeedDelta;
+            SeqSpeed += context.SeqSpeedDelta;
 
             // StepCounter がある場合の補正
-            if (SeqSpeedDelta == 0 && context.GetStepCounter() > 0)
+            if (context.SeqSpeedDelta == 0 && context.GetStepCounter() > 0)
             {
                 SeqSpeed++;
                 int step = context.GetStepCounter();

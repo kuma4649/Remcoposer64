@@ -3,6 +3,7 @@ using Remcoposer64.Core;
 using Remcoposer64.Core.Timer;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Threading;
 using System.Windows.Forms;
 using static Remcoposer64.Common.Setting;
@@ -74,16 +75,15 @@ namespace Remcoposer64.Test
 
         class MockHandler : IRmTimerHandler
         {
-
-            private readonly Label _label;
+            private RmTimerContext ctx;
             private readonly RingBuffer<CntPackData> _ring;
             private readonly NAudio.Midi.MidiOut midiOut;
 
-            public MockHandler(Label label, RingBuffer<CntPackData> ring, NAudio.Midi.MidiOut midiOut)
+            public MockHandler(RmTimerContext ctx,RingBuffer<CntPackData> ring, NAudio.Midi.MidiOut midiOut)
             {
-                _label = label;
                 _ring = ring;
                 this.midiOut = midiOut;
+                this.ctx = ctx;
             }
 
             long oldCounter = 0;
@@ -95,7 +95,24 @@ namespace Remcoposer64.Test
                     if (p.Counter > seq)
                         break;
 
-                    if (p.pack.SysEx != null)
+                    // ★ Tempo MetaEvent の検出
+                    if (p.pack.Status == 0xFF)
+                    {
+                        if (p.pack.SysEx[1] == 0x51)
+                        {
+                            //// FF 51 03 tt tt tt
+                            //int tempoUSec =
+                            //    (p.pack.SysEx[2] << 16) |
+                            //    (p.pack.SysEx[3] << 8) |
+                            //    (p.pack.SysEx[4]);
+
+                            //ctx.SetTempo(tempoUSec);
+
+                            //計算時にテンポは考慮済み
+                        }
+
+                    }
+                    else if (p.pack.SysEx != null)
                     {
                         // SysEx の場合
                         midiOut.SendBuffer(p.pack.SysEx);
@@ -105,7 +122,7 @@ namespace Remcoposer64.Test
                         // 通常ショートメッセージ
                         midiOut.Send(p.pack.RawData);
                         //if (oldCounter > p.Counter)
-                            //Debug.WriteLine($"oldCounter:{oldCounter} Counter:{p.Counter}");
+                        //Debug.WriteLine($"oldCounter:{oldCounter} Counter:{p.Counter}");
                         oldCounter = p.Counter;
                         //Debug.WriteLine($"Counter:{p.Counter} seq:{seq} Sent: {p.pack.Status:X2} {p.pack.Data1:X2} {p.pack.Data2:X2}");
                     }
@@ -118,8 +135,24 @@ namespace Remcoposer64.Test
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            timer.RequestStop();
-            timer.Dispose();
+            if (timer != null)
+            {
+                timer.RequestStop();
+                timer.Dispose();
+            }
+            if(midiOut != null)
+            {
+                try
+                {
+                    SendAllSoundOff(midiOut);
+                    midiOut.Reset();
+                    midiOut.Dispose();
+                }
+                catch
+                {
+                    // Ignore errors during cleanup
+                }
+            }
         }
 
         private void btnRef_Click(object sender, EventArgs e)
@@ -136,7 +169,7 @@ namespace Remcoposer64.Test
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            if(btnPlay.Text != "Play")
+            if (btnPlay.Text != "Play")
             {
                 btnPlay.Text = "Play";
                 timer.RequestStop();
@@ -146,18 +179,42 @@ namespace Remcoposer64.Test
                 return;
             }
 
-            btnPlay.Text = "Stop";
-
             // 選択されたデバイスを開く
-            midiOut = new NAudio.Midi.MidiOut(cmbDevice.SelectedIndex);
+            int deviceIndex = -1;
+            if(cmbDevice.SelectedItem == null)
+            {
+                MessageBox.Show("MIDI出力デバイスが選択されていません。");
+                return;
+            }
+            string selectedDevice = cmbDevice.SelectedItem.ToString();
+            selectedDevice = selectedDevice.Trim();
 
-            var events = SMFParser.ParseSmf(txtMIDIFile.Text);
+            for (int i = 0; i < NAudio.Midi.MidiOut.NumberOfDevices; i++)
+            {
+                string deviceName = NAudio.Midi.MidiOut.DeviceInfo(i).ProductName.Trim();
+                if (selectedDevice != deviceName)
+                    continue;
+
+                deviceIndex = i;
+                break;
+            }
+            if(deviceIndex == -1)
+            {
+                MessageBox.Show("MIDI出力デバイスが選択されていません。");
+                return;
+            }
+
+            btnPlay.Text = "Stop";
+            midiOut = new NAudio.Midi.MidiOut(deviceIndex);
+
+            var smfdata = SMFParser.ParseSmf(txtMIDIFile.Text);
+            var events = smfdata.Events;
+            int ppq = smfdata.PPQ;
 
             ringBuffer = new RingBuffer<CntPackData>(events.Count);
 
             // デフォルトテンポ
             int tempoUSec = 500000;
-            int ppq = 480;
 
             double currentSeconds = 0.0;
             long lastTick = 0;
@@ -212,7 +269,7 @@ namespace Remcoposer64.Test
                 else if (status == 0xFF)
                 {
                     // MetaEvent（テンポ変更など）
-                    HandleMetaEvent(ev.Data, ref tempoUSec);
+                    HandleMetaEvent(counter,ev.Data, ref tempoUSec);
                 }
             }
 
@@ -229,7 +286,6 @@ namespace Remcoposer64.Test
 
             ctx = new RmTimerContext
             {
-                Handler = new MockHandler(lblRmCounter, ringBuffer, midiOut),
 
                 GetStepCounter = () => 0,
                 SetStepCounter = v => { },
@@ -238,10 +294,14 @@ namespace Remcoposer64.Test
                 GetCurrentMode = () => SendMode.RealTime,
 
                 SendFrameData = () => { return; },// Debug.WriteLine("SendFrameData"),
-                SendStopFrame = () => { Debug.WriteLine("SendStopFrame"); return 0; },
+                SendStopFrame = () =>
+                {
+                    SendAllSoundOff(midiOut); Debug.WriteLine("SendStopFrame"); return 0;
+                },
 
                 WaitSync = () => Debug.WriteLine("WaitSync")
             };
+            ctx.Handler = new MockHandler(ctx, ringBuffer, midiOut);
             timer = new RmTimer(ctx);
             timer.RequestStart();
 
@@ -261,15 +321,45 @@ namespace Remcoposer64.Test
             return full;
         }
 
-        private void HandleMetaEvent(byte[] data, ref int tempoUSec)
+        private void HandleMetaEvent(long counter, byte[] data, ref int tempoUSec)
         {
             if (data[1] == 0x51) // SetTempo
             {
                 // data[2..4] が 24bit のテンポ値
                 tempoUSec = (data[2] << 16) | (data[3] << 8) | data[4];
             }
+
+            ringBuffer.Push(new CntPackData
+            {
+                Counter = counter,
+                pack = new PackData
+                {
+                    Status=0xff,
+                    SysEx = data
+                }
+            });
         }
 
+        public void SendAllSoundOff(NAudio.Midi.MidiOut midiout)
+        {
+            try
+            {
 
+                for (int ch = 0; ch < 16; ch++)
+                {
+                    // All Sound Off (CC120)
+                    midiOut.Send((0xB0 | ch) | (120 << 8) | (0 << 16));
+                    // All Notes Off (CC123)
+                    midiOut.Send((0xB0 | ch) | (123 << 8) | (0 << 16));
+                    // Hold Pedal Off (CC64)
+                    midiOut.Send((0xB0 | ch) | (64 << 8) | (0 << 16));
+                    // Reset All Controllers (CC121)
+                    midiOut.Send((0xB0 | ch) | (121 << 8) | (0 << 16));
+                    // Pitch Bend Center (E0 00 40)
+                    midiOut.Send((0xE0 | ch) | (0 << 8) | (64 << 16));
+                }
+            }
+            catch { }
+        }
     }
 }

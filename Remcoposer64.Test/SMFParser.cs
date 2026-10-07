@@ -13,7 +13,13 @@ namespace Remcoposer64.Test
             public byte[] Data; // ステータス含む生MIDIメッセージ
         }
 
-        public static List<MidiEventEx> ParseSmf(string path)
+        public class SmfData
+        {
+            public int PPQ;
+            public List<MidiEventEx> Events;
+        }
+
+        public static SmfData ParseSmf(string path)
         {
             using var fs = File.OpenRead(path);
             using var br = new BinaryReader(fs);
@@ -117,7 +123,11 @@ namespace Remcoposer64.Test
             //        throw new Exception("Tick order error");
             //    oldTick = ev.AbsTick;
             //}
-            return ret;
+            return new SmfData
+            {
+                PPQ = division,
+                Events = ret
+            };
         }
 
         private static List<MidiEventEx> MergeTracks(List<List<MidiEventEx>> tracks)
