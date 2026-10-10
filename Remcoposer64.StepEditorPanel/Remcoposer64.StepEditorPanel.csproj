@@ -14,7 +14,6 @@
     <Folder Include="Command\" />
     <Folder Include="EventArgs\" />
     <Folder Include="Events\" />
-    <Folder Include="Render\" />
     <Folder Include="Resource\" />
   </ItemGroup>
 

@@ -147,6 +147,10 @@ namespace Remcoposer64.ProjectData
             {
                 ((MIDIProgramChangeEvent)eve).ProgramNumber = MIDImessage[1];
             }
+            else if(eve is MIDIPitchBendEvent)
+            {
+                ((MIDIPitchBendEvent)eve).PitchValue = (short)((MIDImessage[2] << 7) | MIDImessage[1]);
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }
@@ -162,11 +166,26 @@ namespace Remcoposer64.ProjectData
         public LinkedListNode<MIDIEvent> insertSpEventNode(LinkedListNode<MIDIEvent> TargetEvent, int Step, MIDISpEventType EventType, byte[][] MIDImessageLst)
         {
             if (MIDImessageLst == null) return null;
-            MIDIEvent eve = Events.MIDIEventsFactory.CreateMIDIEvent((MIDIEventType)EventType);
-            eve.Type = MIDIEventType.MetaSequencerSpecific;
+            int enm = (byte)EventType + 0x100;
+            MIDIEvent eve = Events.MIDIEventsFactory.CreateMIDIEvent((MIDIEventType)enm);
             eve.MIDIMessage = new byte[1] { (byte)EventType };
             eve.MIDIMessageLst = MIDImessageLst;
             eve.ST = Step;
+            if(eve.Type== MIDIEventType.RolandDevice)
+            {
+                ((MIDIRolandDeviceEvent)eve).RolandDev_gt = eve.MIDIMessageLst[0][0];
+                ((MIDIRolandDeviceEvent)eve).RolandDev_vel = eve.MIDIMessageLst[0][1];
+            }
+            else if (eve.Type == MIDIEventType.RolandBase)
+            {
+                ((MIDIRolandBaseEvent)eve).RolandBase_gt = eve.MIDIMessageLst[0][0];
+                ((MIDIRolandBaseEvent)eve).RolandBase_vel = eve.MIDIMessageLst[0][1];
+            }
+            else if (eve.Type == MIDIEventType.RolandPara)
+            {
+                ((MIDIRolandParaEvent)eve).RolandPara_gt = eve.MIDIMessageLst[0][0];
+                ((MIDIRolandParaEvent)eve).RolandPara_vel = eve.MIDIMessageLst[0][1];
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }

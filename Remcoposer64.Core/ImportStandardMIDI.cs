@@ -87,6 +87,7 @@ namespace Remcoposer64.Core
 
             #region プロジェクトの初期設定
 
+            prj.Information.FileFullName = fn;
             prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
             prj.Information.Title = Common.Common.cntNoTitle;
             prj.Information.Tempo = 120;
@@ -224,7 +225,8 @@ namespace Remcoposer64.Core
                         if (format != 0)
                         {
                             //Format1の時は、現在のトラックのみにEndOfTrackを挿入する
-                            prtAry[num].insertSpEventNode(evt, 0, MIDISpEventType.EndOfTrack, null);
+                            //prtAry[num].insertEventNode(evt, 0, MIDIEventType.MetaEndOfTrack, null);
+
                         }
                         else
                         {
@@ -233,7 +235,7 @@ namespace Remcoposer64.Core
                             {
                                 LinkedListNode<MIDIEvent> ev = prtAry[i].getEndEventNode();
                                 if (ev != null) ev.Value.ST = trkStep[i];
-                                prtAry[i].insertSpEventNode(ev, 0, MIDISpEventType.EndOfTrack, null);
+                                //prtAry[i].insertEventNode(ev, 0, MIDIEventType.MetaEndOfTrack, null);
                             }
                         }
                     }

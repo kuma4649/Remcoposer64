@@ -25,6 +25,8 @@ namespace Remcoposer64.Core.Player
         private NAudio.Midi.MidiOut[] midiOutDevice;
         private NAudio.Midi.MidiIn[] midiInDevice;
 
+        private byte[] RolEx = new byte[11];
+
         public void Initialize(Setting.midiOutInfo[] midiOut, MidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
         {
             _midiOutInfo = midiOut;
@@ -215,7 +217,9 @@ namespace Remcoposer64.Core.Player
                               + (nevt.KeyNumber << 8)
                               + (nevt.Vel << 16);
 
-                    if (!trk.Mute) midiOut?.Send(msg);
+                    if (!dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
+                        && !trk.Mute) 
+                        midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録
                     SetNoteTable(trk.OutDevice, ch, nevt.KeyNumber, nevt.GT);
@@ -331,6 +335,41 @@ namespace Remcoposer64.Core.Player
 
                 // SysEx はそのまま送る
                 midiOut?.SendBuffer(sevt.Data);
+            }
+            else if (evt.Type == MIDIEventType.RolandDevice)
+            {
+                MIDIRolandDeviceEvent sevt = (MIDIRolandDeviceEvent)evt;
+
+                trk.RolandDev_gt = sevt.RolandDev_gt;
+                trk.RolandDev_vel = sevt.RolandDev_vel;
+            }
+            else if (evt.Type == MIDIEventType.RolandBase)
+            {
+                MIDIRolandBaseEvent sevt = (MIDIRolandBaseEvent)evt;
+
+                trk.RolandBase_gt = sevt.RolandBase_gt;
+                trk.RolandBase_vel = sevt.RolandBase_vel;
+            }
+            else if (evt.Type == MIDIEventType.RolandPara)
+            {
+                MIDIRolandParaEvent sevt = (MIDIRolandParaEvent)evt;
+
+                trk.RolandPara_gt = sevt.RolandPara_gt;
+                trk.RolandPara_vel = sevt.RolandPara_vel;
+
+                RolEx[0] = 0xF0;
+                RolEx[1] = 0x41;
+                RolEx[2] = trk.RolandDev_gt;
+                RolEx[3] = trk.RolandDev_vel;
+                RolEx[4] = 0x12;
+                RolEx[5] = trk.RolandBase_gt;
+                RolEx[6] = trk.RolandBase_vel;
+                RolEx[7] = trk.RolandPara_gt;
+                RolEx[8] = trk.RolandPara_vel;
+                RolEx[9] = (byte)((128 - ((trk.RolandBase_gt + trk.RolandBase_vel + trk.RolandPara_gt + trk.RolandPara_vel) % 128)) & 0x7f);
+                RolEx[10] = 0xF7;
+                midiOut?.SendBuffer(RolEx);
+
             }
             else
             {

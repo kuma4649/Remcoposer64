@@ -48,6 +48,8 @@ namespace Remcoposer64.Core
         {
             prj = new MIDIProject(setting);
             bs = null;
+            prj.Information.FileFullName = fn;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
 
             #region ファイル読込（オンメモリバッファ）
 

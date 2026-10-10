@@ -39,6 +39,32 @@ namespace Remcoposer64.ProjectData
         //End = 0x101,
         Memo = 0x102,
         Meta = 0x103,
-        SameMeas = 0x104
+        SameMeas = 0x104,
+
+        UserExclusive1 = 0x190,
+        UserExclusive2 = 0x191,
+        UserExclusive3 = 0x192,
+        UserExclusive4 = 0x193,
+        UserExclusive5 = 0x194,
+        UserExclusive6 = 0x195,
+        UserExclusive7 = 0x196,
+        UserExclusive8 = 0x197,
+        ChExclusive = 0x198,
+        OutSideProc = 0x199,
+        BankProgram = 0x1E2,
+        KeyScan = 0x1E5,
+        MIDICh = 0x1E6,
+        TempoChange = 0x1E7,
+        RolandBase = 0x1DD,
+        RolandPara = 0x1DE,
+        RolandDevice = 0x1DF,
+        KeyChange = 0x1F5,
+        Comment = 0x1F6,
+        LoopEnd = 0x1F8,
+        LoopStart = 0x1F9,
+        SameMeasure = 0x1FC,
+        MeasureEnd = 0x1FD,
+        EndOfTrack = 0x1FE
+
     }
 }

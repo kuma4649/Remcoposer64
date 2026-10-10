@@ -38,8 +38,8 @@ namespace Remcoposer64.StepEditorPanelControl.Events
 
         public int GT { get; set; }
         public static int oGT { get; set; }
-        public static readonly int GT_MAXLEN = 4;
-        public static readonly string GT_SPACE = "    ";
+        public static new readonly int GT_MAXLEN = 4;
+        public static new readonly string GT_SPACE = "    ";
 
         public int Vel { get; set; }
         public static int oVel { get; set; }

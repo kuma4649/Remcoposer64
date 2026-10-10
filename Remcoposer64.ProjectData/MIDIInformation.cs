@@ -31,6 +31,7 @@ namespace Remcoposer64.ProjectData
         private int _NumberTrack = 0;
         private int _tCounter = 0;
 
+        public string FileFullName { get; set; } = "";
         public string FileName
         {
             set

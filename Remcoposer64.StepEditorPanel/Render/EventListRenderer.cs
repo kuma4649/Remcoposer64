@@ -1,7 +1,4 @@
-﻿using global::Remcoposer64.StepEditorPanelControl.Events;
-using global::Remcoposer64.StepEditorPanelControl.Render;
-using Remcoposer64.StepEditorPanelControl.Render;
-using Remcoposer64.ProjectData;
+﻿using global::Remcoposer64.StepEditorPanelControl.Render;
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
 

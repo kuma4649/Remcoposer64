@@ -22,6 +22,10 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         private readonly UIChannelPressureEvent channelPressureEvent;
         private readonly UIPolyphonicKeyPressureEvent polyphonicKeyPressureEvent;
 
+        private readonly UIRolandDeviceEvent rolandDeviceEvent;
+        private readonly UIRolandBaseEvent rolandBaseEvent;
+        private readonly UIRolandParaEvent rolandParaEvent;
+
 
         public UIEventProvider(DrawUtil drawUtil)
         {
@@ -38,6 +42,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             tempoEvent = new(drawUtil);
             channelPressureEvent = new(drawUtil);
             polyphonicKeyPressureEvent = new(drawUtil);
+            rolandDeviceEvent = new(drawUtil);
+            rolandBaseEvent = new(drawUtil);
+            rolandParaEvent = new(drawUtil);
         }
 
         public UIEvent Get(MIDIEventType type)
@@ -75,6 +82,11 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 MIDIEventType.MetaChannelPrefix => metaEvent,
                 MIDIEventType.MetaPortPrefix => metaEvent,
                 MIDIEventType.MetaSeqNumber => metaEvent,
+
+                MIDIEventType.RolandDevice => rolandDeviceEvent,
+                MIDIEventType.RolandBase => rolandBaseEvent,
+                MIDIEventType.RolandPara => rolandParaEvent,
+
                 _ => throw new NotSupportedException()
             };
         }

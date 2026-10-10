@@ -49,6 +49,12 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDISysExEvent();
                 case MIDIEventType.SysExF7:
                     return new MIDISysExEvent();
+                case MIDIEventType.RolandBase:
+                    return new MIDIRolandBaseEvent();
+                case MIDIEventType.RolandPara:
+                    return new MIDIRolandParaEvent();
+                case MIDIEventType.RolandDevice:
+                    return new MIDIRolandDeviceEvent();
                 default:
                     return new MIDIMetaEvent();
                     //Debug.WriteLine(type.ToString());
