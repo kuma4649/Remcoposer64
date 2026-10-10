@@ -275,6 +275,8 @@ namespace Remcoposer64.StepEditorPanelControl
             row--;
 
             int absoluteIndex = scrollOffset + row;
+            if (eventManager.EventCount <= absoluteIndex)
+                return;
 
             bool ctrl = (ModifierKeys & Keys.Control) != 0;
             bool shift = (ModifierKeys & Keys.Shift) != 0;
@@ -384,6 +386,8 @@ namespace Remcoposer64.StepEditorPanelControl
             if (row < 0) return;
 
             int absoluteIndex = scrollOffset + row;
+            if (eventManager.EventCount <= absoluteIndex)
+                return;
 
             bool ctrl = (ModifierKeys & Keys.Control) != 0;
             bool shift = (ModifierKeys & Keys.Shift) != 0;

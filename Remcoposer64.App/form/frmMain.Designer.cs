@@ -30,22 +30,24 @@
         {
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
-            newSequenceToolStripMenuItem = new ToolStripMenuItem();
-            openSequenceFileToolStripMenuItem = new ToolStripMenuItem();
-            saveSequenceFileToolStripMenuItem = new ToolStripMenuItem();
-            saveAsToolStripMenuItem = new ToolStripMenuItem();
-            recentFilesToolStripMenuItem = new ToolStripMenuItem();
+            tsmiNewSequence = new ToolStripMenuItem();
+            tsmiOpenSequenceFile = new ToolStripMenuItem();
+            tsmiSaveSequenceFile = new ToolStripMenuItem();
+            tsmiSaveAs = new ToolStripMenuItem();
+            tsmiRecentFiles = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            exportToolStripMenuItem = new ToolStripMenuItem();
+            tsmiExport = new ToolStripMenuItem();
             tsmiImport = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            exitToolStripMenuItem = new ToolStripMenuItem();
+            tsmiExit = new ToolStripMenuItem();
+            editToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPlay = new ToolStripMenuItem();
             toolToolStripMenuItem = new ToolStripMenuItem();
+            tsmiSetting = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             tsmiShowConsole = new ToolStripMenuItem();
             tabControl1 = new TabControl();
             toolStripContainer2 = new ToolStripContainer();
-            settingToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStripContainer2.ContentPanel.SuspendLayout();
             toolStripContainer2.TopToolStripPanel.SuspendLayout();
@@ -55,7 +57,7 @@
             // menuStrip1
             // 
             menuStrip1.Dock = DockStyle.None;
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, toolToolStripMenuItem, helpToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolToolStripMenuItem, helpToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -64,76 +66,99 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newSequenceToolStripMenuItem, openSequenceFileToolStripMenuItem, saveSequenceFileToolStripMenuItem, saveAsToolStripMenuItem, recentFilesToolStripMenuItem, toolStripSeparator1, exportToolStripMenuItem, tsmiImport, toolStripSeparator2, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiNewSequence, tsmiOpenSequenceFile, tsmiSaveSequenceFile, tsmiSaveAs, tsmiRecentFiles, toolStripSeparator1, tsmiExport, tsmiImport, toolStripSeparator2, tsmiExit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "&File";
             // 
-            // newSequenceToolStripMenuItem
+            // tsmiNewSequence
             // 
-            newSequenceToolStripMenuItem.Name = "newSequenceToolStripMenuItem";
-            newSequenceToolStripMenuItem.Size = new Size(184, 22);
-            newSequenceToolStripMenuItem.Text = "Open New Sequence";
+            tsmiNewSequence.Name = "tsmiNewSequence";
+            tsmiNewSequence.Size = new Size(180, 22);
+            tsmiNewSequence.Text = "New Sequence file";
             // 
-            // openSequenceFileToolStripMenuItem
+            // tsmiOpenSequenceFile
             // 
-            openSequenceFileToolStripMenuItem.Name = "openSequenceFileToolStripMenuItem";
-            openSequenceFileToolStripMenuItem.Size = new Size(184, 22);
-            openSequenceFileToolStripMenuItem.Text = "Open Sequence file";
+            tsmiOpenSequenceFile.Name = "tsmiOpenSequenceFile";
+            tsmiOpenSequenceFile.Size = new Size(180, 22);
+            tsmiOpenSequenceFile.Text = "Open Sequence file";
             // 
-            // saveSequenceFileToolStripMenuItem
+            // tsmiSaveSequenceFile
             // 
-            saveSequenceFileToolStripMenuItem.Name = "saveSequenceFileToolStripMenuItem";
-            saveSequenceFileToolStripMenuItem.Size = new Size(184, 22);
-            saveSequenceFileToolStripMenuItem.Text = "Save Sequence file";
+            tsmiSaveSequenceFile.Name = "tsmiSaveSequenceFile";
+            tsmiSaveSequenceFile.Size = new Size(180, 22);
+            tsmiSaveSequenceFile.Text = "Save Sequence file";
             // 
-            // saveAsToolStripMenuItem
+            // tsmiSaveAs
             // 
-            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(184, 22);
-            saveAsToolStripMenuItem.Text = "Save As";
+            tsmiSaveAs.Name = "tsmiSaveAs";
+            tsmiSaveAs.Size = new Size(180, 22);
+            tsmiSaveAs.Text = "Save As";
             // 
-            // recentFilesToolStripMenuItem
+            // tsmiRecentFiles
             // 
-            recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-            recentFilesToolStripMenuItem.Size = new Size(184, 22);
-            recentFilesToolStripMenuItem.Text = "Recent files";
+            tsmiRecentFiles.Name = "tsmiRecentFiles";
+            tsmiRecentFiles.Size = new Size(180, 22);
+            tsmiRecentFiles.Text = "Recent files";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(181, 6);
+            toolStripSeparator1.Size = new Size(177, 6);
             // 
-            // exportToolStripMenuItem
+            // tsmiExport
             // 
-            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(184, 22);
-            exportToolStripMenuItem.Text = "Export";
+            tsmiExport.Name = "tsmiExport";
+            tsmiExport.Size = new Size(180, 22);
+            tsmiExport.Text = "Export";
             // 
             // tsmiImport
             // 
             tsmiImport.Name = "tsmiImport";
-            tsmiImport.Size = new Size(184, 22);
+            tsmiImport.Size = new Size(180, 22);
             tsmiImport.Text = "Import";
             tsmiImport.Click += tsmiImport_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(181, 6);
+            toolStripSeparator2.Size = new Size(177, 6);
             // 
-            // exitToolStripMenuItem
+            // tsmiExit
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(184, 22);
-            exitToolStripMenuItem.Text = "&Exit";
+            tsmiExit.Name = "tsmiExit";
+            tsmiExit.Size = new Size(180, 22);
+            tsmiExit.Text = "&Exit";
+            tsmiExit.Click += tsmiExit_Click;
+            // 
+            // editToolStripMenuItem
+            // 
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay });
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new Size(39, 20);
+            editToolStripMenuItem.Text = "&Edit";
+            // 
+            // tsmiPlay
+            // 
+            tsmiPlay.Name = "tsmiPlay";
+            tsmiPlay.ShortcutKeys = Keys.F5;
+            tsmiPlay.Size = new Size(115, 22);
+            tsmiPlay.Text = "&Play";
+            tsmiPlay.Click += tsmiPlay_Click;
             // 
             // toolToolStripMenuItem
             // 
-            toolToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { settingToolStripMenuItem });
+            toolToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiSetting });
             toolToolStripMenuItem.Name = "toolToolStripMenuItem";
             toolToolStripMenuItem.Size = new Size(41, 20);
             toolToolStripMenuItem.Text = "&Tool";
+            // 
+            // tsmiSetting
+            // 
+            tsmiSetting.Name = "tsmiSetting";
+            tsmiSetting.Size = new Size(180, 22);
+            tsmiSetting.Text = "Setting";
+            tsmiSetting.Click += tsmiSetting_Click;
             // 
             // helpToolStripMenuItem
             // 
@@ -157,6 +182,7 @@
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new Size(800, 514);
             tabControl1.TabIndex = 1;
+            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
             // toolStripContainer2
             // 
@@ -175,13 +201,6 @@
             // toolStripContainer2.TopToolStripPanel
             // 
             toolStripContainer2.TopToolStripPanel.Controls.Add(menuStrip1);
-            // 
-            // settingToolStripMenuItem
-            // 
-            settingToolStripMenuItem.Name = "settingToolStripMenuItem";
-            settingToolStripMenuItem.Size = new Size(180, 22);
-            settingToolStripMenuItem.Text = "Setting";
-            settingToolStripMenuItem.Click += settingToolStripMenuItem_Click;
             // 
             // frmMain
             // 
@@ -208,19 +227,21 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem toolToolStripMenuItem;
         private ToolStripMenuItem helpToolStripMenuItem;
-        private ToolStripMenuItem newSequenceToolStripMenuItem;
-        private ToolStripMenuItem openSequenceFileToolStripMenuItem;
-        private ToolStripMenuItem saveSequenceFileToolStripMenuItem;
-        private ToolStripMenuItem saveAsToolStripMenuItem;
-        private ToolStripMenuItem recentFilesToolStripMenuItem;
+        private ToolStripMenuItem tsmiNewSequence;
+        private ToolStripMenuItem tsmiOpenSequenceFile;
+        private ToolStripMenuItem tsmiSaveSequenceFile;
+        private ToolStripMenuItem tsmiSaveAs;
+        private ToolStripMenuItem tsmiRecentFiles;
         private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem exitToolStripMenuItem;
-        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripMenuItem tsmiExit;
+        private ToolStripMenuItem tsmiExport;
         private ToolStripMenuItem tsmiImport;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem tsmiShowConsole;
         private TabControl tabControl1;
         private ToolStripContainer toolStripContainer2;
-        private ToolStripMenuItem settingToolStripMenuItem;
+        private ToolStripMenuItem tsmiSetting;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem tsmiPlay;
     }
 }

@@ -15,6 +15,7 @@ namespace Remcoposer64.ProjectData
         /// イベントリスト
         /// </summary>
         public LinkedList<MIDIEvent> Event { get; set; } = new LinkedList<MIDIEvent>();
+        public bool Played { get; set; } = false;
 
         //初めのイベントを得る
         public LinkedListNode<MIDIEvent> getStartEventNode()
@@ -99,6 +100,14 @@ namespace Remcoposer64.ProjectData
             eve.MIDIMessageLst = null;
             eve.ST = Step;
 
+            if (eve is MIDIMemoEvent)
+            {
+                Encoding encoding = Common.Common.GetCode(MIDImessage, 0, MIDImessage.Length);
+                if (encoding == null) encoding = Encoding.UTF8;
+                string strFromByte = encoding.GetString(MIDImessage).Replace("\0", "");
+                ((MIDIMemoEvent)eve).Text = strFromByte;
+            }
+
             return insertEve(TargetEvent, Step, eve);
         }
 
@@ -119,7 +128,25 @@ namespace Remcoposer64.ProjectData
             eve.MIDIMessage = MIDImessage;
             eve.MIDIMessageLst = null;
             eve.ST = Step;
-            if (eve is MIDINoteEvent) ((MIDINoteEvent)eve).GT = gt;
+            if (eve is MIDINoteEvent)
+            {
+                ((MIDINoteEvent)eve).KeyNumber = MIDImessage[1];
+                ((MIDINoteEvent)eve).GT = gt;
+                ((MIDINoteEvent)eve).Vel = MIDImessage[2];
+            }
+            else if (eve is MIDITempoEvent)
+            {
+                ((MIDITempoEvent)eve).TempoValue =  60000000 / (eve.MIDIMessage[2] * 0x10000 + eve.MIDIMessage[3] * 0x100 + eve.MIDIMessage[4]);
+            }
+            else if (eve is MIDIControlChangeEvent)
+            {
+                ((MIDIControlChangeEvent)eve).ControllerNumber = MIDImessage[1];
+                ((MIDIControlChangeEvent)eve).ControllerValue = MIDImessage[2];
+            }
+            else if (eve is MIDIProgramChangeEvent)
+            {
+                ((MIDIProgramChangeEvent)eve).ProgramNumber = MIDImessage[1];
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }
@@ -135,7 +162,7 @@ namespace Remcoposer64.ProjectData
         public LinkedListNode<MIDIEvent> insertSpEventNode(LinkedListNode<MIDIEvent> TargetEvent, int Step, MIDISpEventType EventType, byte[][] MIDImessageLst)
         {
             if (MIDImessageLst == null) return null;
-            MIDIEvent eve = Events.MIDIEventsFactory.CreateMIDIEvent(MIDIEventType.MetaSequencerSpecific);
+            MIDIEvent eve = Events.MIDIEventsFactory.CreateMIDIEvent((MIDIEventType)EventType);
             eve.Type = MIDIEventType.MetaSequencerSpecific;
             eve.MIDIMessage = new byte[1] { (byte)EventType };
             eve.MIDIMessageLst = MIDImessageLst;

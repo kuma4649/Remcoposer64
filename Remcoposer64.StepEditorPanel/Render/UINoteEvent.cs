@@ -80,8 +80,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 FBColor fbC = aryFb[3];
                 Color fgTie = Color.LightYellow;
 
-                if (state == RowState.Cursor && cursor.Position == 0) drawUtil.DrawCell(note.NoteName, ref pos, ref x, COL_NOTENAME, fbC);
-                else drawUtil.DrawCell(note.NoteName, ref pos, ref x, COL_NOTENAME, aryFb[0]);
+                string noteName = (note.GT + note.Vel == 0) ? " " : note.NoteName;
+                if (state == RowState.Cursor && cursor.Position == 0) drawUtil.DrawCell(noteName, ref pos, ref x, COL_NOTENAME, fbC);
+                else drawUtil.DrawCell(noteName, ref pos, ref x, COL_NOTENAME, aryFb[0]);
 
                 if (state == RowState.Cursor && cursor.Position == 1) drawUtil.DrawCell(note.KeyNumber.ToString(), ref pos, ref x, COL_KEYNUMBER, fbC);
                 else drawUtil.DrawCell(note.KeyNumber.ToString(), ref pos, ref x, COL_KEYNUMBER, aryFb[0]);

@@ -207,7 +207,7 @@ namespace Remcoposer64.ProjectData
                 return _Tempo;
             }
         }
-        public int BeatDen
+        public int BeatDen//拍子（分母）
         {
             set
             {
@@ -284,5 +284,7 @@ namespace Remcoposer64.ProjectData
                 return _tCounter;
             }
         }
+
+        public bool Played { get; set; } = false;
     }
 }

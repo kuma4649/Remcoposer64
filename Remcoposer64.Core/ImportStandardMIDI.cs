@@ -268,6 +268,7 @@ namespace Remcoposer64.Core
                         //NoteONイベントが見つかったのでNoteOFFイベントを探す
                         gt = evt.Value.ST;
                         LinkedListNode<MIDIEvent> evt2 = prt.Value.getNextEventNode(evt);
+                        LinkedListNode<MIDIEvent> oldEvt2 = evt;
                         while (evt2 != null)
                         {
                             if (evt2.Value.Type == MIDIEventType.NoteOff || (evt2.Value.Type == MIDIEventType.NoteON && evt2.Value.MIDIMessage[2] == 0))
@@ -280,6 +281,7 @@ namespace Remcoposer64.Core
                             }
                             //NoteOFFが見つかるまでのイベントのGateTimeを加算し続ける
                             gt += evt2.Value.ST;
+                            oldEvt2 = evt2;
                             evt2 = prt.Value.getNextEventNode(evt2);
                         }
                         //ループを抜けた時にOFFイベントを見つけていなければとりあえずGateTimeを1にしてしまう
@@ -294,6 +296,14 @@ namespace Remcoposer64.Core
                         }
                         //NoteONのGateTimeを更新
                         ((MIDINoteEvent)evt.Value).GT = gt;
+                        if (evt2 != null)
+                        {
+                            oldEvt2.Value.ST += evt2.Value.ST;
+                        }
+                        else
+                        {
+                            Log.Write(LogLevel.Warning, "Not found NoteOFF event.");
+                        }
                         //次のNoteONイベント探しの旅へ
                         evt = prt.Value.getNextEventNode(evt);
                     }
@@ -361,7 +371,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(ev.MIDIMessage, 2, ev.MIDIMessage.Length - 2);
                                     if(encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -373,7 +383,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(ev.MIDIMessage, 2, ev.MIDIMessage.Length - 2);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -385,7 +395,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(ev.MIDIMessage, 2, ev.MIDIMessage.Length - 2);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -397,7 +407,7 @@ namespace Remcoposer64.Core
                                     bytes = new byte[ev.MIDIMessage.Length - 2];
                                     Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
 
-                                    encoding = Common.Common.GetCode(bytes);
+                                    encoding = Common.Common.GetCode(ev.MIDIMessage, 2, ev.MIDIMessage.Length - 2);
                                     if (encoding == null) encoding = Encoding.UTF8;
                                     strFromByte = encoding.GetString(bytes).Replace("\0", "");
                                     ((MIDIMemoEvent)ev).Text = strFromByte;
@@ -454,16 +464,32 @@ namespace Remcoposer64.Core
                         LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
                         while (eventNode != null)
                         {
-                            MIDIEvent ev = eventNode.Value;
 
+                            MIDIEvent ev = eventNode.Value;
                             sum += ev.ST;
-                            if(sum >= prj.Information.TimeBase * 4 / beatDen * beatMol)
+                            int tsum = prj.Information.TimeBase * 4 / beatDen * beatMol;
+
+                            while (sum >= tsum)
                             {
+                                ev = eventNode.Value;
+                                ev.ST -= sum - tsum;
                                 //小節線を挿入
                                 LinkedListNode<MIDIEvent> barLineNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.BarLine, null);
                                 MIDIBarLineEvent barLineEvent = (MIDIBarLineEvent)barLineNode.Value;
                                 barLineEvent.MeasureTotalST = sum;
-                                sum -= prj.Information.TimeBase * 4 / beatDen * beatMol;
+                                eventNode = barLineNode;
+
+                                if (sum - tsum > 0)
+                                {
+                                    LinkedListNode<MIDIEvent> restNoteNode = prt.Value.insertEventNode(barLineNode, 0, MIDIEventType.NoteON, null);
+                                    ((MIDINoteEvent)restNoteNode.Value).KeyNumber = 0;
+                                    if (ev.Type == MIDIEventType.NoteON)
+                                        ((MIDINoteEvent)restNoteNode.Value).KeyNumber = ((MIDINoteEvent)ev).KeyNumber;
+                                    restNoteNode.Value.ST = sum - tsum;
+                                    eventNode = restNoteNode;
+                                }
+
+                                sum -= tsum;
                             }
 
                             eventNode = prt.Value.getNextEventNode(eventNode);
@@ -571,26 +597,26 @@ namespace Remcoposer64.Core
                 case 0x02://著作権表示
                     len = getDelta(ref trkPtr, bs, msg);
                     nam = new byte[len];
+                    enc = Common.Common.GetCode(bs, trkPtr, len);
                     for (int i = 0; i < len; i++, trkPtr++)
                     {
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.Common.GetCode(nam);
-                    if(enc == null) enc = Encoding.UTF8;
+                    if (enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     prj.Information.Copyright = strFromByte;
                     break;
                 case 0x03://曲名或いはトラック名
                     len = getDelta(ref trkPtr, bs, msg);
                     nam = new byte[len];
+                    enc = Common.Common.GetCode(bs, trkPtr, len);
                     for (int i = 0; i < len; i++, trkPtr++)
                     {
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.Common.GetCode(nam);
-                    if(enc == null) enc = Encoding.UTF8;
+                    if (enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     if ((format == 0 || (format == 1 && trk.Number == 0)) && !titleSW)
                     {
@@ -605,12 +631,12 @@ namespace Remcoposer64.Core
                 case 0x04://楽器名
                     len = getDelta(ref trkPtr, bs, msg);
                     nam = new byte[len];
+                    enc = Common.Common.GetCode(bs, trkPtr, len);
                     for (int i = 0; i < len; i++, trkPtr++)
                     {
                         nam[i] = bs[trkPtr];
                         msg.Add(nam[i]);
                     }
-                    enc = Common.Common.GetCode(nam);
                     if (enc == null) enc = Encoding.UTF8;
                     strFromByte = enc.GetString(nam).Replace("\0", "");
                     trk.Name = strFromByte;

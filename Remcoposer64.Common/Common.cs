@@ -284,5 +284,13 @@ namespace Remcoposer64.Common
             return null;
         }
 
+        public static Encoding GetCode(byte[] bs, int ptr, int v)
+        {
+            while (v > 0 && bs[ptr + v - 1] == 0x00) v--;
+
+            byte[] dst = new byte[v];
+            Array.Copy(bs, ptr, dst, 0, v);
+            return GetCode(dst);
+        }
     }
 }

@@ -1,11 +1,8 @@
 using Remcoposer64.App.form;
-using Remcoposer64.Core;
-using Remcoposer64.ProjectData;
-using Remcoposer64.UndoRedoManager;
 using Remcoposer64.Common;
-
-using System.Text;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Remcoposer64.Core;
+using Remcoposer64.Core.Player;
+using Remcoposer64.ProjectData;
 
 namespace Remcoposer64.App
 {
@@ -15,25 +12,84 @@ namespace Remcoposer64.App
         private frmConsole console;
         private UndoRedoManager.UndoRedoManager undoMng;
 
+        private List<MIDIProject> projects = new List<MIDIProject>();
+        private MIDIProject currentProject = null;
+        private RmPlayer player = null;
+
         public frmMain()
         {
-            InitializeComponent();
-
-            Common.Common.SetExecutablePath(Application.ExecutablePath);
-            setting = Setting.Load();
-
-            console = new frmConsole(setting);
-#if DEBUG
-            console.Show();
-            console.BringToFront();
-#endif
-            undoMng = new UndoRedoManager.UndoRedoManager();
+            Initial();
         }
 
+        // E:\FM音源\data\MIDI\MakingMIDI\XGfeelingheart.mid
+
+        public frmMain(string[] args)
+        {
+            Initial();
+
+            if (args.Length > 1)
+            {
+                var file = args[1];
+                if (File.Exists(file))
+                {
+                    ImportMidiFile(file);
+                }
+            }
+        }
 
         //
         // Event
         //
+
+        private void tsmiExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void tsmiPlay_Click(object sender, EventArgs e)
+        {
+            if (currentProject == null)
+            {
+                MessageBox.Show("再生するプロジェクトがありません。");
+                return;
+            }
+
+            player.InitialPlay();
+            player.PlayMusic(currentProject);
+        }
+
+        private void tsmiSetting_Click(object sender, EventArgs e)
+        {
+            frmSetting frm = new frmSetting(setting);
+            DialogResult res = frm.ShowDialog();
+            if (res != DialogResult.OK) return;
+
+            setting = frm.GetSetting();
+            setting.Save();
+
+            // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
+            player.StopPlayback();
+            player.Close(); 
+
+            // MIDIデバイスの表示を更新する
+            foreach (TabPage tab in tabControl1.TabPages)
+            {
+                MIDIProject project = (MIDIProject)tab.Tag;
+                DataGridView dgv = (DataGridView)tab.Controls[0];
+
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
+                    MIDITrack trk = trkNode.Value;
+                    Setting.MidiOut mo = setting.midiOut;
+                    row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                }
+            }
+
+            // MIDIデバイスをオープンする
+            player = new RmPlayer(setting);
+
+        }
 
         private void tsmiImport_Click(object sender, EventArgs e)
         {
@@ -48,25 +104,85 @@ namespace Remcoposer64.App
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
+            player.StopPlayback();
+            player.Close();
+
             base.OnFormClosing(e);
             setting.Save();
         }
 
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == null)
+            {
+                currentProject = null;
+                return;
+            }
 
+            TabPage tp = tabControl1.SelectedTab;
+            currentProject = (MIDIProject)tp.Tag;
+        }
+
+
+
+        public void Initial()
+        {
+            InitializeComponent();
+
+            Common.Common.SetExecutablePath(Application.ExecutablePath);
+            setting = Setting.Load();
+
+            console = new frmConsole(setting);
+#if DEBUG
+            console.Show();
+            console.BringToFront();
+#endif
+            undoMng = new UndoRedoManager.UndoRedoManager();
+            player = new RmPlayer(setting);
+        }
 
         private void ImportMidiFile()
         {
             var ofd = new OpenFileDialog();
-            ofd.Filter = "MIDI Files (*.mid)|*.mid";
+            ofd.Filter = "All support files (*.mid;*.rcp)|*.mid;*.rcp|MIDI Files (*.mid)|*.mid|RCP Files (*.rcp)|*.rcp";
 
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
-            // SMF → RCP 変換器を作成
-            ImportStandardMIDI importer = new ImportStandardMIDI(ofd.FileName, setting);
-            // プロジェクトをロード
-            MIDIProject project = importer.Load();
-            Log.Write(LogLevel.Information, $"Import {ofd.FileName} is succed.");
+            ImportMidiFile(ofd.FileName);
+        }
+
+        private void ImportMidiFile(string fileName)
+        {
+            MIDIProject project = null;
+
+            string ext = Path.GetExtension(fileName).ToLower();
+            if (ext == ".mid")
+            {
+                // SMF → RMC 変換器を作成
+                ImportStandardMIDI importer = new ImportStandardMIDI(fileName, setting);
+                // プロジェクトをロード
+                project = importer.Load();
+            }
+            else if (ext == ".rcp")
+            {
+                // RCP → RMC 変換器を作成
+                ImportRcp importer = new ImportRcp(fileName, setting);
+                // プロジェクトをロード
+                project = importer.Load();
+            }
+
+            if (project == null)
+            {
+                Log.Write(LogLevel.Error, $"Import {fileName} is fail.");
+                return;
+            }
+
+            Log.Write(LogLevel.Information, $"Import {fileName} is succed.");
+
+            projects.Add(project);
+            currentProject = project;
 
             AddProjectTab(project);
             UpdateInformation(project);
@@ -128,7 +244,7 @@ namespace Remcoposer64.App
                 dgvTracks.Rows.Add(
                     trk.Value.Number + 1,
                     trk.Value.Name,
-                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name,
+                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Max( Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1),0)].name,
                     trk.Value.OutChannel + 1,
                     MakePartDots(trk.Value)
                 );
@@ -146,12 +262,12 @@ namespace Remcoposer64.App
             tabControl1.SelectedTab = tab;
         }
 
-
         private void UpdateInformation(MIDIProject project)
         {
             frmInformation info = new frmInformation(project);
             info.Show();
         }
+
         private string MakePartDots(MIDITrack trk)
         {
             int count = 0;
@@ -164,34 +280,6 @@ namespace Remcoposer64.App
 
             return new string('●', count);
         }
-
-        private void settingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            frmSetting frm = new frmSetting(setting);
-            DialogResult res = frm.ShowDialog();
-            if (res != DialogResult.OK) return;
-
-            setting = frm.GetSetting();
-            setting.Save();
-
-            // MIDIデバイスの表示を更新する
-            foreach (TabPage tab in tabControl1.TabPages)
-            {
-                MIDIProject project = (MIDIProject)tab.Tag;
-                DataGridView dgv = (DataGridView)tab.Controls[0];
-
-                foreach (DataGridViewRow row in dgv.Rows)
-                {
-                    LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
-                    MIDITrack trk = trkNode.Value;
-                    Setting.MidiOut mo = setting.midiOut;
-                    row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
-                }
-            }
-
-        }
-
-
 
     }
 }

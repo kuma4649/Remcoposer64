@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Remcoposer64.App": {
+      "commandName": "Project",
+      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\MakingMIDI\\88youko.rcp\""
+    }
+  }
+}
