@@ -16,6 +16,9 @@ namespace Remcoposer64.ProjectData
         /// </summary>
         public LinkedList<MIDIEvent> Event { get; set; } = new LinkedList<MIDIEvent>();
         public bool Played { get; set; } = false;
+        public LinkedListNode<MIDIEvent> CurrentEvent { get; set; }
+        public int CurrentEventFrame { get; set; }
+        public Stack<LinkedListNode<MIDIEvent>> JumpReturnStack { get; set; }
 
         //初めのイベントを得る
         public LinkedListNode<MIDIEvent> getStartEventNode()

@@ -69,7 +69,7 @@ namespace Remcoposer64.App
 
             // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
             player.StopPlayback();
-            player.Close(); 
+            player.Close();
 
             // MIDIデバイスの表示を更新する
             foreach (TabPage tab in tabControl1.TabPages)
@@ -244,7 +244,7 @@ namespace Remcoposer64.App
                 dgvTracks.Rows.Add(
                     trk.Value.Number + 1,
                     trk.Value.Name,
-                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Max( Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1),0)].name,
+                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name,
                     trk.Value.OutChannel + 1,
                     MakePartDots(trk.Value)
                 );
@@ -280,6 +280,57 @@ namespace Remcoposer64.App
 
             return new string('●', count);
         }
+
+        private void tsmiSaveSequenceFile_Click(object sender, EventArgs e)
+        {
+            TabPage? tab = tabControl1.SelectedTab;
+            if (tab == null) return;
+            MIDIProject prj = (MIDIProject)tab.Tag;
+            string fn = prj.Information.FileFullName;
+
+            var sfd = new SaveFileDialog();
+            sfd.FileName = fn;
+            sfd.Filter = "RMC Files (*.rmc)|*.rmc";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            prj.Save(sfd.FileName);
+
+            prj.Information.FileFullName = sfd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
+            tab.Text = prj.Information.FileName;
+        }
+
+        private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            // プロジェクトをロード
+            MIDIProject prj = MIDIProject.Load(ofd.FileName);
+            if (prj == null)
+            {
+                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
+                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // タブを作成
+            TabPage tab = new TabPage();
+            tab.Tag = prj;
+            tab.Text = prj.Information.FileName;
+
+            // プロジェクトの UI を構築（あなたの既存関数）
+            AddProjectTab(prj);
+
+            // ファイル名を更新
+            prj.Information.FileFullName = ofd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+        }
+
 
     }
 }

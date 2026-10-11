@@ -27,6 +27,9 @@ namespace Remcoposer64.Core.Player
 
         private byte[] RolEx = new byte[11];
 
+        private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
+
+
         public void Initialize(Setting.midiOutInfo[] midiOut, MidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
         {
             _midiOutInfo = midiOut;
@@ -71,7 +74,64 @@ namespace Remcoposer64.Core.Player
             frameCounter = 0;
             FireFrameProcess = 0;
             IsFinished = false;
+
+            measureStartNode.Clear();
+
+            BuildMeasureStartNode();
         }
+
+        private void BuildMeasureStartNode()
+        {
+            measureStartNode.Clear();
+
+            LinkedListNode<MIDITrack> nTrk = _project.Track.First;
+            for (int t = 0; t < _project.Track.Count; t++)
+            {
+                var trk = nTrk;
+
+                LinkedListNode<MIDIPart> nPrt = trk.Value.Part.First;
+                for (int p = 0; p < trk.Value.Part.Count; p++)
+                {
+                    var prt = nPrt.Value;
+                    var node = prt.Event.First;
+                    
+                    int meas = 0;
+
+                    measureStartNode[(t, p, meas)] = node;
+
+                    while (node != null)
+                    {
+                        var evt = node.Value;
+
+                        if (evt.Type == MIDIEventType.BarLine)
+                        {
+                            meas++;
+                            measureStartNode[(t, p, meas)] = node;
+                        }
+                        else if (evt.Type == MIDIEventType.SameMeas)
+                        {
+                            if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+                            {
+                                meas++;
+                                measureStartNode[(t, p, meas)] = node;
+                            }
+                        }
+                        else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
+                        {
+                            meas++;
+                            measureStartNode[(t, p, meas)] = node;
+                        }
+
+                        node = node.Next;
+                    }
+
+                    nPrt = nPrt.Next;
+                }
+
+                nTrk = nTrk.Next;
+            }
+        }
+
 
         public void Stop()
         {
@@ -90,6 +150,9 @@ namespace Remcoposer64.Core.Player
                 while (nPrt != null)
                 {
                     nPrt.Value.Played = false;
+                    nPrt.Value.CurrentEvent = null;
+                    nPrt.Value.CurrentEventFrame = 0;
+                    nPrt.Value.JumpReturnStack = new Stack<LinkedListNode<MIDIEvent>>();
                     LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
                     while (nEvt != null)
                     {
@@ -148,20 +211,26 @@ namespace Remcoposer64.Core.Player
                     }
 
                     playedAllParts = false;
-                    long partStartFrame = prt.StartTick;
 
-                    if (frameCounter < partStartFrame)
+                    if (prt.CurrentEvent == null)
+                    {
+                        prt.CurrentEventFrame = prt.StartTick;
+                        prt.CurrentEvent = prt.Event.First;
+                    }
+
+                    if (frameCounter < prt.CurrentEventFrame)
+                    {
                         break;
+                    }
 
-                    LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
                     bool playedAllEvents = true;
 
-                    long eventStartFrame = prt.StartTick;
-                    while (nEvt != null)
+                    //long eventStartFrame = prt.StartTick;
+                    while (prt.CurrentEvent != null)
                     {
-                        MIDIEvent evt = nEvt.Value;
+                        MIDIEvent evt = prt.CurrentEvent.Value;
 
-                        if (frameCounter < eventStartFrame)
+                        if (frameCounter < prt.CurrentEventFrame)
                         {
                             playedAllEvents = false;
                             break;
@@ -169,13 +238,14 @@ namespace Remcoposer64.Core.Player
 
                         if (!evt.Played)
                         {
-                            //T.B.D.
-                            PlayEvent(trk, prt, evt);
-                            evt.Played = true;
+                            prt.CurrentEvent = PlayEvent(trk, nPrt, prt.CurrentEvent);
+                            prt.CurrentEventFrame += evt.ST;
                         }
-
-                        eventStartFrame += evt.ST;
-                        nEvt = nEvt.Next;
+                        else
+                        {
+                            prt.CurrentEventFrame += evt.ST;
+                            prt.CurrentEvent = prt.CurrentEvent.Next;
+                        }
                     }
 
                     if (playedAllEvents)
@@ -198,12 +268,24 @@ namespace Remcoposer64.Core.Player
 
         }
 
-        private void PlayEvent(MIDITrack trk, MIDIPart prt, MIDIEvent evt)
+        private LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
         {
+            MIDIPart prt = nPrt.Value;
+            MIDIEvent evt = nEvt.Value;
+
             MidiOut midiOut = null;
             if (trk.OutDevice < midiOutDevice.Length)
                 midiOut = midiOutDevice[trk.OutDevice];
             int? channel = trk.OutChannel;
+
+            //if (nEvt.Previous != null && nEvt.Previous.Value.Type == MIDIEventType.SameMeas && evt.Type!=MIDIEventType.SameMeas)
+            //{
+            //    if (prt.JumpReturnStack.Count > 0)
+            //    {
+            //        return prt.JumpReturnStack.Pop();
+            //    }
+            //}
+            evt.Played = true;
 
             if (evt.Type == MIDIEventType.NoteON)
             {
@@ -263,7 +345,7 @@ namespace Remcoposer64.Core.Player
                               + (cevt.ControllerNumber << 8)
                               + (cevt.ControllerValue << 16);
 
-                    midiOut.Send(msg);
+                    midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.ProgramChange)
@@ -277,7 +359,7 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.ProgramNumber << 8);
 
-                    midiOut.Send(msg);
+                    midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.PitchBend)
@@ -297,7 +379,7 @@ namespace Remcoposer64.Core.Player
                               + (lsb << 8)
                               + (msb << 16);
 
-                    midiOut.Send(msg);
+                    midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.KeyAfterTouch)
@@ -312,7 +394,7 @@ namespace Remcoposer64.Core.Player
                               + (aevt.KeyNumber << 8)
                               + (aevt.PressureValue << 16);
 
-                    midiOut.Send(msg);
+                    midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.ChannelAfterTouch)
@@ -326,7 +408,7 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.PressureValue << 8); // data2 は使わないので 0
 
-                    midiOut.Send(msg);
+                    midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.SysExF0)
@@ -371,10 +453,69 @@ namespace Remcoposer64.Core.Player
                 midiOut?.SendBuffer(RolEx);
 
             }
+            else if (evt.Type == MIDIEventType.SameMeas)
+            {
+                if (prt.JumpReturnStack.Count > 0)
+                {
+                    evt.Played = false;
+                    return prt.JumpReturnStack.Pop();
+                }
+
+                var sevt = (MIDISameMeasEvent)evt;
+                int target = sevt.RepeatMeas;
+
+                var key = (trk.Number, prt.Number, target);
+
+                if (measureStartNode.TryGetValue(key, out var jumpNode))
+                {
+                    // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                    prt.JumpReturnStack.Push(nEvt.Next);
+                    
+                    // ★ ジャンプ先の小節の Played を全部 false に戻す
+                    ResetPlayedFlagsForMeasure(jumpNode);
+                    
+                    prt.Played = false;
+                    evt.Played = true;
+
+                    if (target == 0) return jumpNode;
+                    if (jumpNode.Value.Type != MIDIEventType.BarLine && jumpNode.Value.Type != MIDIEventType.SameMeas) return jumpNode;
+                    return jumpNode.Next;
+                }
+            }
+            else if(evt.Type==MIDIEventType.BarLine)
+            {
+                if (prt.JumpReturnStack.Count > 0)
+                {
+                    //evt.Played = false;
+                    return prt.JumpReturnStack.Pop();
+                }
+            }
+            else if (evt.Type == MIDIEventType.MetaEndOfTrack)
+            {
+                if (prt.JumpReturnStack.Count > 0)
+                {
+                    evt.Played = false;
+                    return prt.JumpReturnStack.Pop();
+                }
+            }
             else
             {
                 //T.B.D.
             }
+
+            return nEvt.Next;
+        }
+
+        private void ResetPlayedFlagsForMeasure(LinkedListNode<MIDIEvent> jumpNode)
+        {
+            var nEvt = jumpNode;
+            do
+            {
+                nEvt.Value.Played = false;
+                nEvt = nEvt.Next;
+            } while (nEvt.Value.Type != MIDIEventType.BarLine
+            && nEvt.Value.Type != MIDIEventType.SameMeas);
+            nEvt.Value.Played = false;
         }
 
 

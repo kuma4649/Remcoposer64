@@ -82,12 +82,14 @@
             tsmiOpenSequenceFile.Name = "tsmiOpenSequenceFile";
             tsmiOpenSequenceFile.Size = new Size(180, 22);
             tsmiOpenSequenceFile.Text = "Open Sequence file";
+            tsmiOpenSequenceFile.Click += tsmiOpenSequenceFile_Click;
             // 
             // tsmiSaveSequenceFile
             // 
             tsmiSaveSequenceFile.Name = "tsmiSaveSequenceFile";
             tsmiSaveSequenceFile.Size = new Size(180, 22);
             tsmiSaveSequenceFile.Text = "Save Sequence file";
+            tsmiSaveSequenceFile.Click += tsmiSaveSequenceFile_Click;
             // 
             // tsmiSaveAs
             // 
@@ -156,7 +158,7 @@
             // tsmiSetting
             // 
             tsmiSetting.Name = "tsmiSetting";
-            tsmiSetting.Size = new Size(180, 22);
+            tsmiSetting.Size = new Size(111, 22);
             tsmiSetting.Text = "Setting";
             tsmiSetting.Click += tsmiSetting_Click;
             // 

@@ -36,6 +36,8 @@ namespace Remcoposer64.Core
         private int pt = 0;
         private int skipPtr = 4;
 
+        private List<byte> mojiHantei;
+        private List<byte[]> trackNameAry;
 
         //コンストラクタ
         public ImportRcp(string fn, Setting setting)
@@ -46,6 +48,9 @@ namespace Remcoposer64.Core
 
         public MIDIProject Load()
         {
+            mojiHantei = new List<byte>();
+            trackNameAry = new List<byte[]>();
+            
             prj = new MIDIProject(setting);
             bs = null;
             prj.Information.FileFullName = fn;
@@ -77,6 +82,17 @@ namespace Remcoposer64.Core
                 }
                 else
                     break;
+            }
+
+            enc = Common.Common.GetCode(mojiHantei.ToArray());
+            if (enc == null) enc = Encoding.UTF8;
+            nTrk = prj.Track.First;
+            int i = 0;
+            while (nTrk != null)
+            {
+                nTrk.Value.Name =
+                    enc.GetString(trackNameAry[i++]).Replace("\0", "");
+                nTrk = nTrk.Next;
             }
 
             return prj;
@@ -397,10 +413,16 @@ namespace Remcoposer64.Core
                 trk[trkNumber].Mute = (bs[ptr++] == 1);
 
                 // トラック名
-                enc = Common.Common.GetCode(bs, ptr, 36);
-                if (enc == null) enc = Encoding.UTF8;
-                trk[trkNumber].Name =
-                    enc.GetString(bs, ptr, 36).Replace("\0", "");
+
+                byte[] dmy = new byte[36];
+                Array.Copy(bs, ptr, dmy, 0, 36);
+                mojiHantei.AddRange(dmy);
+                trackNameAry.Add(dmy);
+
+                //enc = Common.Common.GetCode(bs, ptr, 36);
+                //if (enc == null) enc = Encoding.UTF8;
+                //trk[trkNumber].Name =
+                //    enc.GetString(bs, ptr, 36).Replace("\0", "");
                 ptr += 36;
 
                 // イベント読み込み準備
@@ -492,86 +514,64 @@ namespace Remcoposer64.Core
                 MIDIEvent evt = nevt.Value;
 
                 // SameMeasure 判定
-                if (evt.Type == MIDIEventType.MetaSequencerSpecific &&
-                    evt.MIDIMessage[0] == (byte)MIDISpEventType.SameMeasure)
+                if (evt.Type != MIDIEventType.SameMeas)
                 {
-                    int ofsMea = 0;
-
-                    // --- オフセット計算 ---
-                    if (IsG36)
-                    {
-                        // G36 は 3バイト構造
-                        ofsMea = evt.MIDIMessageLst[0][0]
-                               + evt.MIDIMessageLst[0][2] * 0x100;
-                    }
-                    else
-                    {
-                        // 通常 RCP
-                        ofsMea = evt.MIDIMessageLst[0][0]
-                               + (evt.MIDIMessageLst[0][1] & 3) * 0x100;
-                    }
-
-                    int Mea = 0;
-                    int MeaS = 0;
-
-                    LinkedListNode<MIDIEvent> nmEvt = part.Value.Event.First;
-                    MIDIEvent mEvt = nmEvt.Value;
-
-                    // --- オフセットが 0 の場合はリンク不要 ---
-                    if (ofsMea != 0)
-                    {
-                        while (mEvt != null)
-                        {
-                            MeaS = 0;
-
-                            if (mEvt.Type == MIDIEventType.MetaSequencerSpecific)
-                            {
-                                LinkedListNode< MIDIEvent> nnEvt = nmEvt.Next;
-                                MIDIEvent nEvt = nnEvt?.Value;
-                                int s = 0;
-
-                                // 次が SameMeasure なら小節進めない
-                                if (nEvt != null &&
-                                    nEvt.Type == MIDIEventType.MetaSequencerSpecific &&
-                                    nEvt.MIDIMessage[0] == (byte)MIDISpEventType.SameMeasure)
-                                {
-                                    s = 0;
-                                }
-                                else
-                                {
-                                    s = 1;
-                                }
-
-                                // MeasureEnd の場合
-                                if (mEvt.MIDIMessage[0] == (byte)MIDISpEventType.MeasureEnd)
-                                {
-                                    MeaS = s;
-                                }
-
-                                // SameMeasure の場合
-                                if (mEvt.MIDIMessage[0] == (byte)MIDISpEventType.SameMeasure)
-                                {
-                                    Mea++;
-                                    if (ofsMea == Mea) break;
-                                    MeaS = s;
-                                }
-                            }
-
-                            nmEvt = nmEvt.Next;
-                            mEvt = nmEvt?.Value;
-                            Mea += MeaS;
-
-                            if (ofsMea == Mea) break;
-                        }
-                    }
-
-                    // --- リンク設定 ---
-                    if (mEvt != null)
-                    {
-                        ((MIDISameMeasEvent)evt).RepeatMeas = mEvt.Meas;
-                    }
+                    nevt = nevt.Next;
+                    continue;
                 }
 
+                MIDISameMeasEvent sevt = (MIDISameMeasEvent)evt;
+
+                // --- オフセット計算 ---
+                // 通常 RCP
+                int ofsMea = sevt.MIDIMessage[0] + (sevt.MIDIMessage[1] & 3) * 0x100;
+                // G36 は 3バイト構造
+                if (IsG36) ofsMea = sevt.MIDIMessage[0] + sevt.MIDIMessage[2] * 0x100;
+
+                int Mea = 0;
+                int MeaS = 0;
+
+                LinkedListNode<MIDIEvent> nmEvt = part.Value.Event.First;
+                MIDIEvent mEvt = nmEvt.Value;
+
+                // --- オフセットが 0 の場合はリンク不要 ---
+                if (ofsMea == 0)
+                {
+                    // --- リンク設定 ---
+                    if (mEvt != null) sevt.RepeatMeas = Mea;
+                    nevt = nevt.Next;
+                    continue;
+                }
+
+                while (mEvt != null)
+                {
+                    MeaS = 0;
+
+                    LinkedListNode<MIDIEvent> nnEvt = nmEvt.Next;
+                    MIDIEvent nEvt = nnEvt?.Value;
+                    int s = 1;
+
+                    // 次が SameMeasure なら小節進めない
+                    if (nEvt != null && nEvt.Type == MIDIEventType.SameMeas)
+                        s = 0;
+                    
+                    if (mEvt.Type == MIDIEventType.BarLine) MeaS = s;// MeasureEnd の場合
+                    else if (mEvt.Type == MIDIEventType.SameMeas)// SameMeasure の場合
+                    {
+                        Mea++;
+                        if (ofsMea == Mea) break;
+                        MeaS = s;
+                    }
+
+                    nmEvt = nmEvt.Next;
+                    mEvt = nmEvt?.Value;
+                    Mea += MeaS;
+
+                    if (ofsMea == Mea) break;
+                }
+
+                // --- リンク設定 ---
+                if (mEvt != null) sevt.RepeatMeas = Mea;
                 nevt = nevt.Next;
             }
         }

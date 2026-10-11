@@ -197,11 +197,20 @@ namespace Remcoposer64.Core.Player
 
             for (int i = 0; i < midiOutDev.Length; i++)
             {
-                midiOutDev[i].Dispose();
+                try
+                {
+                    midiOutDev[i]?.Dispose();
+                }
+                catch { }
             }
+
             for (int i = 0; i < midiInDev.Length; i++)
             {
-                midiInDev[i].Dispose();
+                try
+                {
+                    midiInDev[i]?.Dispose();
+                }
+                catch { }
             }
 
             _timer.Dispose();

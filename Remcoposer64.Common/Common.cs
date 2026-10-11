@@ -213,6 +213,10 @@ namespace Remcoposer64.Common
                     sjis += 2;
                     i++;
                 }
+                else if(0xa1<=b1 && b1 <= 0xdf)
+                {
+                    sjis += 1;
+                }
             }
             for (int i = 0; i < len - 1; i++)
             {
