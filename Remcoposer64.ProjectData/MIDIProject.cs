@@ -487,9 +487,42 @@ namespace Remcoposer64.ProjectData
                 case MIDISameMeasEvent sm:
                     return ConvertSameMeasEvent(sm);
 
+                case MIDILoopStartEvent ls:
+                    return ConvertLoopStartEvent(ls);
+
+                case MIDILoopEndEvent le:
+                    return ConvertLoopEndEvent(le);
+
                 default:
                     throw new NotImplementedException($"未対応のイベント: {ev.GetType().Name}");
             }
+        }
+
+        private MIDIEventDto ConvertLoopStartEvent(MIDILoopStartEvent ls)
+        {
+            return new MIDILoopStartEventDto
+            {
+                Type = ls.Type,
+                Meas = ls.Meas,
+                Step = ls.Step,
+                ST = ls.ST,
+                MIDIMessage = ls.MIDIMessage,
+                MIDIMessageLst = ls.MIDIMessageLst
+            };
+        }
+
+        private MIDIEventDto ConvertLoopEndEvent(MIDILoopEndEvent le)
+        {
+            return new MIDILoopEndEventDto
+            {
+                Type = le.Type,
+                Meas = le.Meas,
+                Step = le.Step,
+                ST = le.ST,
+                MIDIMessage = le.MIDIMessage,
+                MIDIMessageLst = le.MIDIMessageLst,
+                LoopCounter = le.LoopCounter
+            };
         }
 
         private MIDIEventDto ConvertSameMeasEvent(MIDISameMeasEvent sm)
@@ -520,7 +553,9 @@ namespace Remcoposer64.ProjectData
                 MIDIMessageLst = sx.MIDIMessageLst,
 
                 Data = sx.Data,
-                Name = sx.Name
+                Name = sx.Name,
+                GT = sx.GT,
+                VEL = sx.VEL,
             };
         }
 
@@ -1083,6 +1118,8 @@ namespace Remcoposer64.ProjectData
                     sx.Meas = dto.Meas;
                     sx.Step = dto.Step;
                     sx.ST = dto.ST;
+                    sx.GT = ((MIDISysExEventDto)dto).GT;
+                    sx.VEL = ((MIDISysExEventDto)dto).VEL;
                     sx.Data = ((MIDISysExEventDto)dto).Data;
                     sx.Name = ((MIDISysExEventDto)dto).Name;
                     return sx;
@@ -1094,6 +1131,28 @@ namespace Remcoposer64.ProjectData
                     sm.ST = dto.ST;
                     sm.RepeatMeas = ((MIDISameMeasEventDto)dto).RepeatMeas;
                     return sm;
+
+                case MIDIEventType.LoopStart:
+                    return new MIDILoopStartEvent
+                    {
+                        Meas = dto.Meas,
+                        Step = dto.Step,
+                        ST = dto.ST,
+                        MIDIMessage = dto.MIDIMessage,
+                        MIDIMessageLst = dto.MIDIMessageLst
+                    };
+
+                case MIDIEventType.LoopEnd:
+                    var leDto = (MIDILoopEndEventDto)dto;
+                    return new MIDILoopEndEvent
+                    {
+                        Meas = dto.Meas,
+                        Step = dto.Step,
+                        ST = dto.ST,
+                        MIDIMessage = dto.MIDIMessage,
+                        MIDIMessageLst = dto.MIDIMessageLst,
+                        LoopCounter = leDto.LoopCounter
+                    };
             }
 
             throw new Exception("Unknown event type: " + dto.Type);

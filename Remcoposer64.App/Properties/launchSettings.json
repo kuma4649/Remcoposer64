@@ -2,7 +2,7 @@
   "profiles": {
     "Remcoposer64.App": {
       "commandName": "Project",
-      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\YOKOOPCD.RCP\""
+      "commandLineArgs": "\"D:\\GAME\\68\\STED207\\test.rcp\""
     }
   }
 }

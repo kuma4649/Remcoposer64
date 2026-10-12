@@ -26,6 +26,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         private readonly UIRolandBaseEvent rolandBaseEvent;
         private readonly UIRolandParaEvent rolandParaEvent;
 
+        private readonly UILoopStartEvent loopStartEvent;
+        private readonly UILoopEndEvent loopEndEvent;
+
 
         public UIEventProvider(DrawUtil drawUtil)
         {
@@ -45,6 +48,8 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             rolandDeviceEvent = new(drawUtil);
             rolandBaseEvent = new(drawUtil);
             rolandParaEvent = new(drawUtil);
+            loopStartEvent = new(drawUtil);
+            loopEndEvent = new(drawUtil);
         }
 
         public UIEvent Get(MIDIEventType type)
@@ -66,7 +71,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 MIDIEventType.KeyAfterTouch => polyphonicKeyPressureEvent,
 
                 MIDIEventType.NoteOff => noteEvent,
-                MIDIEventType.MetaTimeSignature=>metaEvent,
+                MIDIEventType.MetaTimeSignature => metaEvent,
                 MIDIEventType.MetaKeySignature => metaEvent,
                 MIDIEventType.MetaSMPTEOffset => metaEvent,
                 MIDIEventType.MetaSequencerSpecific => metaEvent,
@@ -86,6 +91,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 MIDIEventType.RolandDevice => rolandDeviceEvent,
                 MIDIEventType.RolandBase => rolandBaseEvent,
                 MIDIEventType.RolandPara => rolandParaEvent,
+
+                MIDIEventType.LoopStart => loopStartEvent,
+                MIDIEventType.LoopEnd => loopEndEvent,
 
                 _ => throw new NotSupportedException()
             };

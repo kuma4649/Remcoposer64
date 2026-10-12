@@ -848,7 +848,9 @@ namespace Remcoposer64.Core
                         pEvt,
                         0,
                         MIDISpEventType.LoopEnd,
-                        new byte[1][] { new byte[1] { (byte)pk[1] } }
+                        new byte[1][] {
+                                [ (byte)pk[1] ]
+                        }
                     );
                     pt += skipPtr;
                     break;
@@ -858,7 +860,9 @@ namespace Remcoposer64.Core
                         pEvt,
                         0,
                         MIDISpEventType.LoopStart,
-                        new byte[1][] { new byte[1] { 0 } }
+                        new byte[1][] {
+                         null
+                        }
                     );
                     pt += skipPtr;
                     break;

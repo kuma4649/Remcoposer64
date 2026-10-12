@@ -43,7 +43,8 @@ namespace Remcoposer64.ProjectData
         private int _NextEventTick = 0;
         private bool _EndMark = false;
         private int _TrackNumber = 0;
-        private Stack<MIDIEvent> _LoopTargetEvent = new Stack<MIDIEvent>();
+        private Stack<(MIDIEvent,int?)> _LoopStackEvent = new Stack<(MIDIEvent,int?)>();
+        private Stack<MIDIEvent> _SameMeasStackEvent = new Stack<MIDIEvent>();
         private int? _LoopOrSameTargetEventIndex = null;
         private int? _SameMeasure = null;
         private byte _RolandBase_gt = 0;
@@ -323,21 +324,8 @@ namespace Remcoposer64.ProjectData
             }
         }
 
-        /// <summary>
-        /// 演奏時専用なのでそれ以外の用途で使用不可
-        /// </summary>
-        [XmlIgnore]
-        public Stack<MIDIEvent> LoopTargetEvent
-        {
-            set
-            {
-                _LoopTargetEvent = value;
-            }
-            get
-            {
-                return _LoopTargetEvent;
-            }
-        }
+        public Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack { get; set; } = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
+        public Stack<LinkedListNode<MIDIEvent>> SameMeasStack { get; set; } = new Stack<LinkedListNode<MIDIEvent>>();
 
         /// <summary>
         /// 演奏時専用なのでそれ以外の用途で使用不可

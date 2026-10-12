@@ -170,7 +170,7 @@ namespace Remcoposer64.Core.Player
                         // Pitch Bend Center (E0 00 40)
                         midiOut.Send((0xE0 | ch) | (0 << 8) | (64 << 16));
                     }
-                    midiOut.Close();
+                    //midiOut.Close();
                 }
                 catch(NAudio.MmException)
                 {
@@ -182,7 +182,7 @@ namespace Remcoposer64.Core.Player
                 }
                 finally
                 {
-                    try { midiOut?.Close(); } catch { }
+                    //try { midiOut?.Close(); } catch { }
                 }
             }
         }
@@ -214,6 +214,46 @@ namespace Remcoposer64.Core.Player
             }
 
             _timer.Dispose();
+        }
+
+        public int GetTempo()
+        {
+            return musicPlayer.GetTempo();
+        }
+
+        public int GetBaseTempo()
+        {
+            return musicPlayer.GetBaseTempo();
+        }
+
+        public int GetBeatDen()
+        {
+            return musicPlayer.GetBeatDen();
+        }
+
+        public int GetBeatMol()
+        {
+            return musicPlayer.GetBeatMol();
+        }
+
+        public long GetTimeMSec()
+        {
+            return musicPlayer.GetTimeMSec();
+        }
+
+        public int GetMeas()
+        {
+            return musicPlayer.GetMeas();
+        }
+
+        public int GetStep()
+        {
+            return musicPlayer.GetStep();
+        }
+
+        public int GetTick()
+        {
+            return musicPlayer.GetTick();
         }
     }
 }

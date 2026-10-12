@@ -122,7 +122,7 @@ namespace Remcoposer64.App
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "frmConsole";
-            Text = "Console";
+            Text = "Log viewer";
             FormClosing += frmConsole_FormClosing;
             FormClosed += frmConsole_FormClosed;
             Load += frmConsole_Load;

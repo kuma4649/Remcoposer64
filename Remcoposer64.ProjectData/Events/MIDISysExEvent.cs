@@ -12,6 +12,13 @@ namespace Remcoposer64.ProjectData.Events
 
         public string DataString => BitConverter.ToString(Data).Replace("-", " ");
         public string Name { get; set; } = "";
+        public byte GT { get; set; } = 0;
+        public byte backupGT;
+        public static byte oGT;
+        public byte VEL { get; set; } = 0;
+        public byte backupVEL;
+        public static byte oVEL;
+
         public string backupName;
         public static string oName;
 
@@ -29,6 +36,9 @@ namespace Remcoposer64.ProjectData.Events
                 Meas = this.Meas,
                 Step = this.Step,
                 ST = this.ST,
+                
+                GT=this.GT,
+                VEL=this.VEL,
 
                 Data = this.Data,
                 Name = this.Name

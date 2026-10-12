@@ -41,13 +41,19 @@
             toolStripSeparator2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
-            tsmiPlay = new ToolStripMenuItem();
+            //tsmiPlay_ = new ToolStripMenuItem();
             toolToolStripMenuItem = new ToolStripMenuItem();
             tsmiSetting = new ToolStripMenuItem();
+            windowToolStripMenuItem = new ToolStripMenuItem();
+            tsmiOpenOpePanel = new ToolStripMenuItem();
+            tsmiOpenInformation = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             tsmiShowConsole = new ToolStripMenuItem();
             tabControl1 = new TabControl();
             toolStripContainer2 = new ToolStripContainer();
+            transportToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPlay = new ToolStripMenuItem();
+            tsmiStop = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStripContainer2.ContentPanel.SuspendLayout();
             toolStripContainer2.TopToolStripPanel.SuspendLayout();
@@ -57,7 +63,7 @@
             // menuStrip1
             // 
             menuStrip1.Dock = DockStyle.None;
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolToolStripMenuItem, helpToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, transportToolStripMenuItem, toolToolStripMenuItem, windowToolStripMenuItem, helpToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -74,79 +80,78 @@
             // tsmiNewSequence
             // 
             tsmiNewSequence.Name = "tsmiNewSequence";
-            tsmiNewSequence.Size = new Size(180, 22);
+            tsmiNewSequence.Size = new Size(175, 22);
             tsmiNewSequence.Text = "New Sequence file";
             // 
             // tsmiOpenSequenceFile
             // 
             tsmiOpenSequenceFile.Name = "tsmiOpenSequenceFile";
-            tsmiOpenSequenceFile.Size = new Size(180, 22);
+            tsmiOpenSequenceFile.Size = new Size(175, 22);
             tsmiOpenSequenceFile.Text = "Open Sequence file";
             tsmiOpenSequenceFile.Click += tsmiOpenSequenceFile_Click;
             // 
             // tsmiSaveSequenceFile
             // 
             tsmiSaveSequenceFile.Name = "tsmiSaveSequenceFile";
-            tsmiSaveSequenceFile.Size = new Size(180, 22);
+            tsmiSaveSequenceFile.Size = new Size(175, 22);
             tsmiSaveSequenceFile.Text = "Save Sequence file";
             tsmiSaveSequenceFile.Click += tsmiSaveSequenceFile_Click;
             // 
             // tsmiSaveAs
             // 
             tsmiSaveAs.Name = "tsmiSaveAs";
-            tsmiSaveAs.Size = new Size(180, 22);
+            tsmiSaveAs.Size = new Size(175, 22);
             tsmiSaveAs.Text = "Save As";
             // 
             // tsmiRecentFiles
             // 
             tsmiRecentFiles.Name = "tsmiRecentFiles";
-            tsmiRecentFiles.Size = new Size(180, 22);
+            tsmiRecentFiles.Size = new Size(175, 22);
             tsmiRecentFiles.Text = "Recent files";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(172, 6);
             // 
             // tsmiExport
             // 
             tsmiExport.Name = "tsmiExport";
-            tsmiExport.Size = new Size(180, 22);
+            tsmiExport.Size = new Size(175, 22);
             tsmiExport.Text = "Export";
             // 
             // tsmiImport
             // 
             tsmiImport.Name = "tsmiImport";
-            tsmiImport.Size = new Size(180, 22);
+            tsmiImport.Size = new Size(175, 22);
             tsmiImport.Text = "Import";
             tsmiImport.Click += tsmiImport_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(177, 6);
+            toolStripSeparator2.Size = new Size(172, 6);
             // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(180, 22);
+            tsmiExit.Size = new Size(175, 22);
             tsmiExit.Text = "&Exit";
             tsmiExit.Click += tsmiExit_Click;
             // 
             // editToolStripMenuItem
             // 
-            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay });
+            //editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay_ });
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "&Edit";
-            // 
-            // tsmiPlay
-            // 
-            tsmiPlay.Name = "tsmiPlay";
-            tsmiPlay.ShortcutKeys = Keys.F5;
-            tsmiPlay.Size = new Size(115, 22);
-            tsmiPlay.Text = "&Play";
-            tsmiPlay.Click += tsmiPlay_Click;
+             
+            // tsmiPlay_
+             
+            //tsmiPlay_.Name = "tsmiPlay_";
+            //tsmiPlay_.Size = new Size(96, 22);
+            //tsmiPlay_.Text = "&Play";
+            //tsmiPlay_.Click += tsmiPlay_Click;
             // 
             // toolToolStripMenuItem
             // 
@@ -158,9 +163,30 @@
             // tsmiSetting
             // 
             tsmiSetting.Name = "tsmiSetting";
-            tsmiSetting.Size = new Size(111, 22);
+            tsmiSetting.Size = new Size(180, 22);
             tsmiSetting.Text = "Setting";
             tsmiSetting.Click += tsmiSetting_Click;
+            // 
+            // windowToolStripMenuItem
+            // 
+            windowToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiOpenOpePanel, tsmiOpenInformation });
+            windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+            windowToolStripMenuItem.Size = new Size(63, 20);
+            windowToolStripMenuItem.Text = "&Window";
+            // 
+            // tsmiOpenOpePanel
+            // 
+            tsmiOpenOpePanel.Name = "tsmiOpenOpePanel";
+            tsmiOpenOpePanel.Size = new Size(180, 22);
+            tsmiOpenOpePanel.Text = "Open OpePanel";
+            tsmiOpenOpePanel.Click += tsmiOpenOpePanel_Click;
+            // 
+            // tsmiOpenInformation
+            // 
+            tsmiOpenInformation.Name = "tsmiOpenInformation";
+            tsmiOpenInformation.Size = new Size(180, 22);
+            tsmiOpenInformation.Text = "Open Information";
+            tsmiOpenInformation.Click += tsmiOpenInformation_Click;
             // 
             // helpToolStripMenuItem
             // 
@@ -204,6 +230,29 @@
             // 
             toolStripContainer2.TopToolStripPanel.Controls.Add(menuStrip1);
             // 
+            // transportToolStripMenuItem
+            // 
+            transportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay, tsmiStop });
+            transportToolStripMenuItem.Name = "transportToolStripMenuItem";
+            transportToolStripMenuItem.Size = new Size(68, 20);
+            transportToolStripMenuItem.Text = "Transport";
+            // 
+            // tsmiPlay
+            // 
+            tsmiPlay.Name = "tsmiPlay";
+            tsmiPlay.ShortcutKeys = Keys.F5;
+            tsmiPlay.Size = new Size(180, 22);
+            tsmiPlay.Text = "&Play";
+            tsmiPlay.Click += tsmiPlay_Click;
+            // 
+            // tsmiStop
+            // 
+            tsmiStop.Name = "tsmiStop";
+            tsmiStop.ShortcutKeys = Keys.F10;
+            tsmiStop.Size = new Size(180, 22);
+            tsmiStop.Text = "&Stop";
+            tsmiStop.Click += tsmiStop_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -244,6 +293,12 @@
         private ToolStripContainer toolStripContainer2;
         private ToolStripMenuItem tsmiSetting;
         private ToolStripMenuItem editToolStripMenuItem;
+        //private ToolStripMenuItem tsmiPlay_;
+        private ToolStripMenuItem windowToolStripMenuItem;
+        private ToolStripMenuItem tsmiOpenOpePanel;
+        private ToolStripMenuItem tsmiOpenInformation;
+        private ToolStripMenuItem transportToolStripMenuItem;
         private ToolStripMenuItem tsmiPlay;
+        private ToolStripMenuItem tsmiStop;
     }
 }

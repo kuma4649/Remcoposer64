@@ -10,6 +10,7 @@ namespace Remcoposer64.App
     {
         private Setting setting;
         private frmConsole console;
+        private frmOpePanel opePanel;
         private UndoRedoManager.UndoRedoManager undoMng;
 
         private List<MIDIProject> projects = new List<MIDIProject>();
@@ -37,16 +38,7 @@ namespace Remcoposer64.App
             }
         }
 
-        //
-        // Event
-        //
-
-        private void tsmiExit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void tsmiPlay_Click(object sender, EventArgs e)
+        internal void Play()
         {
             if (currentProject == null)
             {
@@ -56,6 +48,68 @@ namespace Remcoposer64.App
 
             player.InitialPlay();
             player.PlayMusic(currentProject);
+        }
+
+        internal void Stop()
+        {
+            player.StopPlayback();
+        }
+
+        internal string GetLocationText()
+        {
+            if (player == null) return "----:---:---";
+
+            int meas = player.GetMeas() + 1;
+            int step = player.GetStep() + 1;
+            int tick = player.GetTick();
+
+            if (meas <= 1 && step <= 1 && tick <= 0)
+                return "----:---:---";
+
+            return $"{meas:D4}:{step:D3}:{tick:D3}";
+        }
+
+        internal string GetTempoText()
+        {
+            if (player == null) return "---/---";
+            int tempo = player.GetTempo();
+            int bTempo = player.GetBaseTempo();
+            if (tempo <= 0 || bTempo <= 0) return "---/---";
+            return $"{tempo:D3}/{bTempo:D3}";
+        }
+
+        internal string GetTimeText()
+        {
+            if (player == null) return "-";
+
+            long totalMs = player.GetTimeMSec();
+            if (totalMs < 0) return "-";
+
+            int h = (int)(totalMs / (1000 * 60 * 60));
+            int m = (int)((totalMs / (1000 * 60)) % 60);
+            int s = (int)((totalMs / 1000) % 60);
+            int ms = (int)(totalMs % 1000);
+
+            return $"{h:D3}:{m:D2}:{s:D2}.{ms:D3}";
+        }
+
+        internal string GetBeatText()
+        {
+            if (player == null) return "---/---";
+            int den = player.GetBeatDen();
+            int mol = player.GetBeatMol();
+            if (den <= 0 || mol <= 0) return "---/---";
+            return $"{mol:D3}/{den:D3}";
+        }
+
+
+        //
+        // Event
+        //
+
+        private void tsmiExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void tsmiSetting_Click(object sender, EventArgs e)
@@ -126,7 +180,7 @@ namespace Remcoposer64.App
 
 
 
-        public void Initial()
+        private void Initial()
         {
             InitializeComponent();
 
@@ -138,6 +192,11 @@ namespace Remcoposer64.App
             console.Show();
             console.BringToFront();
 #endif
+
+            opePanel = new frmOpePanel(this);
+            opePanel.Show();
+            opePanel.TopMost = true;
+
             undoMng = new UndoRedoManager.UndoRedoManager();
             player = new RmPlayer(setting);
         }
@@ -331,6 +390,26 @@ namespace Remcoposer64.App
             prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
         }
 
+        private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
+        {
+            opePanel.Show();
+            opePanel.BringToFront();
+        }
 
+        private void tsmiOpenInformation_Click(object sender, EventArgs e)
+        {
+            var info = new frmInformation(currentProject);
+            info.Show();
+        }
+
+        internal void tsmiPlay_Click(object sender, EventArgs e)
+        {
+            Play();
+        }
+
+        private void tsmiStop_Click(object sender, EventArgs e)
+        {
+            Stop();
+        }
     }
 }

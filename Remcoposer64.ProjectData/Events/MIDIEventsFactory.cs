@@ -55,6 +55,12 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIRolandParaEvent();
                 case MIDIEventType.RolandDevice:
                     return new MIDIRolandDeviceEvent();
+                case MIDIEventType.LoopStart:
+                    return new MIDILoopStartEvent();
+                case MIDIEventType.LoopEnd:
+                    return new MIDILoopEndEvent();
+                case MIDIEventType.ChExclusive:
+                    return new MIDISysExEvent();
                 default:
                     return new MIDIMetaEvent();
                     //Debug.WriteLine(type.ToString());

@@ -27,8 +27,6 @@
         public string MeasString => editing ? "- :" : $"{Meas + 1}:";
         public string StepString => editing ? "- :" : $"{Step + 1}:";
 
-        public bool Played { get; set; } = false;
-
         public MIDIEvent()
         {
             Type = MIDIEventType.None;

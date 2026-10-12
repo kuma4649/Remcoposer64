@@ -15,10 +15,9 @@ namespace Remcoposer64.ProjectData
         /// イベントリスト
         /// </summary>
         public LinkedList<MIDIEvent> Event { get; set; } = new LinkedList<MIDIEvent>();
-        public bool Played { get; set; } = false;
         public LinkedListNode<MIDIEvent> CurrentEvent { get; set; }
         public int CurrentEventFrame { get; set; }
-        public Stack<LinkedListNode<MIDIEvent>> JumpReturnStack { get; set; }
+        //public Stack<LinkedListNode<MIDIEvent>> JumpReturnStack { get; set; }
 
         //初めのイベントを得る
         public LinkedListNode<MIDIEvent> getStartEventNode()
@@ -188,6 +187,17 @@ namespace Remcoposer64.ProjectData
             {
                 ((MIDIRolandParaEvent)eve).RolandPara_gt = eve.MIDIMessageLst[0][0];
                 ((MIDIRolandParaEvent)eve).RolandPara_vel = eve.MIDIMessageLst[0][1];
+            }
+            else if (eve.Type == MIDIEventType.LoopEnd)
+            {
+                ((MIDILoopEndEvent)eve).LoopCounter = eve.MIDIMessageLst[0][0];
+            }
+            else if (eve.Type == MIDIEventType.SysExF0)
+            {
+                ((MIDISysExEvent)eve).Data = new byte[eve.MIDIMessageLst[0].Length - 2];
+                Array.Copy(eve.MIDIMessageLst[0], 0, ((MIDISysExEvent)eve).Data, 0, eve.MIDIMessageLst[0].Length - 2);
+                ((MIDISysExEvent)eve).GT = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 2];
+                ((MIDISysExEvent)eve).VEL = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 1];
             }
 
             return insertEve(TargetEvent, Step, eve);
