@@ -19,7 +19,6 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         public string[] headers;
         public int iconMergin;
         private string oldMeas = "";
-        private string oldStep = "";
         private int oldST = -1;
 
 
@@ -52,10 +51,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         public void InitialOldMeasOldStep()
         {
             oldMeas = "";
-            oldStep = "";
         }
 
-        public void DrawMeasAndStep(MIDIEvent ev, ref Point pos, ref int x, FBColor fb, bool isCursor)
+        public void DrawMeasAndStep(MIDIEvent ev, ref Point pos, ref int x, FBColor fb, bool isCursor, bool dispStep)
         {
             if (ev.editing)
             {
@@ -63,20 +61,13 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 oldMeas = ev.MeasString;
 
                 DrawCell(ev.StepString, ref pos, ref x, 1, fb);
-                oldStep = ev.StepString;
                 return;
             }
 
             DrawCell((oldMeas != ev.MeasString || isCursor) ? ev.MeasString : "     :", ref pos, ref x, 0, fb);
             oldMeas = ev.MeasString;
 
-            DrawCell((oldStep != ev.StepString || isCursor) ? ev.StepString : "     :", ref pos, ref x, 1, fb);
-            oldStep = ev.StepString;
-
-            if (ev.Type == MIDIEventType.BarLine || ev.Type == MIDIEventType.SameMeas)
-            {
-                oldStep = "";   // ← これで次のイベントは必ず Step を描く
-            }
+            DrawCell((dispStep || isCursor) ? ev.StepString : "     :", ref pos, ref x, 1, fb);
 
         }
 

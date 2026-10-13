@@ -300,10 +300,19 @@ namespace Remcoposer64.App
             LinkedListNode<MIDITrack> trk = project.getStartTrackNode();
             while (trk != null)
             {
+                string name = "";
+                if (mo != null
+                    && mo.lstMidiOutInfo != null
+                    && mo.lstMidiOutInfo.Count > 0
+                    && mo.lstMidiOutInfo.Count > mo.CurrentDev
+                    && mo.lstMidiOutInfo[mo.CurrentDev] != null
+                )
+                    name = mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name;
+
                 dgvTracks.Rows.Add(
                     trk.Value.Number + 1,
                     trk.Value.Name,
-                    mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name,
+                    name,
                     trk.Value.OutChannel + 1,
                     MakePartDots(trk.Value)
                 );

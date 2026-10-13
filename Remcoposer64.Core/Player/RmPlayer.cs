@@ -44,27 +44,35 @@ namespace Remcoposer64.Core.Player
             currentMidiIn = _midiIn.lstMidiInInfo[_midiIn.CurrentDev];
             State = PlayerState.Stopped;
 
-            midiOutDev = new NAudio.Midi.MidiOut[currentMidiOut.Length];
-            for (int i = 0; i < currentMidiOut.Length; i++)
+            if (currentMidiOut != null && currentMidiOut.Length > 0)
             {
-                try
+                midiOutDev = new NAudio.Midi.MidiOut[currentMidiOut.Length];
+                for (int i = 0; i < currentMidiOut.Length; i++)
                 {
-                    midiOutDev[i] = new NAudio.Midi.MidiOut(currentMidiOut[i].id);
-                }
-                catch
-                {
-                    midiOutDev[i] = null;
+                    try
+                    {
+                        midiOutDev[i] = new NAudio.Midi.MidiOut(currentMidiOut[i].id);
+                    }
+                    catch
+                    {
+                        midiOutDev[i] = null;
+                    }
                 }
             }
-            midiInDev = new NAudio.Midi.MidiIn[currentMidiIn.Length];
-            for (int i = 0; i < currentMidiIn.Length; i++)
+
+            if (currentMidiIn != null && currentMidiIn.Length > 0)
             {
-                try
+                midiInDev = new NAudio.Midi.MidiIn[currentMidiIn.Length];
+                for (int i = 0; i < currentMidiIn.Length; i++)
                 {
-                    midiInDev[i] = new NAudio.Midi.MidiIn(currentMidiIn[i].id);
-                }catch
-                {
-                    midiInDev[i] = null;
+                    try
+                    {
+                        midiInDev[i] = new NAudio.Midi.MidiIn(currentMidiIn[i].id);
+                    }
+                    catch
+                    {
+                        midiInDev[i] = null;
+                    }
                 }
             }
 
@@ -195,22 +203,28 @@ namespace Remcoposer64.Core.Player
             }
             catch { }
 
-            for (int i = 0; i < midiOutDev.Length; i++)
+            if (midiOutDev != null)
             {
-                try
+                for (int i = 0; i < midiOutDev.Length; i++)
                 {
-                    midiOutDev[i]?.Dispose();
+                    try
+                    {
+                        midiOutDev[i]?.Dispose();
+                    }
+                    catch { }
                 }
-                catch { }
             }
 
-            for (int i = 0; i < midiInDev.Length; i++)
+            if (midiInDev != null)
             {
-                try
+                for (int i = 0; i < midiInDev.Length; i++)
                 {
-                    midiInDev[i]?.Dispose();
+                    try
+                    {
+                        midiInDev[i]?.Dispose();
+                    }
+                    catch { }
                 }
-                catch { }
             }
 
             _timer.Dispose();

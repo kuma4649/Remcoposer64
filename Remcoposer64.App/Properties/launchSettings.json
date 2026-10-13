@@ -2,7 +2,7 @@
   "profiles": {
     "Remcoposer64.App": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\GAME\\68\\STED207\\test.rcp\""
+      "commandLineArgs": "\"_D:\\GAME\\68\\STED207\\test.rcp\""
     }
   }
 }

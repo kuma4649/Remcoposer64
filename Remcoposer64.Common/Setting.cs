@@ -113,11 +113,13 @@ namespace Remcoposer64.Common
                 MidiOut.Custom = this.Custom;
                 MidiOut.CurrentDev = this.CurrentDev;
                 MidiOut.lstMidiOutInfo = null;
-                if (this.lstMidiOutInfo != null)
+                if (this.lstMidiOutInfo != null && this.lstMidiOutInfo.Count>0)
                 {
                     MidiOut.lstMidiOutInfo = new List<midiOutInfo[]>();
                     foreach (var item in this.lstMidiOutInfo)
                     {
+                        if (item == null) continue;
+
                         midiOutInfo[] newItem = new midiOutInfo[item.Length];
                         for (int i = 0; i < item.Length; i++)
                         {

@@ -370,7 +370,14 @@ namespace Remcoposer64.Core
 
                 if (ch != 255)
                 {
-                    int n = (stDevNum + (ch / 16)) % setting.midiOut.lstMidiOutInfo[setting.midiOut.CurrentDev].Length;
+                    int n=0;
+                    if (setting.midiOut != null
+                        && setting.midiOut.lstMidiOutInfo != null
+                        && setting.midiOut.lstMidiOutInfo.Count > 0
+                        && setting.midiOut.lstMidiOutInfo.Count > setting.midiOut.CurrentDev
+                        && setting.midiOut.lstMidiOutInfo[setting.midiOut.CurrentDev] != null
+                        )
+                        n = (stDevNum + (ch / 16)) % setting.midiOut.lstMidiOutInfo[setting.midiOut.CurrentDev].Length;
 
                     trk[trkNumber].OutDevice = n;
                     trk[trkNumber].OutChannel = ch % 16;

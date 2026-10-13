@@ -492,7 +492,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 ev.Meas = meas;
                 ev.Step = step;
                 ev.STsum = sum + ev.ST;
-                step++;
+                if (ev.ST != 0) step++;
                 sum += ev.ST;
                 if (ev.Type == MIDIEventType.BarLine)
                 {

@@ -1,6 +1,8 @@
 ﻿using global::Remcoposer64.StepEditorPanelControl.Render;
+using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
+using System.Xml.Linq;
 
 namespace Remcoposer64.StepEditorPanelControl
 {
@@ -32,6 +34,10 @@ namespace Remcoposer64.StepEditorPanelControl
             drawUtil.DrawHeader(rect);
             drawUtil.InitialOldMeasOldStep();
 
+            bool dispStep = true;
+            int oldStep = -1;
+            bool firstDisp = true;
+
             if (eventManager.EventCount > 0)
             {
                 int row = 0;
@@ -46,7 +52,10 @@ namespace Remcoposer64.StepEditorPanelControl
                     bool isCursor = i == cursor.Index;
                     bool isPlayingCursor = i == playingCursorIndex;
                     UIEvent uie = uiep.Get(node.Value.Type);
-                    DrawEventRow(node.Value, uie, mdl, row, i, rect, isCursor, isPlayingCursor, cursor);
+
+                    ProcessStepDisplayControl(ref oldStep, ref dispStep, ref firstDisp, node.Value);
+
+                    DrawEventRow(node.Value, uie, mdl, row, i, rect, isCursor, isPlayingCursor, cursor, dispStep);
                     row++;
                 }
             }
@@ -54,7 +63,52 @@ namespace Remcoposer64.StepEditorPanelControl
             drawUtil.EndPaint();
         }
 
-        public void DrawEventRow(MIDIEvent ev, UIEvent ue, MdlEvent me, int row, int absoluteIndex, Rectangle rect, bool isCursor, bool isPlayingCursor, CursorInfo cursor)
+        /// <summary>
+        /// step表示制御処理
+        /// </summary>
+        private void ProcessStepDisplayControl(ref int oldStep,ref bool dispStep,ref bool firstDisp,MIDIEvent evt)
+        {
+            if (oldStep == evt.Step)
+            {
+                if (firstDisp)
+                {
+                    dispStep = true;
+
+                    firstDisp = false;
+                }
+                else
+                {
+                    dispStep = false;
+                }
+            }
+            else
+            {
+                dispStep = true;
+
+                oldStep = evt.Step;
+                firstDisp = false;
+            }
+
+            if (dispStep)
+            {
+                if (evt.Type == MIDIEventType.MetaTextEvent
+                    || evt.Type == MIDIEventType.Memo
+                    || evt.Type == MIDIEventType.BarLine
+                    || evt.Type == MIDIEventType.LoopStart
+                    || evt.Type == MIDIEventType.LoopEnd
+                    || evt.Type == MIDIEventType.SameMeas
+                    || evt.Type == MIDIEventType.EndOfTrack
+                    || evt.Type == MIDIEventType.MetaEndOfTrack
+                    )
+                {
+                    firstDisp = true;
+                    dispStep = false;
+                }
+            }
+
+        }
+
+        public void DrawEventRow(MIDIEvent ev, UIEvent ue, MdlEvent me, int row, int absoluteIndex, Rectangle rect, bool isCursor, bool isPlayingCursor, CursorInfo cursor, bool dispStep)
         {
             Point pos = new(rect.Left + drawUtil.iconMergin, rect.Top + (1 + row) * drawUtil.lineHeight);
 
@@ -70,7 +124,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
             // Meas/Step を描く
             int x = 0;
-            drawUtil.DrawMeasAndStep(ev, ref pos, ref x, fb, isCursor);
+            drawUtil.DrawMeasAndStep(ev, ref pos, ref x, fb, isCursor, dispStep);
 
             // イベント を描く
             ue.DrawEvent(ev, me, pos, ref x, cursor, state);

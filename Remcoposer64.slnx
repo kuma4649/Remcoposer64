@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Documents/">
     <File Path="OperationManual.txt" />
+    <File Path="removeZoneIdent.bat" />
   </Folder>
   <Project Path="Remcoposer64.App/Remcoposer64.App.csproj" />
   <Project Path="Remcoposer64.Common/Remcoposer64.Common.csproj" Id="733589d3-cb3b-4583-a6f2-8f6d9eac5806" />
