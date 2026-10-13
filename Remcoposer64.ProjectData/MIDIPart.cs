@@ -199,6 +199,11 @@ namespace Remcoposer64.ProjectData
                 ((MIDISysExEvent)eve).GT = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 2];
                 ((MIDISysExEvent)eve).VEL = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 1];
             }
+            else if (eve.Type == MIDIEventType.BankProgram)
+            {
+                ((MIDIBankProgramEvent)eve).ProgramNumber = eve.MIDIMessageLst[0][1];
+                ((MIDIBankProgramEvent)eve).ControlChange = eve.MIDIMessageLst[1][2];
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }

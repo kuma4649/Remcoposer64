@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Remcoposer64.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -61,10 +62,11 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDILoopEndEvent();
                 case MIDIEventType.ChExclusive:
                     return new MIDISysExEvent();
+                case MIDIEventType.BankProgram:
+                    return new MIDIBankProgramEvent();
                 default:
+                    Log.Write("Detect unsupported commands.{0}", type);
                     return new MIDIMetaEvent();
-                    //Debug.WriteLine(type.ToString());
-                    //throw new ArgumentOutOfRangeException();
             }
         }
     }

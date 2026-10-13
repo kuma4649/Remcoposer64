@@ -493,6 +493,9 @@ namespace Remcoposer64.ProjectData
                 case MIDILoopEndEvent le:
                     return ConvertLoopEndEvent(le);
 
+                case MIDIBankProgramEvent bp:
+                    return ConvertBankProgramEvent(bp);
+
                 default:
                     throw new NotImplementedException($"未対応のイベント: {ev.GetType().Name}");
             }
@@ -768,6 +771,22 @@ namespace Remcoposer64.ProjectData
 
                 ControllerNumber = cc.ControllerNumber,
                 ControllerValue = cc.ControllerValue
+            };
+        }
+
+        private MIDIEventDto ConvertBankProgramEvent(MIDIBankProgramEvent bp)
+        {
+            return new MIDIBankProgramEventDto
+            {
+                Type = bp.Type,
+                Meas = bp.Meas,
+                Step = bp.Step,
+                ST = bp.ST,
+                MIDIMessage = bp.MIDIMessage,
+                MIDIMessageLst = bp.MIDIMessageLst,
+
+                ProgramNumber = bp.ProgramNumber,
+                ControlChange = bp.ControlChange
             };
         }
 
@@ -1153,6 +1172,15 @@ namespace Remcoposer64.ProjectData
                         MIDIMessageLst = dto.MIDIMessageLst,
                         LoopCounter = leDto.LoopCounter
                     };
+
+                case MIDIEventType.BankProgram:
+                    var bp = new MIDIBankProgramEvent();
+                    bp.Meas = dto.Meas;
+                    bp.Step = dto.Step;
+                    bp.ST = dto.ST;
+                    bp.ProgramNumber = ((MIDIBankProgramEventDto)dto).ProgramNumber;
+                    bp.ControlChange = ((MIDIBankProgramEventDto)dto).ControlChange;
+                    return bp;
             }
 
             throw new Exception("Unknown event type: " + dto.Type);

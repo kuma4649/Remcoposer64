@@ -583,6 +583,30 @@ namespace Remcoposer64.Core.Player
                     }
                 }
             }
+            else if (evt.Type == MIDIEventType.BankProgram)
+            {
+                if (channel != null)
+                {
+                    MIDIBankProgramEvent bevt = (MIDIBankProgramEvent)evt;
+                    int ch = (int)(channel & 0x0F);
+
+                    int status;
+                    int msg;
+
+                    status = 0xB0 | ch; // CC
+                    msg = status
+                              + (0 << 8)
+                              + (bevt.ControlChange << 16);
+
+                    midiOut?.Send(msg);
+
+                    status = 0xC0 | ch; // ProgramChange
+                    msg = status
+                              + (bevt.ProgramNumber << 8);
+                    midiOut?.Send(msg);
+
+                }
+            }
             else
             {
                 //T.B.D.

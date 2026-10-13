@@ -2,7 +2,7 @@
   "profiles": {
     "Remcoposer64.App": {
       "commandName": "Project",
-      "commandLineArgs": "\"_D:\\GAME\\68\\STED207\\test.rcp\""
+      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\人様のＭＩＤＩ\\ANIME\\NADOP88G.RCP\""
     }
   }
 }
