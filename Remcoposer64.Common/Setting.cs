@@ -60,7 +60,8 @@ namespace Remcoposer64.Common
                 string fullPath = Common.settingFilePath;
                 fullPath = Path.Combine(fullPath, Common.cntSettingFileName);
 
-                if (!File.Exists(fullPath)) { return new Setting(); }
+                if (!File.Exists(fullPath))
+                    return new Setting(); 
                 XmlSerializer serializer = new(typeof(Setting), typeof(Setting).GetNestedTypes());
                 using StreamReader sr = new(fullPath, new UTF8Encoding(false));
 
@@ -180,6 +181,8 @@ namespace Remcoposer64.Common
                     MidiIn.lstMidiInInfo = new List<midiInInfo[]>();
                     foreach (var item in this.lstMidiInInfo)
                     {
+                        if (item == null) continue;
+
                         midiInInfo[] newItem = new midiInInfo[item.Length];
                         for (int i = 0; i < item.Length; i++)
                         {

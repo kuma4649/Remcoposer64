@@ -38,10 +38,31 @@ namespace Remcoposer64.Core.Player
 
         public RmPlayer(Setting setting)
         {
+            if (setting.midiOut == null) 
+                setting.midiOut = new();
             _midiOut = setting.midiOut;
-            currentMidiOut = _midiOut.lstMidiOutInfo[_midiOut.CurrentDev];
+            if (_midiOut.lstMidiOutInfo == null)
+            {
+                _midiOut.lstMidiOutInfo = new List<midiOutInfo[]>();
+                currentMidiOut = null;
+            }
+            else
+            {
+                currentMidiOut = _midiOut.lstMidiOutInfo[_midiOut.CurrentDev];
+            }
+
+            if (setting.midiIn == null) 
+                setting.midiIn = new();
             _midiIn = setting.midiIn;
-            currentMidiIn = _midiIn.lstMidiInInfo[_midiIn.CurrentDev];
+            if (_midiIn.lstMidiInInfo == null)
+            {
+                _midiIn.lstMidiInInfo = new List<midiInInfo[]>();
+                currentMidiIn = null;
+            }
+            else
+            {
+                currentMidiIn = _midiIn.lstMidiInInfo[_midiIn.CurrentDev];
+            }
             State = PlayerState.Stopped;
 
             if (currentMidiOut != null && currentMidiOut.Length > 0)
