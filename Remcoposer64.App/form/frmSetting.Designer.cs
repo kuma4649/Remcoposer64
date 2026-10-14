@@ -30,7 +30,7 @@
         {
             tcSetting = new TabControl();
             tpOutput = new TabPage();
-            tcDeviceCategory = new TabControl();
+            tbcDeviceCategory = new TabControl();
             tpMIDIOut = new TabPage();
             scMIDIOutSplit = new SplitContainer();
             label16 = new Label();
@@ -39,8 +39,8 @@
             clmDeviceName = new DataGridViewTextBoxColumn();
             clmManufacturer = new DataGridViewTextBoxColumn();
             clmSpacer = new DataGridViewTextBoxColumn();
-            tbcMIDIoutList = new TabControl();
-            tabPage1 = new TabPage();
+            tbcMIDIOutList = new TabControl();
+            tpA = new TabPage();
             dgvMIDIoutListA = new DataGridView();
             dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
             clmIsVST = new DataGridViewCheckBoxColumn();
@@ -52,6 +52,78 @@
             dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
             btnUPMIDIOut_A = new Button();
             btnDownMIDIOut_A = new Button();
+            tpB = new TabPage();
+            btnUPMIDIOut_B = new Button();
+            btnDownMIDIOut_B = new Button();
+            dgvMIDIoutListB = new DataGridView();
+            dataGridViewTextBoxColumn14 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn2 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn15 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn16 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn2 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn3 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn17 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn18 = new DataGridViewTextBoxColumn();
+            tpC = new TabPage();
+            btnUPMIDIOut_C = new Button();
+            btnDownMIDIOut_C = new Button();
+            dgvMIDIoutListC = new DataGridView();
+            dataGridViewTextBoxColumn19 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn3 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn20 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn21 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn4 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn5 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn22 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn23 = new DataGridViewTextBoxColumn();
+            tpD = new TabPage();
+            btnUPMIDIOut_D = new Button();
+            btnDownMIDIOut_D = new Button();
+            dgvMIDIoutListD = new DataGridView();
+            dataGridViewTextBoxColumn24 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn4 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn25 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn26 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn6 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn7 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn27 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn28 = new DataGridViewTextBoxColumn();
+            tpE = new TabPage();
+            btnUPMIDIOut_E = new Button();
+            btnDownMIDIOut_E = new Button();
+            dgvMIDIoutListE = new DataGridView();
+            dataGridViewTextBoxColumn29 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn5 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn30 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn31 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn8 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn9 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn32 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn33 = new DataGridViewTextBoxColumn();
+            tpF = new TabPage();
+            button9 = new Button();
+            btnDownMIDIOut_F = new Button();
+            dgvMIDIoutListF = new DataGridView();
+            dataGridViewTextBoxColumn34 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn6 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn35 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn36 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn10 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn11 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn37 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn38 = new DataGridViewTextBoxColumn();
+            tpG = new TabPage();
+            btnUPMIDIOut_G = new Button();
+            btnDownMIDIOut_G = new Button();
+            dgvMIDIoutListG = new DataGridView();
+            dataGridViewTextBoxColumn39 = new DataGridViewTextBoxColumn();
+            dataGridViewCheckBoxColumn7 = new DataGridViewCheckBoxColumn();
+            dataGridViewTextBoxColumn40 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn41 = new DataGridViewTextBoxColumn();
+            dataGridViewComboBoxColumn12 = new DataGridViewComboBoxColumn();
+            dataGridViewComboBoxColumn13 = new DataGridViewComboBoxColumn();
+            dataGridViewTextBoxColumn42 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn43 = new DataGridViewTextBoxColumn();
             btnAddMIDIout = new Button();
             label18 = new Label();
             btnAddVSTiOut = new Button();
@@ -84,16 +156,28 @@
             btnCancel = new Button();
             tcSetting.SuspendLayout();
             tpOutput.SuspendLayout();
-            tcDeviceCategory.SuspendLayout();
+            tbcDeviceCategory.SuspendLayout();
             tpMIDIOut.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)scMIDIOutSplit).BeginInit();
             scMIDIOutSplit.Panel1.SuspendLayout();
             scMIDIOutSplit.Panel2.SuspendLayout();
             scMIDIOutSplit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMIDIoutPallet).BeginInit();
-            tbcMIDIoutList.SuspendLayout();
-            tabPage1.SuspendLayout();
+            tbcMIDIOutList.SuspendLayout();
+            tpA.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListA).BeginInit();
+            tpB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListB).BeginInit();
+            tpC.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListC).BeginInit();
+            tpD.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListD).BeginInit();
+            tpE.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListE).BeginInit();
+            tpF.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListF).BeginInit();
+            tpG.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListG).BeginInit();
             tpMIDIIN.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -117,7 +201,7 @@
             // 
             // tpOutput
             // 
-            tpOutput.Controls.Add(tcDeviceCategory);
+            tpOutput.Controls.Add(tbcDeviceCategory);
             tpOutput.Location = new Point(4, 24);
             tpOutput.Name = "tpOutput";
             tpOutput.Padding = new Padding(3);
@@ -126,16 +210,16 @@
             tpOutput.Text = "Output";
             tpOutput.UseVisualStyleBackColor = true;
             // 
-            // tcDeviceCategory
+            // tbcDeviceCategory
             // 
-            tcDeviceCategory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tcDeviceCategory.Controls.Add(tpMIDIOut);
-            tcDeviceCategory.Controls.Add(tpMIDIIN);
-            tcDeviceCategory.Location = new Point(6, 6);
-            tcDeviceCategory.Name = "tcDeviceCategory";
-            tcDeviceCategory.SelectedIndex = 0;
-            tcDeviceCategory.Size = new Size(500, 508);
-            tcDeviceCategory.TabIndex = 0;
+            tbcDeviceCategory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbcDeviceCategory.Controls.Add(tpMIDIOut);
+            tbcDeviceCategory.Controls.Add(tpMIDIIN);
+            tbcDeviceCategory.Location = new Point(6, 6);
+            tbcDeviceCategory.Name = "tbcDeviceCategory";
+            tbcDeviceCategory.SelectedIndex = 0;
+            tbcDeviceCategory.Size = new Size(500, 508);
+            tbcDeviceCategory.TabIndex = 0;
             // 
             // tpMIDIOut
             // 
@@ -163,7 +247,7 @@
             // 
             // scMIDIOutSplit.Panel2
             // 
-            scMIDIOutSplit.Panel2.Controls.Add(tbcMIDIoutList);
+            scMIDIOutSplit.Panel2.Controls.Add(tbcMIDIOutList);
             scMIDIOutSplit.Panel2.Controls.Add(btnAddMIDIout);
             scMIDIOutSplit.Panel2.Controls.Add(label18);
             scMIDIOutSplit.Panel2.Controls.Add(btnAddVSTiOut);
@@ -200,6 +284,7 @@
             dgvMIDIoutPallet.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvMIDIoutPallet.Size = new Size(480, 164);
             dgvMIDIoutPallet.TabIndex = 1;
+            dgvMIDIoutPallet.CellMouseDoubleClick += dgvMIDIoutPallet_CellMouseDoubleClick;
             // 
             // clmID
             // 
@@ -235,31 +320,37 @@
             clmSpacer.ReadOnly = true;
             clmSpacer.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
-            // tbcMIDIoutList
+            // tbcMIDIOutList
             // 
-            tbcMIDIoutList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tbcMIDIoutList.Controls.Add(tabPage1);
-            tbcMIDIoutList.Location = new Point(4, 39);
-            tbcMIDIoutList.Margin = new Padding(4);
-            tbcMIDIoutList.Name = "tbcMIDIoutList";
-            tbcMIDIoutList.SelectedIndex = 0;
-            tbcMIDIoutList.Size = new Size(478, 227);
-            tbcMIDIoutList.TabIndex = 4;
+            tbcMIDIOutList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbcMIDIOutList.Controls.Add(tpA);
+            tbcMIDIOutList.Controls.Add(tpB);
+            tbcMIDIOutList.Controls.Add(tpC);
+            tbcMIDIOutList.Controls.Add(tpD);
+            tbcMIDIOutList.Controls.Add(tpE);
+            tbcMIDIOutList.Controls.Add(tpF);
+            tbcMIDIOutList.Controls.Add(tpG);
+            tbcMIDIOutList.Location = new Point(4, 39);
+            tbcMIDIOutList.Margin = new Padding(4);
+            tbcMIDIOutList.Name = "tbcMIDIOutList";
+            tbcMIDIOutList.SelectedIndex = 0;
+            tbcMIDIOutList.Size = new Size(478, 220);
+            tbcMIDIOutList.TabIndex = 4;
             // 
-            // tabPage1
+            // tpA
             // 
-            tabPage1.Controls.Add(dgvMIDIoutListA);
-            tabPage1.Controls.Add(btnUPMIDIOut_A);
-            tabPage1.Controls.Add(btnDownMIDIOut_A);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Margin = new Padding(4);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(4);
-            tabPage1.Size = new Size(470, 199);
-            tabPage1.TabIndex = 0;
-            tabPage1.Tag = "0";
-            tabPage1.Text = "...";
-            tabPage1.UseVisualStyleBackColor = true;
+            tpA.Controls.Add(dgvMIDIoutListA);
+            tpA.Controls.Add(btnUPMIDIOut_A);
+            tpA.Controls.Add(btnDownMIDIOut_A);
+            tpA.Location = new Point(4, 24);
+            tpA.Margin = new Padding(4);
+            tpA.Name = "tpA";
+            tpA.Padding = new Padding(4);
+            tpA.Size = new Size(470, 192);
+            tpA.TabIndex = 0;
+            tpA.Tag = "0";
+            tpA.Text = "A";
+            tpA.UseVisualStyleBackColor = true;
             // 
             // dgvMIDIoutListA
             // 
@@ -276,8 +367,9 @@
             dgvMIDIoutListA.RowHeadersVisible = false;
             dgvMIDIoutListA.RowTemplate.Height = 21;
             dgvMIDIoutListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListA.Size = new Size(428, 191);
+            dgvMIDIoutListA.Size = new Size(428, 184);
             dgvMIDIoutListA.TabIndex = 1;
+            dgvMIDIoutListA.CellMouseDoubleClick += dgvMIDIoutListA_CellMouseDoubleClick;
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -357,7 +449,7 @@
             // btnDownMIDIOut_A
             // 
             btnDownMIDIOut_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_A.Location = new Point(440, 123);
+            btnDownMIDIOut_A.Location = new Point(440, 116);
             btnDownMIDIOut_A.Margin = new Padding(4);
             btnDownMIDIOut_A.Name = "btnDownMIDIOut_A";
             btnDownMIDIOut_A.Size = new Size(26, 72);
@@ -365,6 +457,708 @@
             btnDownMIDIOut_A.Text = "↓";
             btnDownMIDIOut_A.UseVisualStyleBackColor = true;
             btnDownMIDIOut_A.Click += btnDownMIDIOut_A_Click;
+            // 
+            // tpB
+            // 
+            tpB.Controls.Add(btnUPMIDIOut_B);
+            tpB.Controls.Add(btnDownMIDIOut_B);
+            tpB.Controls.Add(dgvMIDIoutListB);
+            tpB.Location = new Point(4, 24);
+            tpB.Name = "tpB";
+            tpB.Size = new Size(470, 192);
+            tpB.TabIndex = 1;
+            tpB.Text = "B";
+            tpB.UseVisualStyleBackColor = true;
+            // 
+            // btnUPMIDIOut_B
+            // 
+            btnUPMIDIOut_B.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIOut_B.Location = new Point(440, 4);
+            btnUPMIDIOut_B.Margin = new Padding(4);
+            btnUPMIDIOut_B.Name = "btnUPMIDIOut_B";
+            btnUPMIDIOut_B.Size = new Size(26, 72);
+            btnUPMIDIOut_B.TabIndex = 4;
+            btnUPMIDIOut_B.Text = "↑";
+            btnUPMIDIOut_B.UseVisualStyleBackColor = true;
+            btnUPMIDIOut_B.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_B
+            // 
+            btnDownMIDIOut_B.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_B.Location = new Point(440, 116);
+            btnDownMIDIOut_B.Margin = new Padding(4);
+            btnDownMIDIOut_B.Name = "btnDownMIDIOut_B";
+            btnDownMIDIOut_B.Size = new Size(26, 72);
+            btnDownMIDIOut_B.TabIndex = 5;
+            btnDownMIDIOut_B.Text = "↓";
+            btnDownMIDIOut_B.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_B.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListB
+            // 
+            dgvMIDIoutListB.AllowUserToAddRows = false;
+            dgvMIDIoutListB.AllowUserToDeleteRows = false;
+            dgvMIDIoutListB.AllowUserToResizeRows = false;
+            dgvMIDIoutListB.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListB.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListB.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn14, dataGridViewCheckBoxColumn2, dataGridViewTextBoxColumn15, dataGridViewTextBoxColumn16, dataGridViewComboBoxColumn2, dataGridViewComboBoxColumn3, dataGridViewTextBoxColumn17, dataGridViewTextBoxColumn18 });
+            dgvMIDIoutListB.Location = new Point(4, 4);
+            dgvMIDIoutListB.Margin = new Padding(4);
+            dgvMIDIoutListB.MultiSelect = false;
+            dgvMIDIoutListB.Name = "dgvMIDIoutListB";
+            dgvMIDIoutListB.RowHeadersVisible = false;
+            dgvMIDIoutListB.RowTemplate.Height = 21;
+            dgvMIDIoutListB.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListB.Size = new Size(428, 184);
+            dgvMIDIoutListB.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn14
+            // 
+            dataGridViewTextBoxColumn14.Frozen = true;
+            dataGridViewTextBoxColumn14.HeaderText = "ID";
+            dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
+            dataGridViewTextBoxColumn14.ReadOnly = true;
+            dataGridViewTextBoxColumn14.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn14.Visible = false;
+            dataGridViewTextBoxColumn14.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn2
+            // 
+            dataGridViewCheckBoxColumn2.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn2.Name = "dataGridViewCheckBoxColumn2";
+            dataGridViewCheckBoxColumn2.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn15
+            // 
+            dataGridViewTextBoxColumn15.HeaderText = "fileName";
+            dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
+            dataGridViewTextBoxColumn15.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn15.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn15.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn16
+            // 
+            dataGridViewTextBoxColumn16.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
+            dataGridViewTextBoxColumn16.ReadOnly = true;
+            dataGridViewTextBoxColumn16.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn16.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn2
+            // 
+            dataGridViewComboBoxColumn2.HeaderText = "Type";
+            dataGridViewComboBoxColumn2.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn2.Name = "dataGridViewComboBoxColumn2";
+            dataGridViewComboBoxColumn2.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn2.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn3
+            // 
+            dataGridViewComboBoxColumn3.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn3.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn3.Name = "dataGridViewComboBoxColumn3";
+            dataGridViewComboBoxColumn3.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn3.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn17
+            // 
+            dataGridViewTextBoxColumn17.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn17.Name = "dataGridViewTextBoxColumn17";
+            dataGridViewTextBoxColumn17.ReadOnly = true;
+            dataGridViewTextBoxColumn17.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn18
+            // 
+            dataGridViewTextBoxColumn18.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn18.HeaderText = "";
+            dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
+            dataGridViewTextBoxColumn18.ReadOnly = true;
+            dataGridViewTextBoxColumn18.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // tpC
+            // 
+            tpC.Controls.Add(btnUPMIDIOut_C);
+            tpC.Controls.Add(btnDownMIDIOut_C);
+            tpC.Controls.Add(dgvMIDIoutListC);
+            tpC.Location = new Point(4, 24);
+            tpC.Name = "tpC";
+            tpC.Size = new Size(470, 192);
+            tpC.TabIndex = 2;
+            tpC.Text = "C";
+            tpC.UseVisualStyleBackColor = true;
+            // 
+            // btnUPMIDIOut_C
+            // 
+            btnUPMIDIOut_C.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIOut_C.Location = new Point(440, 4);
+            btnUPMIDIOut_C.Margin = new Padding(4);
+            btnUPMIDIOut_C.Name = "btnUPMIDIOut_C";
+            btnUPMIDIOut_C.Size = new Size(26, 72);
+            btnUPMIDIOut_C.TabIndex = 4;
+            btnUPMIDIOut_C.Text = "↑";
+            btnUPMIDIOut_C.UseVisualStyleBackColor = true;
+            btnUPMIDIOut_C.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_C
+            // 
+            btnDownMIDIOut_C.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_C.Location = new Point(440, 116);
+            btnDownMIDIOut_C.Margin = new Padding(4);
+            btnDownMIDIOut_C.Name = "btnDownMIDIOut_C";
+            btnDownMIDIOut_C.Size = new Size(26, 72);
+            btnDownMIDIOut_C.TabIndex = 5;
+            btnDownMIDIOut_C.Text = "↓";
+            btnDownMIDIOut_C.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_C.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListC
+            // 
+            dgvMIDIoutListC.AllowUserToAddRows = false;
+            dgvMIDIoutListC.AllowUserToDeleteRows = false;
+            dgvMIDIoutListC.AllowUserToResizeRows = false;
+            dgvMIDIoutListC.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListC.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListC.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn19, dataGridViewCheckBoxColumn3, dataGridViewTextBoxColumn20, dataGridViewTextBoxColumn21, dataGridViewComboBoxColumn4, dataGridViewComboBoxColumn5, dataGridViewTextBoxColumn22, dataGridViewTextBoxColumn23 });
+            dgvMIDIoutListC.Location = new Point(4, 4);
+            dgvMIDIoutListC.Margin = new Padding(4);
+            dgvMIDIoutListC.MultiSelect = false;
+            dgvMIDIoutListC.Name = "dgvMIDIoutListC";
+            dgvMIDIoutListC.RowHeadersVisible = false;
+            dgvMIDIoutListC.RowTemplate.Height = 21;
+            dgvMIDIoutListC.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListC.Size = new Size(428, 184);
+            dgvMIDIoutListC.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn19
+            // 
+            dataGridViewTextBoxColumn19.Frozen = true;
+            dataGridViewTextBoxColumn19.HeaderText = "ID";
+            dataGridViewTextBoxColumn19.Name = "dataGridViewTextBoxColumn19";
+            dataGridViewTextBoxColumn19.ReadOnly = true;
+            dataGridViewTextBoxColumn19.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn19.Visible = false;
+            dataGridViewTextBoxColumn19.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn3
+            // 
+            dataGridViewCheckBoxColumn3.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn3.Name = "dataGridViewCheckBoxColumn3";
+            dataGridViewCheckBoxColumn3.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn20
+            // 
+            dataGridViewTextBoxColumn20.HeaderText = "fileName";
+            dataGridViewTextBoxColumn20.Name = "dataGridViewTextBoxColumn20";
+            dataGridViewTextBoxColumn20.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn20.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn20.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn21
+            // 
+            dataGridViewTextBoxColumn21.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn21.Name = "dataGridViewTextBoxColumn21";
+            dataGridViewTextBoxColumn21.ReadOnly = true;
+            dataGridViewTextBoxColumn21.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn21.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn4
+            // 
+            dataGridViewComboBoxColumn4.HeaderText = "Type";
+            dataGridViewComboBoxColumn4.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn4.Name = "dataGridViewComboBoxColumn4";
+            dataGridViewComboBoxColumn4.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn4.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn5
+            // 
+            dataGridViewComboBoxColumn5.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn5.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn5.Name = "dataGridViewComboBoxColumn5";
+            dataGridViewComboBoxColumn5.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn5.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn22
+            // 
+            dataGridViewTextBoxColumn22.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn22.Name = "dataGridViewTextBoxColumn22";
+            dataGridViewTextBoxColumn22.ReadOnly = true;
+            dataGridViewTextBoxColumn22.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn23
+            // 
+            dataGridViewTextBoxColumn23.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn23.HeaderText = "";
+            dataGridViewTextBoxColumn23.Name = "dataGridViewTextBoxColumn23";
+            dataGridViewTextBoxColumn23.ReadOnly = true;
+            dataGridViewTextBoxColumn23.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // tpD
+            // 
+            tpD.Controls.Add(btnUPMIDIOut_D);
+            tpD.Controls.Add(btnDownMIDIOut_D);
+            tpD.Controls.Add(dgvMIDIoutListD);
+            tpD.Location = new Point(4, 24);
+            tpD.Name = "tpD";
+            tpD.Size = new Size(470, 192);
+            tpD.TabIndex = 3;
+            tpD.Text = "D";
+            tpD.UseVisualStyleBackColor = true;
+            // 
+            // btnUPMIDIOut_D
+            // 
+            btnUPMIDIOut_D.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIOut_D.Location = new Point(440, 4);
+            btnUPMIDIOut_D.Margin = new Padding(4);
+            btnUPMIDIOut_D.Name = "btnUPMIDIOut_D";
+            btnUPMIDIOut_D.Size = new Size(26, 72);
+            btnUPMIDIOut_D.TabIndex = 4;
+            btnUPMIDIOut_D.Text = "↑";
+            btnUPMIDIOut_D.UseVisualStyleBackColor = true;
+            btnUPMIDIOut_D.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_D
+            // 
+            btnDownMIDIOut_D.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_D.Location = new Point(440, 116);
+            btnDownMIDIOut_D.Margin = new Padding(4);
+            btnDownMIDIOut_D.Name = "btnDownMIDIOut_D";
+            btnDownMIDIOut_D.Size = new Size(26, 72);
+            btnDownMIDIOut_D.TabIndex = 5;
+            btnDownMIDIOut_D.Text = "↓";
+            btnDownMIDIOut_D.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_D.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListD
+            // 
+            dgvMIDIoutListD.AllowUserToAddRows = false;
+            dgvMIDIoutListD.AllowUserToDeleteRows = false;
+            dgvMIDIoutListD.AllowUserToResizeRows = false;
+            dgvMIDIoutListD.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListD.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListD.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn24, dataGridViewCheckBoxColumn4, dataGridViewTextBoxColumn25, dataGridViewTextBoxColumn26, dataGridViewComboBoxColumn6, dataGridViewComboBoxColumn7, dataGridViewTextBoxColumn27, dataGridViewTextBoxColumn28 });
+            dgvMIDIoutListD.Location = new Point(4, 4);
+            dgvMIDIoutListD.Margin = new Padding(4);
+            dgvMIDIoutListD.MultiSelect = false;
+            dgvMIDIoutListD.Name = "dgvMIDIoutListD";
+            dgvMIDIoutListD.RowHeadersVisible = false;
+            dgvMIDIoutListD.RowTemplate.Height = 21;
+            dgvMIDIoutListD.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListD.Size = new Size(428, 184);
+            dgvMIDIoutListD.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn24
+            // 
+            dataGridViewTextBoxColumn24.Frozen = true;
+            dataGridViewTextBoxColumn24.HeaderText = "ID";
+            dataGridViewTextBoxColumn24.Name = "dataGridViewTextBoxColumn24";
+            dataGridViewTextBoxColumn24.ReadOnly = true;
+            dataGridViewTextBoxColumn24.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn24.Visible = false;
+            dataGridViewTextBoxColumn24.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn4
+            // 
+            dataGridViewCheckBoxColumn4.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn4.Name = "dataGridViewCheckBoxColumn4";
+            dataGridViewCheckBoxColumn4.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn25
+            // 
+            dataGridViewTextBoxColumn25.HeaderText = "fileName";
+            dataGridViewTextBoxColumn25.Name = "dataGridViewTextBoxColumn25";
+            dataGridViewTextBoxColumn25.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn25.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn25.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn26
+            // 
+            dataGridViewTextBoxColumn26.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn26.Name = "dataGridViewTextBoxColumn26";
+            dataGridViewTextBoxColumn26.ReadOnly = true;
+            dataGridViewTextBoxColumn26.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn26.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn6
+            // 
+            dataGridViewComboBoxColumn6.HeaderText = "Type";
+            dataGridViewComboBoxColumn6.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn6.Name = "dataGridViewComboBoxColumn6";
+            dataGridViewComboBoxColumn6.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn6.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn7
+            // 
+            dataGridViewComboBoxColumn7.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn7.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn7.Name = "dataGridViewComboBoxColumn7";
+            dataGridViewComboBoxColumn7.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn7.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn27
+            // 
+            dataGridViewTextBoxColumn27.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn27.Name = "dataGridViewTextBoxColumn27";
+            dataGridViewTextBoxColumn27.ReadOnly = true;
+            dataGridViewTextBoxColumn27.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn28
+            // 
+            dataGridViewTextBoxColumn28.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn28.HeaderText = "";
+            dataGridViewTextBoxColumn28.Name = "dataGridViewTextBoxColumn28";
+            dataGridViewTextBoxColumn28.ReadOnly = true;
+            dataGridViewTextBoxColumn28.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // tpE
+            // 
+            tpE.Controls.Add(btnUPMIDIOut_E);
+            tpE.Controls.Add(btnDownMIDIOut_E);
+            tpE.Controls.Add(dgvMIDIoutListE);
+            tpE.Location = new Point(4, 24);
+            tpE.Name = "tpE";
+            tpE.Size = new Size(470, 192);
+            tpE.TabIndex = 4;
+            tpE.Text = "E";
+            tpE.UseVisualStyleBackColor = true;
+            // 
+            // btnUPMIDIOut_E
+            // 
+            btnUPMIDIOut_E.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIOut_E.Location = new Point(440, 4);
+            btnUPMIDIOut_E.Margin = new Padding(4);
+            btnUPMIDIOut_E.Name = "btnUPMIDIOut_E";
+            btnUPMIDIOut_E.Size = new Size(26, 72);
+            btnUPMIDIOut_E.TabIndex = 4;
+            btnUPMIDIOut_E.Text = "↑";
+            btnUPMIDIOut_E.UseVisualStyleBackColor = true;
+            btnUPMIDIOut_E.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_E
+            // 
+            btnDownMIDIOut_E.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_E.Location = new Point(440, 116);
+            btnDownMIDIOut_E.Margin = new Padding(4);
+            btnDownMIDIOut_E.Name = "btnDownMIDIOut_E";
+            btnDownMIDIOut_E.Size = new Size(26, 72);
+            btnDownMIDIOut_E.TabIndex = 5;
+            btnDownMIDIOut_E.Text = "↓";
+            btnDownMIDIOut_E.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_E.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListE
+            // 
+            dgvMIDIoutListE.AllowUserToAddRows = false;
+            dgvMIDIoutListE.AllowUserToDeleteRows = false;
+            dgvMIDIoutListE.AllowUserToResizeRows = false;
+            dgvMIDIoutListE.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListE.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListE.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn29, dataGridViewCheckBoxColumn5, dataGridViewTextBoxColumn30, dataGridViewTextBoxColumn31, dataGridViewComboBoxColumn8, dataGridViewComboBoxColumn9, dataGridViewTextBoxColumn32, dataGridViewTextBoxColumn33 });
+            dgvMIDIoutListE.Location = new Point(4, 4);
+            dgvMIDIoutListE.Margin = new Padding(4);
+            dgvMIDIoutListE.MultiSelect = false;
+            dgvMIDIoutListE.Name = "dgvMIDIoutListE";
+            dgvMIDIoutListE.RowHeadersVisible = false;
+            dgvMIDIoutListE.RowTemplate.Height = 21;
+            dgvMIDIoutListE.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListE.Size = new Size(428, 184);
+            dgvMIDIoutListE.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn29
+            // 
+            dataGridViewTextBoxColumn29.Frozen = true;
+            dataGridViewTextBoxColumn29.HeaderText = "ID";
+            dataGridViewTextBoxColumn29.Name = "dataGridViewTextBoxColumn29";
+            dataGridViewTextBoxColumn29.ReadOnly = true;
+            dataGridViewTextBoxColumn29.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn29.Visible = false;
+            dataGridViewTextBoxColumn29.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn5
+            // 
+            dataGridViewCheckBoxColumn5.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn5.Name = "dataGridViewCheckBoxColumn5";
+            dataGridViewCheckBoxColumn5.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn30
+            // 
+            dataGridViewTextBoxColumn30.HeaderText = "fileName";
+            dataGridViewTextBoxColumn30.Name = "dataGridViewTextBoxColumn30";
+            dataGridViewTextBoxColumn30.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn30.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn30.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn31
+            // 
+            dataGridViewTextBoxColumn31.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn31.Name = "dataGridViewTextBoxColumn31";
+            dataGridViewTextBoxColumn31.ReadOnly = true;
+            dataGridViewTextBoxColumn31.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn31.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn8
+            // 
+            dataGridViewComboBoxColumn8.HeaderText = "Type";
+            dataGridViewComboBoxColumn8.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn8.Name = "dataGridViewComboBoxColumn8";
+            dataGridViewComboBoxColumn8.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn8.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn9
+            // 
+            dataGridViewComboBoxColumn9.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn9.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn9.Name = "dataGridViewComboBoxColumn9";
+            dataGridViewComboBoxColumn9.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn9.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn32
+            // 
+            dataGridViewTextBoxColumn32.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn32.Name = "dataGridViewTextBoxColumn32";
+            dataGridViewTextBoxColumn32.ReadOnly = true;
+            dataGridViewTextBoxColumn32.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn33
+            // 
+            dataGridViewTextBoxColumn33.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn33.HeaderText = "";
+            dataGridViewTextBoxColumn33.Name = "dataGridViewTextBoxColumn33";
+            dataGridViewTextBoxColumn33.ReadOnly = true;
+            dataGridViewTextBoxColumn33.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // tpF
+            // 
+            tpF.Controls.Add(button9);
+            tpF.Controls.Add(btnDownMIDIOut_F);
+            tpF.Controls.Add(dgvMIDIoutListF);
+            tpF.Location = new Point(4, 24);
+            tpF.Name = "tpF";
+            tpF.Size = new Size(470, 192);
+            tpF.TabIndex = 5;
+            tpF.Text = "F";
+            tpF.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            button9.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            button9.Location = new Point(440, 4);
+            button9.Margin = new Padding(4);
+            button9.Name = "button9";
+            button9.Size = new Size(26, 72);
+            button9.TabIndex = 4;
+            button9.Text = "↑";
+            button9.UseVisualStyleBackColor = true;
+            button9.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_F
+            // 
+            btnDownMIDIOut_F.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_F.Location = new Point(440, 116);
+            btnDownMIDIOut_F.Margin = new Padding(4);
+            btnDownMIDIOut_F.Name = "btnDownMIDIOut_F";
+            btnDownMIDIOut_F.Size = new Size(26, 72);
+            btnDownMIDIOut_F.TabIndex = 5;
+            btnDownMIDIOut_F.Text = "↓";
+            btnDownMIDIOut_F.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_F.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListF
+            // 
+            dgvMIDIoutListF.AllowUserToAddRows = false;
+            dgvMIDIoutListF.AllowUserToDeleteRows = false;
+            dgvMIDIoutListF.AllowUserToResizeRows = false;
+            dgvMIDIoutListF.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListF.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListF.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn34, dataGridViewCheckBoxColumn6, dataGridViewTextBoxColumn35, dataGridViewTextBoxColumn36, dataGridViewComboBoxColumn10, dataGridViewComboBoxColumn11, dataGridViewTextBoxColumn37, dataGridViewTextBoxColumn38 });
+            dgvMIDIoutListF.Location = new Point(4, 4);
+            dgvMIDIoutListF.Margin = new Padding(4);
+            dgvMIDIoutListF.MultiSelect = false;
+            dgvMIDIoutListF.Name = "dgvMIDIoutListF";
+            dgvMIDIoutListF.RowHeadersVisible = false;
+            dgvMIDIoutListF.RowTemplate.Height = 21;
+            dgvMIDIoutListF.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListF.Size = new Size(428, 184);
+            dgvMIDIoutListF.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn34
+            // 
+            dataGridViewTextBoxColumn34.Frozen = true;
+            dataGridViewTextBoxColumn34.HeaderText = "ID";
+            dataGridViewTextBoxColumn34.Name = "dataGridViewTextBoxColumn34";
+            dataGridViewTextBoxColumn34.ReadOnly = true;
+            dataGridViewTextBoxColumn34.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn34.Visible = false;
+            dataGridViewTextBoxColumn34.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn6
+            // 
+            dataGridViewCheckBoxColumn6.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn6.Name = "dataGridViewCheckBoxColumn6";
+            dataGridViewCheckBoxColumn6.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn35
+            // 
+            dataGridViewTextBoxColumn35.HeaderText = "fileName";
+            dataGridViewTextBoxColumn35.Name = "dataGridViewTextBoxColumn35";
+            dataGridViewTextBoxColumn35.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn35.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn35.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn36
+            // 
+            dataGridViewTextBoxColumn36.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn36.Name = "dataGridViewTextBoxColumn36";
+            dataGridViewTextBoxColumn36.ReadOnly = true;
+            dataGridViewTextBoxColumn36.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn36.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn10
+            // 
+            dataGridViewComboBoxColumn10.HeaderText = "Type";
+            dataGridViewComboBoxColumn10.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn10.Name = "dataGridViewComboBoxColumn10";
+            dataGridViewComboBoxColumn10.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn10.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn11
+            // 
+            dataGridViewComboBoxColumn11.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn11.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn11.Name = "dataGridViewComboBoxColumn11";
+            dataGridViewComboBoxColumn11.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn11.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn37
+            // 
+            dataGridViewTextBoxColumn37.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn37.Name = "dataGridViewTextBoxColumn37";
+            dataGridViewTextBoxColumn37.ReadOnly = true;
+            dataGridViewTextBoxColumn37.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn38
+            // 
+            dataGridViewTextBoxColumn38.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn38.HeaderText = "";
+            dataGridViewTextBoxColumn38.Name = "dataGridViewTextBoxColumn38";
+            dataGridViewTextBoxColumn38.ReadOnly = true;
+            dataGridViewTextBoxColumn38.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // tpG
+            // 
+            tpG.Controls.Add(btnUPMIDIOut_G);
+            tpG.Controls.Add(btnDownMIDIOut_G);
+            tpG.Controls.Add(dgvMIDIoutListG);
+            tpG.Location = new Point(4, 24);
+            tpG.Name = "tpG";
+            tpG.Size = new Size(470, 192);
+            tpG.TabIndex = 6;
+            tpG.Text = "G";
+            tpG.UseVisualStyleBackColor = true;
+            // 
+            // btnUPMIDIOut_G
+            // 
+            btnUPMIDIOut_G.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUPMIDIOut_G.Location = new Point(440, 4);
+            btnUPMIDIOut_G.Margin = new Padding(4);
+            btnUPMIDIOut_G.Name = "btnUPMIDIOut_G";
+            btnUPMIDIOut_G.Size = new Size(26, 72);
+            btnUPMIDIOut_G.TabIndex = 4;
+            btnUPMIDIOut_G.Text = "↑";
+            btnUPMIDIOut_G.UseVisualStyleBackColor = true;
+            btnUPMIDIOut_G.Click += btnUPMIDIOut_A_Click;
+            // 
+            // btnDownMIDIOut_G
+            // 
+            btnDownMIDIOut_G.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownMIDIOut_G.Location = new Point(440, 116);
+            btnDownMIDIOut_G.Margin = new Padding(4);
+            btnDownMIDIOut_G.Name = "btnDownMIDIOut_G";
+            btnDownMIDIOut_G.Size = new Size(26, 72);
+            btnDownMIDIOut_G.TabIndex = 5;
+            btnDownMIDIOut_G.Text = "↓";
+            btnDownMIDIOut_G.UseVisualStyleBackColor = true;
+            btnDownMIDIOut_G.Click += btnDownMIDIOut_A_Click;
+            // 
+            // dgvMIDIoutListG
+            // 
+            dgvMIDIoutListG.AllowUserToAddRows = false;
+            dgvMIDIoutListG.AllowUserToDeleteRows = false;
+            dgvMIDIoutListG.AllowUserToResizeRows = false;
+            dgvMIDIoutListG.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvMIDIoutListG.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvMIDIoutListG.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn39, dataGridViewCheckBoxColumn7, dataGridViewTextBoxColumn40, dataGridViewTextBoxColumn41, dataGridViewComboBoxColumn12, dataGridViewComboBoxColumn13, dataGridViewTextBoxColumn42, dataGridViewTextBoxColumn43 });
+            dgvMIDIoutListG.Location = new Point(4, 4);
+            dgvMIDIoutListG.Margin = new Padding(4);
+            dgvMIDIoutListG.MultiSelect = false;
+            dgvMIDIoutListG.Name = "dgvMIDIoutListG";
+            dgvMIDIoutListG.RowHeadersVisible = false;
+            dgvMIDIoutListG.RowTemplate.Height = 21;
+            dgvMIDIoutListG.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMIDIoutListG.Size = new Size(428, 184);
+            dgvMIDIoutListG.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn39
+            // 
+            dataGridViewTextBoxColumn39.Frozen = true;
+            dataGridViewTextBoxColumn39.HeaderText = "ID";
+            dataGridViewTextBoxColumn39.Name = "dataGridViewTextBoxColumn39";
+            dataGridViewTextBoxColumn39.ReadOnly = true;
+            dataGridViewTextBoxColumn39.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn39.Visible = false;
+            dataGridViewTextBoxColumn39.Width = 40;
+            // 
+            // dataGridViewCheckBoxColumn7
+            // 
+            dataGridViewCheckBoxColumn7.HeaderText = "IsVST";
+            dataGridViewCheckBoxColumn7.Name = "dataGridViewCheckBoxColumn7";
+            dataGridViewCheckBoxColumn7.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn40
+            // 
+            dataGridViewTextBoxColumn40.HeaderText = "fileName";
+            dataGridViewTextBoxColumn40.Name = "dataGridViewTextBoxColumn40";
+            dataGridViewTextBoxColumn40.Resizable = DataGridViewTriState.True;
+            dataGridViewTextBoxColumn40.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn40.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn41
+            // 
+            dataGridViewTextBoxColumn41.HeaderText = "Device Name";
+            dataGridViewTextBoxColumn41.Name = "dataGridViewTextBoxColumn41";
+            dataGridViewTextBoxColumn41.ReadOnly = true;
+            dataGridViewTextBoxColumn41.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTextBoxColumn41.Width = 180;
+            // 
+            // dataGridViewComboBoxColumn12
+            // 
+            dataGridViewComboBoxColumn12.HeaderText = "Type";
+            dataGridViewComboBoxColumn12.Items.AddRange(new object[] { "GM" });
+            dataGridViewComboBoxColumn12.Name = "dataGridViewComboBoxColumn12";
+            dataGridViewComboBoxColumn12.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn12.Width = 70;
+            // 
+            // dataGridViewComboBoxColumn13
+            // 
+            dataGridViewComboBoxColumn13.HeaderText = "Before Send";
+            dataGridViewComboBoxColumn13.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            dataGridViewComboBoxColumn13.Name = "dataGridViewComboBoxColumn13";
+            dataGridViewComboBoxColumn13.Resizable = DataGridViewTriState.True;
+            dataGridViewComboBoxColumn13.SortMode = DataGridViewColumnSortMode.Automatic;
+            // 
+            // dataGridViewTextBoxColumn42
+            // 
+            dataGridViewTextBoxColumn42.HeaderText = "Manufacturer";
+            dataGridViewTextBoxColumn42.Name = "dataGridViewTextBoxColumn42";
+            dataGridViewTextBoxColumn42.ReadOnly = true;
+            dataGridViewTextBoxColumn42.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridViewTextBoxColumn43
+            // 
+            dataGridViewTextBoxColumn43.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewTextBoxColumn43.HeaderText = "";
+            dataGridViewTextBoxColumn43.Name = "dataGridViewTextBoxColumn43";
+            dataGridViewTextBoxColumn43.ReadOnly = true;
+            dataGridViewTextBoxColumn43.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // btnAddMIDIout
             // 
@@ -473,6 +1267,7 @@
             dgvMIDIinPallet.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvMIDIinPallet.Size = new Size(480, 164);
             dgvMIDIinPallet.TabIndex = 1;
+            dgvMIDIinPallet.CellMouseDoubleClick += dgvMIDIinPallet_CellMouseDoubleClick;
             // 
             // dataGridViewTextBoxColumn5
             // 
@@ -516,7 +1311,7 @@
             tbcMIDIinList.Margin = new Padding(4);
             tbcMIDIinList.Name = "tbcMIDIinList";
             tbcMIDIinList.SelectedIndex = 0;
-            tbcMIDIinList.Size = new Size(478, 227);
+            tbcMIDIinList.Size = new Size(478, 220);
             tbcMIDIinList.TabIndex = 4;
             // 
             // tabPage3
@@ -528,7 +1323,7 @@
             tabPage3.Margin = new Padding(4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(4);
-            tabPage3.Size = new Size(470, 199);
+            tabPage3.Size = new Size(470, 192);
             tabPage3.TabIndex = 0;
             tabPage3.Tag = "0";
             tabPage3.Text = "...";
@@ -549,8 +1344,9 @@
             dgvMIDIinListA.RowHeadersVisible = false;
             dgvMIDIinListA.RowTemplate.Height = 21;
             dgvMIDIinListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIinListA.Size = new Size(428, 191);
+            dgvMIDIinListA.Size = new Size(428, 184);
             dgvMIDIinListA.TabIndex = 1;
+            dgvMIDIinListA.CellMouseDoubleClick += dgvMIDIinListA_CellMouseDoubleClick;
             // 
             // dataGridViewTextBoxColumn9
             // 
@@ -622,7 +1418,7 @@
             // btnDownMIDIin_A
             // 
             btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIin_A.Location = new Point(440, 123);
+            btnDownMIDIin_A.Location = new Point(440, 116);
             btnDownMIDIin_A.Margin = new Padding(4);
             btnDownMIDIin_A.Name = "btnDownMIDIin_A";
             btnDownMIDIin_A.Size = new Size(26, 72);
@@ -712,7 +1508,7 @@
             Text = "Setting";
             tcSetting.ResumeLayout(false);
             tpOutput.ResumeLayout(false);
-            tcDeviceCategory.ResumeLayout(false);
+            tbcDeviceCategory.ResumeLayout(false);
             tpMIDIOut.ResumeLayout(false);
             scMIDIOutSplit.Panel1.ResumeLayout(false);
             scMIDIOutSplit.Panel1.PerformLayout();
@@ -721,9 +1517,21 @@
             ((System.ComponentModel.ISupportInitialize)scMIDIOutSplit).EndInit();
             scMIDIOutSplit.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvMIDIoutPallet).EndInit();
-            tbcMIDIoutList.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
+            tbcMIDIOutList.ResumeLayout(false);
+            tpA.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListA).EndInit();
+            tpB.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListB).EndInit();
+            tpC.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListC).EndInit();
+            tpD.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListD).EndInit();
+            tpE.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListE).EndInit();
+            tpF.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListF).EndInit();
+            tpG.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvMIDIoutListG).EndInit();
             tpMIDIIN.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel1.PerformLayout();
@@ -744,7 +1552,7 @@
         private TabPage tpOutput;
         private Button btnOK;
         private Button btnCancel;
-        private TabControl tcDeviceCategory;
+        private TabControl tbcDeviceCategory;
         private TabPage tpMIDIOut;
         private TabPage tpMIDIIN;
         private SplitContainer scMIDIOutSplit;
@@ -754,8 +1562,8 @@
         private DataGridViewTextBoxColumn clmDeviceName;
         private DataGridViewTextBoxColumn clmManufacturer;
         private DataGridViewTextBoxColumn clmSpacer;
-        private TabControl tbcMIDIoutList;
-        private TabPage tabPage1;
+        private TabControl tbcMIDIOutList;
+        private TabPage tpA;
         private DataGridView dgvMIDIoutListA;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewCheckBoxColumn clmIsVST;
@@ -794,5 +1602,77 @@
         private DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
+        private TabPage tpB;
+        private TabPage tpC;
+        private TabPage tpD;
+        private TabPage tpE;
+        private TabPage tpF;
+        private TabPage tpG;
+        private DataGridView dgvMIDIoutListB;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn14;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn2;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn15;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn2;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn3;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn17;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn18;
+        private DataGridView dgvMIDIoutListC;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn19;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn3;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn20;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn21;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn4;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn5;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn22;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn23;
+        private DataGridView dgvMIDIoutListD;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn24;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn4;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn25;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn26;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn6;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn7;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn27;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn28;
+        private DataGridView dgvMIDIoutListE;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn29;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn5;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn30;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn31;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn8;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn9;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn32;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn33;
+        private DataGridView dgvMIDIoutListF;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn34;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn6;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn35;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn36;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn10;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn11;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn37;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn38;
+        private DataGridView dgvMIDIoutListG;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn39;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn7;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn40;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn41;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn12;
+        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn13;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn42;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn43;
+        private Button btnUPMIDIOut_B;
+        private Button btnDownMIDIOut_B;
+        private Button btnUPMIDIOut_C;
+        private Button btnDownMIDIOut_C;
+        private Button btnUPMIDIOut_D;
+        private Button btnDownMIDIOut_D;
+        private Button btnUPMIDIOut_E;
+        private Button btnDownMIDIOut_E;
+        private Button button9;
+        private Button btnDownMIDIOut_F;
+        private Button btnUPMIDIOut_G;
+        private Button btnDownMIDIOut_G;
     }
 }

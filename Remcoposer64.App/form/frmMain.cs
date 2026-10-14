@@ -121,6 +121,11 @@ namespace Remcoposer64.App
             setting = frm.GetSetting();
             setting.Save();
 
+            SetDevice();
+        }
+
+        private void SetDevice()
+        { 
             // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
             player.StopPlayback();
             player.Close();
@@ -136,7 +141,11 @@ namespace Remcoposer64.App
                     LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
                     MIDITrack trk = trkNode.Value;
                     Setting.MidiOut mo = setting.midiOut;
-                    row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                    if (mo.lstMidiOutInfo.Count > mo.CurrentDev
+                        && mo.lstMidiOutInfo[mo.CurrentDev] != null)
+                    {
+                        row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                    }
                 }
             }
 
@@ -178,6 +187,130 @@ namespace Remcoposer64.App
             currentProject = (MIDIProject)tp.Tag;
         }
 
+        private void tsmiSaveSequenceFile_Click(object sender, EventArgs e)
+        {
+            TabPage? tab = tabControl1.SelectedTab;
+            if (tab == null) return;
+            MIDIProject prj = (MIDIProject)tab.Tag;
+            string fn = prj.Information.FileFullName;
+
+            var sfd = new SaveFileDialog();
+            sfd.FileName = fn;
+            sfd.Filter = "RMC Files (*.rmc)|*.rmc";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            prj.Save(sfd.FileName);
+
+            prj.Information.FileFullName = sfd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
+            tab.Text = prj.Information.FileName;
+        }
+
+        private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            // プロジェクトをロード
+            MIDIProject prj = MIDIProject.Load(ofd.FileName);
+            if (prj == null)
+            {
+                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
+                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // タブを作成
+            TabPage tab = new TabPage();
+            tab.Tag = prj;
+            tab.Text = prj.Information.FileName;
+
+            // プロジェクトの UI を構築（あなたの既存関数）
+            AddProjectTab(prj);
+
+            // ファイル名を更新
+            prj.Information.FileFullName = ofd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+        }
+
+        private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
+        {
+            opePanel.Show();
+            opePanel.BringToFront();
+        }
+
+        private void tsmiOpenInformation_Click(object sender, EventArgs e)
+        {
+            var info = new frmInformation(currentProject);
+            info.Show();
+        }
+
+        internal void tsmiPlay_Click(object sender, EventArgs e)
+        {
+            Play();
+        }
+
+        private void tsmiStop_Click(object sender, EventArgs e)
+        {
+            Stop();
+        }
+
+        private void tsbMIDIOut_A_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_A);
+            setting.midiOut.CurrentDev = 0;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_B_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_B);
+            setting.midiOut.CurrentDev = 1;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_C_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_C);
+            setting.midiOut.CurrentDev = 2;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_D_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_D);
+            setting.midiOut.CurrentDev = 3;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_E_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_E);
+            setting.midiOut.CurrentDev = 4;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_F_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_F);
+            setting.midiOut.CurrentDev = 5;
+            SetDevice();
+        }
+
+        private void tsbMIDIOut_G_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(tsbMIDIOut_G);
+            setting.midiOut.CurrentDev = 6;
+            SetDevice();
+        }
+
+
+
+
 
 
         private void Initial()
@@ -199,6 +332,32 @@ namespace Remcoposer64.App
 
             undoMng = new UndoRedoManager.UndoRedoManager();
             player = new RmPlayer(setting);
+
+            switch (setting.midiOut.CurrentDev)
+            {
+                case 0:
+                default:
+                    SelectPresetButton(tsbMIDIOut_A);
+                    break;
+                case 1:
+                    SelectPresetButton(tsbMIDIOut_B);
+                    break;
+                case 2:
+                    SelectPresetButton(tsbMIDIOut_C);
+                    break;
+                case 3:
+                    SelectPresetButton(tsbMIDIOut_D);
+                    break;
+                case 4:
+                    SelectPresetButton(tsbMIDIOut_E);
+                    break;
+                case 5:
+                    SelectPresetButton(tsbMIDIOut_F);
+                    break;
+                case 6:
+                    SelectPresetButton(tsbMIDIOut_G);
+                    break;
+            }
         }
 
         private void ImportMidiFile()
@@ -349,76 +508,16 @@ namespace Remcoposer64.App
             return new string('●', count);
         }
 
-        private void tsmiSaveSequenceFile_Click(object sender, EventArgs e)
+        private void SelectPresetButton(ToolStripButton selected)
         {
-            TabPage? tab = tabControl1.SelectedTab;
-            if (tab == null) return;
-            MIDIProject prj = (MIDIProject)tab.Tag;
-            string fn = prj.Information.FileFullName;
-
-            var sfd = new SaveFileDialog();
-            sfd.FileName = fn;
-            sfd.Filter = "RMC Files (*.rmc)|*.rmc";
-            if (sfd.ShowDialog() != DialogResult.OK)
-                return;
-
-            prj.Save(sfd.FileName);
-
-            prj.Information.FileFullName = sfd.FileName;
-            prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
-            tab.Text = prj.Information.FileName;
-        }
-
-        private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
-        {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
-
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            // プロジェクトをロード
-            MIDIProject prj = MIDIProject.Load(ofd.FileName);
-            if (prj == null)
+            foreach (ToolStripItem item in toolStrip1.Items)
             {
-                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
-                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (item is ToolStripButton btn)
+                {
+                    btn.Checked = (btn == selected);
+                }
             }
-
-            // タブを作成
-            TabPage tab = new TabPage();
-            tab.Tag = prj;
-            tab.Text = prj.Information.FileName;
-
-            // プロジェクトの UI を構築（あなたの既存関数）
-            AddProjectTab(prj);
-
-            // ファイル名を更新
-            prj.Information.FileFullName = ofd.FileName;
-            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
         }
 
-        private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
-        {
-            opePanel.Show();
-            opePanel.BringToFront();
-        }
-
-        private void tsmiOpenInformation_Click(object sender, EventArgs e)
-        {
-            var info = new frmInformation(currentProject);
-            info.Show();
-        }
-
-        internal void tsmiPlay_Click(object sender, EventArgs e)
-        {
-            Play();
-        }
-
-        private void tsmiStop_Click(object sender, EventArgs e)
-        {
-            Stop();
-        }
     }
 }

@@ -50,13 +50,16 @@ namespace Remcoposer64.Core.Player
             FireFrameProcess = 0;
             IsFinished = true;
 
-            dicNoteOnTable = new Dictionary<int, long>[_midiOutInfo.Length][];
-            for(int i = 0; i < _midiOutInfo.Length; i++)
+            if (_midiOutInfo != null)
             {
-                dicNoteOnTable[i] = new Dictionary<int, long>[16];
-                for (int j = 0; j < 16; j++)
+                dicNoteOnTable = new Dictionary<int, long>[_midiOutInfo.Length][];
+                for (int i = 0; i < _midiOutInfo.Length; i++)
                 {
-                    dicNoteOnTable[i][j] = new Dictionary<int, long>();
+                    dicNoteOnTable[i] = new Dictionary<int, long>[16];
+                    for (int j = 0; j < 16; j++)
+                    {
+                        dicNoteOnTable[i][j] = new Dictionary<int, long>();
+                    }
                 }
             }
 
@@ -285,6 +288,8 @@ namespace Remcoposer64.Core.Player
             MIDIEvent evt = nEvt.Value;
 
             MidiOut midiOut = null;
+            if (midiOutDevice == null) return nEvt.Next;
+
             if (trk.OutDevice < midiOutDevice.Length)
                 midiOut = midiOutDevice[trk.OutDevice];
             int? channel = trk.OutChannel;
@@ -641,6 +646,9 @@ namespace Remcoposer64.Core.Player
 
         private void ProcessNoteOff()
         {
+            if (dicNoteOnTable == null) return;
+            if (midiOutDevice == null) return;
+
             for (int device = 0; device < dicNoteOnTable.Length; device++)
             {
                 for (int ch = 0; ch < dicNoteOnTable[device].Length; ch++)

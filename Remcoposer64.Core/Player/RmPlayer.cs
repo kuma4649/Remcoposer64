@@ -1,4 +1,5 @@
-﻿using Remcoposer64.Common;
+﻿using Remcomposer64.Core;
+using Remcoposer64.Common;
 using Remcoposer64.Core.Timer;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
@@ -9,6 +10,8 @@ namespace Remcoposer64.Core.Player
 {
     public class RmPlayer
     {
+        private MidiDeviceManager _deviceManager;
+
         private static MusicPlayer musicPlayer = new();
         private static PreviewPlayer previewPlayer = new();
         private static MidiKeyboardPlayer midiKeyboardPlayer = new();
@@ -38,6 +41,8 @@ namespace Remcoposer64.Core.Player
 
         public RmPlayer(Setting setting)
         {
+            _deviceManager = new MidiDeviceManager();
+
             if (setting.midiOut == null) 
                 setting.midiOut = new();
             _midiOut = setting.midiOut;
@@ -48,7 +53,10 @@ namespace Remcoposer64.Core.Player
             }
             else
             {
-                currentMidiOut = _midiOut.lstMidiOutInfo[_midiOut.CurrentDev];
+                if (_midiOut.lstMidiOutInfo.Count > _midiOut.CurrentDev)
+                    currentMidiOut = _midiOut.lstMidiOutInfo[_midiOut.CurrentDev];
+                else
+                    currentMidiOut = null;
             }
 
             if (setting.midiIn == null) 
@@ -61,8 +69,10 @@ namespace Remcoposer64.Core.Player
             }
             else
             {
-                currentMidiIn = _midiIn.lstMidiInInfo[_midiIn.CurrentDev];
+                if (_midiIn.lstMidiInInfo.Count > _midiIn.CurrentDev)
+                    currentMidiIn = _midiIn.lstMidiInInfo[_midiIn.CurrentDev];
             }
+
             State = PlayerState.Stopped;
 
             if (currentMidiOut != null && currentMidiOut.Length > 0)
@@ -72,7 +82,7 @@ namespace Remcoposer64.Core.Player
                 {
                     try
                     {
-                        midiOutDev[i] = new NAudio.Midi.MidiOut(currentMidiOut[i].id);
+                        midiOutDev[i] = _deviceManager.GetMIDIOutDevice(currentMidiOut[i].name);
                     }
                     catch
                     {
@@ -88,7 +98,7 @@ namespace Remcoposer64.Core.Player
                 {
                     try
                     {
-                        midiInDev[i] = new NAudio.Midi.MidiIn(currentMidiIn[i].id);
+                        midiInDev[i] = _deviceManager.GetMIDIInDevice(currentMidiIn[i].name);
                     }
                     catch
                     {
@@ -180,6 +190,7 @@ namespace Remcoposer64.Core.Player
         public void SendAllSoundOff()
         {
             if(currentMidiOut == null || currentMidiOut.Length < 1) return;
+            if (midiOutDev == null) return;
             foreach (var midiOut in midiOutDev)
             {
                 if (midiOut == null) continue;
@@ -224,29 +235,9 @@ namespace Remcoposer64.Core.Player
             }
             catch { }
 
-            if (midiOutDev != null)
-            {
-                for (int i = 0; i < midiOutDev.Length; i++)
-                {
-                    try
-                    {
-                        midiOutDev[i]?.Dispose();
-                    }
-                    catch { }
-                }
-            }
-
-            if (midiInDev != null)
-            {
-                for (int i = 0; i < midiInDev.Length; i++)
-                {
-                    try
-                    {
-                        midiInDev[i]?.Dispose();
-                    }
-                    catch { }
-                }
-            }
+            _deviceManager.CloseAll();
+            midiOutDev = null;
+            midiInDev = null;
 
             _timer.Dispose();
         }
@@ -290,5 +281,6 @@ namespace Remcoposer64.Core.Player
         {
             return musicPlayer.GetTick();
         }
+
     }
 }

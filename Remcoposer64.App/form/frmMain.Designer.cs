@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             tsmiNewSequence = new ToolStripMenuItem();
@@ -41,7 +42,9 @@
             toolStripSeparator2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
-            //tsmiPlay_ = new ToolStripMenuItem();
+            transportToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPlay = new ToolStripMenuItem();
+            tsmiStop = new ToolStripMenuItem();
             toolToolStripMenuItem = new ToolStripMenuItem();
             tsmiSetting = new ToolStripMenuItem();
             windowToolStripMenuItem = new ToolStripMenuItem();
@@ -51,13 +54,20 @@
             tsmiShowConsole = new ToolStripMenuItem();
             tabControl1 = new TabControl();
             toolStripContainer2 = new ToolStripContainer();
-            transportToolStripMenuItem = new ToolStripMenuItem();
-            tsmiPlay = new ToolStripMenuItem();
-            tsmiStop = new ToolStripMenuItem();
+            toolStrip1 = new ToolStrip();
+            toolStripLabel1 = new ToolStripLabel();
+            tsbMIDIOut_A = new ToolStripButton();
+            tsbMIDIOut_B = new ToolStripButton();
+            tsbMIDIOut_C = new ToolStripButton();
+            tsbMIDIOut_D = new ToolStripButton();
+            tsbMIDIOut_E = new ToolStripButton();
+            tsbMIDIOut_F = new ToolStripButton();
+            tsbMIDIOut_G = new ToolStripButton();
             menuStrip1.SuspendLayout();
             toolStripContainer2.ContentPanel.SuspendLayout();
             toolStripContainer2.TopToolStripPanel.SuspendLayout();
             toolStripContainer2.SuspendLayout();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -141,17 +151,32 @@
             // 
             // editToolStripMenuItem
             // 
-            //editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay_ });
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "&Edit";
-             
-            // tsmiPlay_
-             
-            //tsmiPlay_.Name = "tsmiPlay_";
-            //tsmiPlay_.Size = new Size(96, 22);
-            //tsmiPlay_.Text = "&Play";
-            //tsmiPlay_.Click += tsmiPlay_Click;
+            // 
+            // transportToolStripMenuItem
+            // 
+            transportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay, tsmiStop });
+            transportToolStripMenuItem.Name = "transportToolStripMenuItem";
+            transportToolStripMenuItem.Size = new Size(68, 20);
+            transportToolStripMenuItem.Text = "Transport";
+            // 
+            // tsmiPlay
+            // 
+            tsmiPlay.Name = "tsmiPlay";
+            tsmiPlay.ShortcutKeys = Keys.F5;
+            tsmiPlay.Size = new Size(123, 22);
+            tsmiPlay.Text = "&Play";
+            tsmiPlay.Click += tsmiPlay_Click;
+            // 
+            // tsmiStop
+            // 
+            tsmiStop.Name = "tsmiStop";
+            tsmiStop.ShortcutKeys = Keys.F10;
+            tsmiStop.Size = new Size(123, 22);
+            tsmiStop.Text = "&Stop";
+            tsmiStop.Click += tsmiStop_Click;
             // 
             // toolToolStripMenuItem
             // 
@@ -163,7 +188,7 @@
             // tsmiSetting
             // 
             tsmiSetting.Name = "tsmiSetting";
-            tsmiSetting.Size = new Size(180, 22);
+            tsmiSetting.Size = new Size(111, 22);
             tsmiSetting.Text = "Setting";
             tsmiSetting.Click += tsmiSetting_Click;
             // 
@@ -177,14 +202,14 @@
             // tsmiOpenOpePanel
             // 
             tsmiOpenOpePanel.Name = "tsmiOpenOpePanel";
-            tsmiOpenOpePanel.Size = new Size(180, 22);
+            tsmiOpenOpePanel.Size = new Size(168, 22);
             tsmiOpenOpePanel.Text = "Open OpePanel";
             tsmiOpenOpePanel.Click += tsmiOpenOpePanel_Click;
             // 
             // tsmiOpenInformation
             // 
             tsmiOpenInformation.Name = "tsmiOpenInformation";
-            tsmiOpenInformation.Size = new Size(180, 22);
+            tsmiOpenInformation.Size = new Size(168, 22);
             tsmiOpenInformation.Text = "Open Information";
             tsmiOpenInformation.Click += tsmiOpenInformation_Click;
             // 
@@ -208,7 +233,7 @@
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(800, 514);
+            tabControl1.Size = new Size(800, 489);
             tabControl1.TabIndex = 1;
             tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
@@ -218,7 +243,7 @@
             // toolStripContainer2.ContentPanel
             // 
             toolStripContainer2.ContentPanel.Controls.Add(tabControl1);
-            toolStripContainer2.ContentPanel.Size = new Size(800, 514);
+            toolStripContainer2.ContentPanel.Size = new Size(800, 489);
             toolStripContainer2.Dock = DockStyle.Fill;
             toolStripContainer2.Location = new Point(0, 0);
             toolStripContainer2.Name = "toolStripContainer2";
@@ -229,29 +254,100 @@
             // toolStripContainer2.TopToolStripPanel
             // 
             toolStripContainer2.TopToolStripPanel.Controls.Add(menuStrip1);
+            toolStripContainer2.TopToolStripPanel.Controls.Add(toolStrip1);
             // 
-            // transportToolStripMenuItem
+            // toolStrip1
             // 
-            transportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay, tsmiStop });
-            transportToolStripMenuItem.Name = "transportToolStripMenuItem";
-            transportToolStripMenuItem.Size = new Size(68, 20);
-            transportToolStripMenuItem.Text = "Transport";
+            toolStrip1.Dock = DockStyle.None;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, tsbMIDIOut_A, tsbMIDIOut_B, tsbMIDIOut_C, tsbMIDIOut_D, tsbMIDIOut_E, tsbMIDIOut_F, tsbMIDIOut_G });
+            toolStrip1.Location = new Point(3, 24);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(254, 25);
+            toolStrip1.TabIndex = 1;
             // 
-            // tsmiPlay
+            // toolStripLabel1
             // 
-            tsmiPlay.Name = "tsmiPlay";
-            tsmiPlay.ShortcutKeys = Keys.F5;
-            tsmiPlay.Size = new Size(180, 22);
-            tsmiPlay.Text = "&Play";
-            tsmiPlay.Click += tsmiPlay_Click;
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(50, 22);
+            toolStripLabel1.Text = "MIDIout";
             // 
-            // tsmiStop
+            // tsbMIDIOut_A
             // 
-            tsmiStop.Name = "tsmiStop";
-            tsmiStop.ShortcutKeys = Keys.F10;
-            tsmiStop.Size = new Size(180, 22);
-            tsmiStop.Text = "&Stop";
-            tsmiStop.Click += tsmiStop_Click;
+            tsbMIDIOut_A.CheckOnClick = true;
+            tsbMIDIOut_A.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_A.Image = (Image)resources.GetObject("tsbMIDIOut_A.Image");
+            tsbMIDIOut_A.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_A.Name = "tsbMIDIOut_A";
+            tsbMIDIOut_A.Size = new Size(23, 22);
+            tsbMIDIOut_A.Text = "A";
+            tsbMIDIOut_A.TextImageRelation = TextImageRelation.TextBeforeImage;
+            tsbMIDIOut_A.Click += tsbMIDIOut_A_Click;
+            // 
+            // tsbMIDIOut_B
+            // 
+            tsbMIDIOut_B.CheckOnClick = true;
+            tsbMIDIOut_B.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_B.Image = (Image)resources.GetObject("tsbMIDIOut_B.Image");
+            tsbMIDIOut_B.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_B.Name = "tsbMIDIOut_B";
+            tsbMIDIOut_B.Size = new Size(23, 22);
+            tsbMIDIOut_B.Text = "B";
+            tsbMIDIOut_B.Click += tsbMIDIOut_B_Click;
+            // 
+            // tsbMIDIOut_C
+            // 
+            tsbMIDIOut_C.CheckOnClick = true;
+            tsbMIDIOut_C.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_C.Image = (Image)resources.GetObject("tsbMIDIOut_C.Image");
+            tsbMIDIOut_C.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_C.Name = "tsbMIDIOut_C";
+            tsbMIDIOut_C.Size = new Size(23, 22);
+            tsbMIDIOut_C.Text = "C";
+            tsbMIDIOut_C.Click += tsbMIDIOut_C_Click;
+            // 
+            // tsbMIDIOut_D
+            // 
+            tsbMIDIOut_D.CheckOnClick = true;
+            tsbMIDIOut_D.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_D.Image = (Image)resources.GetObject("tsbMIDIOut_D.Image");
+            tsbMIDIOut_D.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_D.Name = "tsbMIDIOut_D";
+            tsbMIDIOut_D.Size = new Size(23, 22);
+            tsbMIDIOut_D.Text = "D";
+            tsbMIDIOut_D.Click += tsbMIDIOut_D_Click;
+            // 
+            // tsbMIDIOut_E
+            // 
+            tsbMIDIOut_E.CheckOnClick = true;
+            tsbMIDIOut_E.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_E.Image = (Image)resources.GetObject("tsbMIDIOut_E.Image");
+            tsbMIDIOut_E.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_E.Name = "tsbMIDIOut_E";
+            tsbMIDIOut_E.Size = new Size(23, 22);
+            tsbMIDIOut_E.Text = "E";
+            tsbMIDIOut_E.Click += tsbMIDIOut_E_Click;
+            // 
+            // tsbMIDIOut_F
+            // 
+            tsbMIDIOut_F.CheckOnClick = true;
+            tsbMIDIOut_F.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_F.Image = (Image)resources.GetObject("tsbMIDIOut_F.Image");
+            tsbMIDIOut_F.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_F.Name = "tsbMIDIOut_F";
+            tsbMIDIOut_F.Size = new Size(23, 22);
+            tsbMIDIOut_F.Text = "F";
+            tsbMIDIOut_F.Click += tsbMIDIOut_F_Click;
+            // 
+            // tsbMIDIOut_G
+            // 
+            tsbMIDIOut_G.CheckOnClick = true;
+            tsbMIDIOut_G.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbMIDIOut_G.Image = (Image)resources.GetObject("tsbMIDIOut_G.Image");
+            tsbMIDIOut_G.ImageTransparentColor = Color.Magenta;
+            tsbMIDIOut_G.Name = "tsbMIDIOut_G";
+            tsbMIDIOut_G.Size = new Size(23, 22);
+            tsbMIDIOut_G.Text = "G";
+            tsbMIDIOut_G.Click += tsbMIDIOut_G_Click;
             // 
             // frmMain
             // 
@@ -269,6 +365,8 @@
             toolStripContainer2.TopToolStripPanel.PerformLayout();
             toolStripContainer2.ResumeLayout(false);
             toolStripContainer2.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -300,5 +398,14 @@
         private ToolStripMenuItem transportToolStripMenuItem;
         private ToolStripMenuItem tsmiPlay;
         private ToolStripMenuItem tsmiStop;
+        private ToolStrip toolStrip1;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripButton tsbMIDIOut_A;
+        private ToolStripButton tsbMIDIOut_B;
+        private ToolStripButton tsbMIDIOut_C;
+        private ToolStripButton tsbMIDIOut_D;
+        private ToolStripButton tsbMIDIOut_E;
+        private ToolStripButton tsbMIDIOut_F;
+        private ToolStripButton tsbMIDIOut_G;
     }
 }
