@@ -10,6 +10,7 @@ namespace Remcoposer64.Common
     {
         public static readonly string AssemblyTitle = "Remcoposer64";
         public static readonly string cntSettingFileName = "Setting.xml";
+        public static readonly string cntLayoutFileName = "layout.xml";
         public static readonly string cntLogFilename = "log.txt";
         public static readonly string cntTimeFormat="yyMMddHHmmssfff";
         public static readonly string cntExceptionFormat= "例外発生:\r\n- Type ------\r\n{0}\r\n- Message ------\r\n{1}\r\n- Source ------\r\n{2}\r\n- StackTrace ------\r\n{3}\r\n";

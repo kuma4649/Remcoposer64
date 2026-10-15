@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App
 {
@@ -16,6 +17,8 @@ namespace Remcoposer64.App
         private List<MIDIProject> projects = new List<MIDIProject>();
         private MIDIProject currentProject = null;
         private RmPlayer player = null;
+
+        private List<frmProject> fProjects = new List<frmProject>();
 
         public frmMain()
         {
@@ -125,13 +128,13 @@ namespace Remcoposer64.App
         }
 
         private void SetDevice()
-        { 
+        {
             // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
             player.StopPlayback();
             player.Close();
 
             // MIDIデバイスの表示を更新する
-            foreach (TabPage tab in tabControl1.TabPages)
+            foreach (frmProject tab in fProjects)
             {
                 MIDIProject project = (MIDIProject)tab.Tag;
                 DataGridView dgv = (DataGridView)tab.Controls[0];
@@ -171,27 +174,21 @@ namespace Remcoposer64.App
             player.StopPlayback();
             player.Close();
 
+            try
+            {
+                string fullPath = Common.Common.settingFilePath;
+                fullPath = Path.Combine(fullPath, Common.Common.cntLayoutFileName);
+                dockPanel1.SaveAsXml(fullPath);
+            }
+            catch { }
+
             base.OnFormClosing(e);
             setting.Save();
         }
 
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (tabControl1.SelectedTab == null)
-            {
-                currentProject = null;
-                return;
-            }
-
-            TabPage tp = tabControl1.SelectedTab;
-            currentProject = (MIDIProject)tp.Tag;
-        }
-
         private void tsmiSaveSequenceFile_Click(object sender, EventArgs e)
         {
-            TabPage? tab = tabControl1.SelectedTab;
-            if (tab == null) return;
-            MIDIProject prj = (MIDIProject)tab.Tag;
+            MIDIProject prj = currentProject;
             string fn = prj.Information.FileFullName;
 
             var sfd = new SaveFileDialog();
@@ -204,7 +201,7 @@ namespace Remcoposer64.App
 
             prj.Information.FileFullName = sfd.FileName;
             prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
-            tab.Text = prj.Information.FileName;
+            ((frmProject)currentProject.parentForm).Text = prj.Information.FileName;
         }
 
         private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
@@ -246,7 +243,8 @@ namespace Remcoposer64.App
         private void tsmiOpenInformation_Click(object sender, EventArgs e)
         {
             var info = new frmInformation(currentProject);
-            info.Show();
+            info.Show(dockPanel1, new Rectangle(0,0, 640, 480));
+            info.Size = new Size(640, 480);
         }
 
         internal void tsmiPlay_Click(object sender, EventArgs e)
@@ -317,18 +315,11 @@ namespace Remcoposer64.App
         {
             InitializeComponent();
 
+            dockPanel1.Theme = vS2015DarkTheme1;
+
             Common.Common.SetExecutablePath(Application.ExecutablePath);
             setting = Setting.Load();
 
-            console = new frmConsole(setting);
-#if DEBUG
-            console.Show();
-            console.BringToFront();
-#endif
-
-            opePanel = new frmOpePanel(this);
-            opePanel.Show();
-            opePanel.TopMost = true;
 
             undoMng = new UndoRedoManager.UndoRedoManager();
             player = new RmPlayer(setting);
@@ -358,6 +349,8 @@ namespace Remcoposer64.App
                     SelectPresetButton(tsbMIDIOut_G);
                     break;
             }
+
+            RestoreLayout();
         }
 
         private void ImportMidiFile()
@@ -403,16 +396,18 @@ namespace Remcoposer64.App
             currentProject = project;
 
             AddProjectTab(project);
-            UpdateInformation(project);
+            //UpdateInformation(project);
         }
 
         private void AddProjectTab(MIDIProject project)
         {
             // 新しいタブページを作成
-            TabPage tab = new TabPage(project.Information.FileName);
+            frmProject tab = new frmProject(this,project);
+            tab.Text = project.Information.FileName;
 
             // プロジェクトをタブに紐づける
             tab.Tag = project;
+            project.parentForm = tab;
 
             DataGridView dgvTracks = new DataGridView();
             dgvTracks.Dock = DockStyle.Fill;
@@ -450,7 +445,8 @@ namespace Remcoposer64.App
                     return;
 
                 frmStepEditor frm = new frmStepEditor(trk, part.Value, undoMng);
-                frm.Show();
+                frm.Show(dockPanel1,new Rectangle(0,0, 816, 480));
+                frm.Size = new Size(816, 480);
             };
 
             dgvTracks.Rows.Clear();
@@ -483,16 +479,17 @@ namespace Remcoposer64.App
             tab.Controls.Add(dgvTracks);
 
             // タブを追加
-            tabControl1.TabPages.Add(tab);
+            tab.Show(dockPanel1, DockState.Document);
 
             // そのタブを選択
-            tabControl1.SelectedTab = tab;
+            tab.Activate();
         }
 
         private void UpdateInformation(MIDIProject project)
         {
             frmInformation info = new frmInformation(project);
-            info.Show();
+            info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
+            info.Size = new Size(640, 480);
         }
 
         private string MakePartDots(MIDITrack trk)
@@ -517,6 +514,65 @@ namespace Remcoposer64.App
                     btn.Checked = (btn == selected);
                 }
             }
+        }
+
+        private void dockPanel1_ActiveContentChanged(object sender, EventArgs e)
+        {
+            var active = dockPanel1.ActiveContent as frmProject;
+            if (active != null)
+            {
+                currentProject = (MIDIProject)active.Tag;
+                // StepEditor がアクティブ
+            }
+        }
+
+        private void dockPanel1_ActiveDocumentChanged(object sender, EventArgs e)
+        {
+            var active = dockPanel1.ActiveDocument as frmProject;
+            if (active != null)
+            {
+                currentProject = (MIDIProject)active.Tag;
+            }
+        }
+
+        public void CloseProject(MIDIProject project)
+        {
+            if (currentProject == project)
+            {
+                currentProject = null;
+            }
+        }
+
+
+        private void RestoreLayout()
+        {
+            console = new frmConsole(setting);
+            opePanel = new frmOpePanel(this);
+
+            string fullPath = Path.Combine(Common.Common.settingFilePath,
+                                Common.Common.cntLayoutFileName);
+            if (File.Exists(fullPath))
+                dockPanel1.LoadFromXml(fullPath, DeserializeDockContent);
+
+            if (console.DockState == DockState.Unknown)
+            {
+                console.Show(dockPanel1, new Rectangle(0, 0, 816, 489));
+                console.Size = new Size(816, 489);
+            }
+
+            if (opePanel.DockState == DockState.Unknown)
+            {
+                opePanel.Show(dockPanel1, new Rectangle(0,0, 372, 121));
+                opePanel.Size = new Size(372, 121);
+            }
+        }
+
+        private IDockContent DeserializeDockContent(string persistString)
+        {
+            if (persistString.IndexOf("frmConsole") >= 0) return console;
+            if (persistString.IndexOf("frmOpePanel") >= 0) return opePanel;
+
+            return null;
         }
 
     }

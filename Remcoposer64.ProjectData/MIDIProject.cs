@@ -111,6 +111,8 @@ namespace Remcoposer64.ProjectData
             }
         }
 
+        public object parentForm { get; set; }
+
         public MIDIProject()
         {
         }

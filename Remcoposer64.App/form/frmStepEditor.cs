@@ -3,10 +3,11 @@ using Remcoposer64.StepEditorPanelControl;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.SysExEditorPanel;
 using System.Runtime.InteropServices;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App.form
 {
-    public partial class frmStepEditor : Form
+    public partial class frmStepEditor : DockContent
     {
         private MIDITrack trk;
         private MIDIPart prt;

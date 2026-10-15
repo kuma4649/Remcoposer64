@@ -1,9 +1,10 @@
-﻿using Remcoposer64.Core;
-using Remcoposer64.Common;
+﻿using Remcoposer64.Common;
+using Remcoposer64.Core;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App
 {
-    public partial class frmConsole : Form
+    public partial class frmConsole : DockContent
     {
         private Setting setting;
 

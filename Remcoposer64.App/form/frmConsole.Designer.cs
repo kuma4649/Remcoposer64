@@ -45,10 +45,12 @@ namespace Remcoposer64.App
             // tbLog
             // 
             tbLog.BackColor = Color.Black;
+            tbLog.BorderStyle = BorderStyle.None;
             tbLog.Dock = DockStyle.Fill;
             tbLog.Font = new Font("Consolas", 9F, FontStyle.Bold);
             tbLog.ForeColor = Color.SlateBlue;
             tbLog.Location = new Point(0, 24);
+            tbLog.Margin = new Padding(0);
             tbLog.Multiline = true;
             tbLog.Name = "tbLog";
             tbLog.ScrollBars = ScrollBars.Both;
@@ -116,9 +118,11 @@ namespace Remcoposer64.App
             // frmConsole
             // 
             AutoScaleMode = AutoScaleMode.None;
+            BackColor = Color.Black;
             ClientSize = new Size(800, 450);
             Controls.Add(tbLog);
             Controls.Add(menuStrip1);
+            ForeColor = SystemColors.ControlLightLight;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "frmConsole";

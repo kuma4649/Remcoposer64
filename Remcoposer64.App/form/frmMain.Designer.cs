@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -52,8 +53,7 @@
             tsmiOpenInformation = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             tsmiShowConsole = new ToolStripMenuItem();
-            tabControl1 = new TabControl();
-            toolStripContainer2 = new ToolStripContainer();
+            statusStrip1 = new StatusStrip();
             toolStrip1 = new ToolStrip();
             toolStripLabel1 = new ToolStripLabel();
             tsbMIDIOut_A = new ToolStripButton();
@@ -63,11 +63,16 @@
             tsbMIDIOut_E = new ToolStripButton();
             tsbMIDIOut_F = new ToolStripButton();
             tsbMIDIOut_G = new ToolStripButton();
+            dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
+            visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(components);
+            toolStripContainer1 = new ToolStripContainer();
             menuStrip1.SuspendLayout();
-            toolStripContainer2.ContentPanel.SuspendLayout();
-            toolStripContainer2.TopToolStripPanel.SuspendLayout();
-            toolStripContainer2.SuspendLayout();
             toolStrip1.SuspendLayout();
+            toolStripContainer1.BottomToolStripPanel.SuspendLayout();
+            toolStripContainer1.ContentPanel.SuspendLayout();
+            toolStripContainer1.TopToolStripPanel.SuspendLayout();
+            toolStripContainer1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -227,34 +232,13 @@
             tsmiShowConsole.Text = "Show Console";
             tsmiShowConsole.Click += tsmiShowConsole_Click;
             // 
-            // tabControl1
+            // statusStrip1
             // 
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.Location = new Point(0, 0);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(800, 489);
-            tabControl1.TabIndex = 1;
-            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
-            // 
-            // toolStripContainer2
-            // 
-            // 
-            // toolStripContainer2.ContentPanel
-            // 
-            toolStripContainer2.ContentPanel.Controls.Add(tabControl1);
-            toolStripContainer2.ContentPanel.Size = new Size(800, 489);
-            toolStripContainer2.Dock = DockStyle.Fill;
-            toolStripContainer2.Location = new Point(0, 0);
-            toolStripContainer2.Name = "toolStripContainer2";
-            toolStripContainer2.Size = new Size(800, 538);
-            toolStripContainer2.TabIndex = 3;
-            toolStripContainer2.Text = "toolStripContainer2";
-            // 
-            // toolStripContainer2.TopToolStripPanel
-            // 
-            toolStripContainer2.TopToolStripPanel.Controls.Add(menuStrip1);
-            toolStripContainer2.TopToolStripPanel.Controls.Add(toolStrip1);
+            statusStrip1.Dock = DockStyle.None;
+            statusStrip1.Location = new Point(0, 0);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(800, 22);
+            statusStrip1.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -262,7 +246,7 @@
             toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, tsbMIDIOut_A, tsbMIDIOut_B, tsbMIDIOut_C, tsbMIDIOut_D, tsbMIDIOut_E, tsbMIDIOut_F, tsbMIDIOut_G });
             toolStrip1.Location = new Point(3, 24);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(254, 25);
+            toolStrip1.Size = new Size(223, 25);
             toolStrip1.TabIndex = 1;
             // 
             // toolStripLabel1
@@ -349,24 +333,63 @@
             tsbMIDIOut_G.Text = "G";
             tsbMIDIOut_G.Click += tsbMIDIOut_G_Click;
             // 
+            // dockPanel1
+            // 
+            dockPanel1.Dock = DockStyle.Fill;
+            dockPanel1.Location = new Point(0, 0);
+            dockPanel1.Name = "dockPanel1";
+            dockPanel1.Size = new Size(800, 467);
+            dockPanel1.TabIndex = 4;
+            dockPanel1.ActiveDocumentChanged += dockPanel1_ActiveDocumentChanged;
+            dockPanel1.ActiveContentChanged += dockPanel1_ActiveContentChanged;
+            // 
+            // visualStudioToolStripExtender1
+            // 
+            visualStudioToolStripExtender1.DefaultRenderer = null;
+            // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.BottomToolStripPanel
+            // 
+            toolStripContainer1.BottomToolStripPanel.Controls.Add(statusStrip1);
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            toolStripContainer1.ContentPanel.Controls.Add(dockPanel1);
+            toolStripContainer1.ContentPanel.Size = new Size(800, 467);
+            toolStripContainer1.Dock = DockStyle.Fill;
+            toolStripContainer1.Location = new Point(0, 0);
+            toolStripContainer1.Name = "toolStripContainer1";
+            toolStripContainer1.Size = new Size(800, 538);
+            toolStripContainer1.TabIndex = 5;
+            toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
+            toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip1);
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 538);
-            Controls.Add(toolStripContainer2);
+            Controls.Add(toolStripContainer1);
             MainMenuStrip = menuStrip1;
             Name = "frmMain";
             Text = "Remcoposer64";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
-            toolStripContainer2.ContentPanel.ResumeLayout(false);
-            toolStripContainer2.TopToolStripPanel.ResumeLayout(false);
-            toolStripContainer2.TopToolStripPanel.PerformLayout();
-            toolStripContainer2.ResumeLayout(false);
-            toolStripContainer2.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
+            toolStripContainer1.BottomToolStripPanel.PerformLayout();
+            toolStripContainer1.ContentPanel.ResumeLayout(false);
+            toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
+            toolStripContainer1.TopToolStripPanel.PerformLayout();
+            toolStripContainer1.ResumeLayout(false);
+            toolStripContainer1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -387,8 +410,6 @@
         private ToolStripMenuItem tsmiImport;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem tsmiShowConsole;
-        private TabControl tabControl1;
-        private ToolStripContainer toolStripContainer2;
         private ToolStripMenuItem tsmiSetting;
         private ToolStripMenuItem editToolStripMenuItem;
         //private ToolStripMenuItem tsmiPlay_;
@@ -407,5 +428,10 @@
         private ToolStripButton tsbMIDIOut_E;
         private ToolStripButton tsbMIDIOut_F;
         private ToolStripButton tsbMIDIOut_G;
+        private StatusStrip statusStrip1;
+        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
+        private WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme vS2015DarkTheme1;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
+        private ToolStripContainer toolStripContainer1;
     }
 }

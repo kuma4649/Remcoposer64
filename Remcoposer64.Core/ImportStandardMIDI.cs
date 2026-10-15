@@ -214,6 +214,21 @@ namespace Remcoposer64.Core
                     int num = (format != 0) ? trkNum : ch;
                     LinkedListNode<MIDIEvent> evt = prtAry[num].getEndEventNode();
                     if (evt != null) evt.Value.ST = trkStep[num];
+                    else
+                    {
+                        // トラック最初が休符の場合を対策
+                        if (trkStep[num] != 0)
+                        {
+                            MIDINoteEvent n = new MIDINoteEvent();
+                            n.ST = trkStep[num];
+                            evt = new LinkedListNode<MIDIEvent>(n);
+                            if (!TrkEnd)
+                            {
+                                prtAry[num].insertEventNode(evt, trkStep[num], (MIDIEventType)0x80, [0x80, 60, 0], 0);
+                            }
+                            evt = null;
+                        }
+                    }
 
                     if (!TrkEnd)
                     {

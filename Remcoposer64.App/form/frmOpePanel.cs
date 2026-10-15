@@ -5,10 +5,11 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App.form
 {
-    public partial class frmOpePanel : Form
+    public partial class frmOpePanel : DockContent
     {
         private frmMain main;
 

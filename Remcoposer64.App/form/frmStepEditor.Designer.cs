@@ -44,10 +44,9 @@
             stepEditorPanel1.Location = new Point(0, 0);
             stepEditorPanel1.Name = "stepEditorPanel1";
             stepEditorPanel1.OverwriteMode = false;
-            stepEditorPanel1.Size = new Size(800, 403);
+            stepEditorPanel1.Size = new Size(800, 394);
             stepEditorPanel1.TabIndex = 0;
             stepEditorPanel1.TabStop = true;
-            stepEditorPanel1.UpdateFlg = false;
             // 
             // toolStripContainer1
             // 
@@ -59,11 +58,11 @@
             // toolStripContainer1.ContentPanel
             // 
             toolStripContainer1.ContentPanel.Controls.Add(stepEditorPanel1);
-            toolStripContainer1.ContentPanel.Size = new Size(800, 403);
+            toolStripContainer1.ContentPanel.Size = new Size(800, 394);
             toolStripContainer1.Dock = DockStyle.Fill;
             toolStripContainer1.Location = new Point(0, 0);
             toolStripContainer1.Name = "toolStripContainer1";
-            toolStripContainer1.Size = new Size(800, 450);
+            toolStripContainer1.Size = new Size(800, 441);
             toolStripContainer1.TabIndex = 1;
             toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -86,7 +85,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 441);
             Controls.Add(toolStripContainer1);
             Name = "frmStepEditor";
             Text = "Step Editor";

@@ -1,8 +1,9 @@
 ﻿using Remcoposer64.ProjectData;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App.form
 {
-    public partial class frmInformation : Form
+    public partial class frmInformation : DockContent
     {
         private MIDIProject project;
 
@@ -45,5 +46,6 @@ namespace Remcoposer64.App.form
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
     }
 }

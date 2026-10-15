@@ -29,6 +29,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         private readonly UILoopStartEvent loopStartEvent;
         private readonly UILoopEndEvent loopEndEvent;
 
+        private readonly UIBankProgramEvent bankProgramEvent;
 
         public UIEventProvider(DrawUtil drawUtil)
         {
@@ -50,6 +51,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             rolandParaEvent = new(drawUtil);
             loopStartEvent = new(drawUtil);
             loopEndEvent = new(drawUtil);
+            bankProgramEvent = new(drawUtil);
         }
 
         public UIEvent Get(MIDIEventType type)
@@ -94,6 +96,8 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
                 MIDIEventType.LoopStart => loopStartEvent,
                 MIDIEventType.LoopEnd => loopEndEvent,
+
+                MIDIEventType.BankProgram => bankProgramEvent,
 
                 _ => throw new NotSupportedException()
             };
