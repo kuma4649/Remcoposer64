@@ -408,6 +408,7 @@ namespace Remcoposer64.App
             // プロジェクトをタブに紐づける
             tab.Tag = project;
             project.parentForm = tab;
+            fProjects.Add(tab);
 
             DataGridView dgvTracks = new DataGridView();
             dgvTracks.Dock = DockStyle.Fill;

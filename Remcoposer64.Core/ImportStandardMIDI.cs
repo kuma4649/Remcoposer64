@@ -525,6 +525,9 @@ namespace Remcoposer64.Core
 
             #endregion
 
+            if (format == 0) prj.Information.MaxLengthMIDIOut = stOutDevNum + 1;
+            else prj.Information.MaxLengthMIDIOut = trkLen / 16 + 1;
+
             return prj;
         }
 
@@ -677,19 +680,21 @@ namespace Remcoposer64.Core
                     msg.Add(bs[trkPtr++]);
                     msg.Add(bs[trkPtr++]);
                     break;
-                case 0x21://出力ポート指定 (現在のSMFでは未定義) 
+                case 0x21://出力ポート指定
                     len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
+                    //msg.Add(bs[trkPtr++]);
+                    //msg.Add(bs[trkPtr++]);
                     if (format == 1)
                     {
-                        stDevNum = msg[1];
+                        stDevNum = bs[trkPtr + 1];
                         trk.OutDevice = stDevNum;
 
                         //int dev = (stOutDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
                         //trk.OutUserDeviceNumber = setting.MIDIOutDeviceList[dev].UsrNumber;
                         //trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
                     }
-                    msg.Add(bs[trkPtr++]);
+                    trkPtr += 2;
+                    msg.Clear();
                     break;
                 case 0x2f://トラックの終端
                     len = bs[trkPtr];

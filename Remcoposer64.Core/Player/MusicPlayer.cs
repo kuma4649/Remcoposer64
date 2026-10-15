@@ -50,18 +50,18 @@ namespace Remcoposer64.Core.Player
             FireFrameProcess = 0;
             IsFinished = true;
 
-            if (_midiOutInfo != null)
-            {
-                dicNoteOnTable = new Dictionary<int, long>[_midiOutInfo.Length][];
-                for (int i = 0; i < _midiOutInfo.Length; i++)
-                {
-                    dicNoteOnTable[i] = new Dictionary<int, long>[16];
-                    for (int j = 0; j < 16; j++)
-                    {
-                        dicNoteOnTable[i][j] = new Dictionary<int, long>();
-                    }
-                }
-            }
+            //if (_midiOutInfo != null)
+            //{
+            //    dicNoteOnTable = new Dictionary<int, long>[_midiOutInfo.Length][];
+            //    for (int i = 0; i < _midiOutInfo.Length; i++)
+            //    {
+            //        dicNoteOnTable[i] = new Dictionary<int, long>[16];
+            //        for (int j = 0; j < 16; j++)
+            //        {
+            //            dicNoteOnTable[i][j] = new Dictionary<int, long>();
+            //        }
+            //    }
+            //}
 
             this.midiOutDevice = midiOutDevice;
             this.midiInDevice = midiInDevice;
@@ -74,6 +74,15 @@ namespace Remcoposer64.Core.Player
             _project = project;
             _bpm = project.Information.Tempo;
             _ppq = project.Information.TimeBase;
+            dicNoteOnTable = new Dictionary<int, long>[project.Information.MaxLengthMIDIOut][];
+            for (int i = 0; i < project.Information.MaxLengthMIDIOut; i++)
+            {
+                dicNoteOnTable[i] = new Dictionary<int, long>[16];
+                for (int j = 0; j < 16; j++)
+                {
+                    dicNoteOnTable[i][j] = new Dictionary<int, long>();
+                }
+            }
 
             // 再生開始
             StartPlayback();
@@ -306,8 +315,9 @@ namespace Remcoposer64.Core.Player
                               + (nevt.KeyNumber << 8)
                               + (nevt.Vel << 16);
 
-                    if (!dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
-                        && !trk.Mute) 
+                    if (dicNoteOnTable.Length > trk.OutDevice
+                        && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
+                        && !trk.Mute)
                         midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録
@@ -664,11 +674,14 @@ namespace Remcoposer64.Core.Player
                         if (gateRemaining <= 0)
                         {
                             // NoteOff を送る
-                            MidiOut midiOut = midiOutDevice[device];
-                            int status = 0x80 | ch;
-                            int msg = status + (key << 8);
+                            if (midiOutDevice.Length > device)
+                            {
+                                MidiOut midiOut = midiOutDevice[device];
+                                int status = 0x80 | ch;
+                                int msg = status + (key << 8);
 
-                            midiOut?.Send(msg);
+                                midiOut?.Send(msg);
+                            }
 
                             keysToRemove.Add(key);
                         }

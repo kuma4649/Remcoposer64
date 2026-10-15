@@ -124,7 +124,7 @@ namespace Remcoposer64.ProjectData
         /// <returns>新たに挿入したイベント</returns>
         public LinkedListNode<MIDIEvent> insertEventNode(LinkedListNode<MIDIEvent> TargetEvent, int Step, MIDIEventType EventType, byte[] MIDImessage, int gt)
         {
-            if (MIDImessage == null) return null;
+            if (MIDImessage == null || MIDImessage.Length<1) return null;
             MIDIEvent eve = Events.MIDIEventsFactory.CreateMIDIEvent(EventType);
             eve.Type = EventType;
             eve.MIDIMessage = MIDImessage;

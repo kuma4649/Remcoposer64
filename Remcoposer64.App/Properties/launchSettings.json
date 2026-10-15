@@ -2,7 +2,7 @@
   "profiles": {
     "Remcoposer64.App": {
       "commandName": "Project",
-      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\人様のＭＩＤＩ\\ANIME\\NADOP88G.RCP\""
+      "commandLineArgs": "\"C:\\Users\\maryb\\OneDrive\\Desktop\\dancing_fmt1\\fmt1mlt.mid\""
     }
   }
 }

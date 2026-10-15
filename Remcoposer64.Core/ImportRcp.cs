@@ -55,6 +55,7 @@ namespace Remcoposer64.Core
             bs = null;
             prj.Information.FileFullName = fn;
             prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
+            prj.Information.MaxLengthMIDIOut = 0;
 
             #region ファイル読込（オンメモリバッファ）
 
@@ -381,11 +382,13 @@ namespace Remcoposer64.Core
 
                     trk[trkNumber].OutDevice = n;
                     trk[trkNumber].OutChannel = ch % 16;
+                    if (n + 1 > prj.Information.MaxLengthMIDIOut) prj.Information.MaxLengthMIDIOut = n + 1;
                 }
                 else
                 {
                     trk[trkNumber].OutDevice = 0;
                     trk[trkNumber].OutChannel = null;
+                    if (1 > prj.Information.MaxLengthMIDIOut) prj.Information.MaxLengthMIDIOut = 1;
                 }
 
                 // 入力デバイスは常に None

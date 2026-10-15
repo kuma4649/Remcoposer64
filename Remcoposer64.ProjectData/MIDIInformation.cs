@@ -286,6 +286,8 @@ namespace Remcoposer64.ProjectData
             }
         }
 
+        public int MaxLengthMIDIOut = 0;
+
         public bool Played { get; set; } = false;
     }
 }
