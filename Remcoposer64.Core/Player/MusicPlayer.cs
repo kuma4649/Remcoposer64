@@ -214,6 +214,9 @@ namespace Remcoposer64.Core.Player
 
         public void ProcessFrame(long seqCounter)
         {
+
+            ProcessNoteOff();
+
             _tick++;
             if (_tick >= _ppq * (4.0 / _den))
             {
@@ -286,7 +289,6 @@ namespace Remcoposer64.Core.Player
             if (playedAllTracks)
                 _project.Information.Played = true;
 
-            ProcessNoteOff();
             frameCounter++;
 
         }
