@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Remcoposer64.App": {
-      "commandName": "Project",
-      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\ff9_fild.mid\""
+      "commandName": "Project"
     }
   }
 }
