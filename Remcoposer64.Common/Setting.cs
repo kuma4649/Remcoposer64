@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 using static Remcoposer64.Common.Setting;
 
@@ -12,6 +13,7 @@ namespace Remcoposer64.Common
         public Log log = new Log();
         public MidiOut midiOut { get; set; } = new();
         public MidiIn midiIn { get; set; } = new();
+        public UI ui = new();
 
         public Setting()
         {
@@ -32,6 +34,7 @@ namespace Remcoposer64.Common
             setting.log = this.log.Copy();
             setting.midiOut = this.midiOut.Copy();
             setting.midiIn = this.midiIn.Copy();
+            setting.ui = this.ui.Copy();
 
             return setting;
         }
@@ -223,6 +226,20 @@ namespace Remcoposer64.Common
                 mii.fileName = this.fileName;
                 mii.vendor = this.vendor;
                 return mii;
+            }
+        }
+
+        [Serializable]
+        public class UI
+        {
+            public List<string> OpenFiles { get; set; } = [];
+
+            public UI Copy()
+            {
+                UI ui = new();
+                ui.OpenFiles = this.OpenFiles;
+
+                return ui;
             }
         }
     }

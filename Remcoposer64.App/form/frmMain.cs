@@ -183,6 +183,20 @@ namespace Remcoposer64.App
             catch { }
 
             base.OnFormClosing(e);
+
+            // 開いていたファイルを全て記憶する
+            setting.ui.OpenFiles = new List<string>();
+            foreach(var project in fProjects)
+            {
+                if (project?.Tag is not MIDIProject prj)
+                    continue;
+
+                if (string.IsNullOrWhiteSpace(prj.Information.FileFullName))
+                    continue;
+
+                setting.ui.OpenFiles.Add(((MIDIProject)project.Tag).Information.FileFullName);
+            }
+
             setting.Save();
         }
 
@@ -315,6 +329,8 @@ namespace Remcoposer64.App
         {
             InitializeComponent();
 
+            Log.Write(LogLevel.Information, "Start initialization.");
+
             dockPanel1.Theme = vS2015DarkTheme1;
 
             Common.Common.SetExecutablePath(Application.ExecutablePath);
@@ -351,6 +367,13 @@ namespace Remcoposer64.App
             }
 
             RestoreLayout();
+
+            foreach (string fn in setting.ui.OpenFiles)
+            {
+                if (File.Exists(fn))
+                    ImportMidiFile(fn);
+            }
+
         }
 
         private void ImportMidiFile()
