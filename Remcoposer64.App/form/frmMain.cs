@@ -137,19 +137,26 @@ namespace Remcoposer64.App
             // MIDIデバイスの表示を更新する
             foreach (frmProject tab in fProjects)
             {
-                MIDIProject project = (MIDIProject)tab.Tag;
-                DataGridView dgv = (DataGridView)tab.Controls[0];
-
-                foreach (DataGridViewRow row in dgv.Rows)
+                try
                 {
-                    LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
-                    MIDITrack trk = trkNode.Value;
-                    Setting.MidiOut mo = setting.midiOut;
-                    if (mo.lstMidiOutInfo.Count > mo.CurrentDev
-                        && mo.lstMidiOutInfo[mo.CurrentDev] != null)
+                    MIDIProject project = (MIDIProject)tab.Tag;
+                    DataGridView dgv = (DataGridView)tab.Controls[0];
+
+                    foreach (DataGridViewRow row in dgv.Rows)
                     {
-                        row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                        LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
+                        MIDITrack trk = trkNode.Value;
+                        Setting.MidiOut mo = setting.midiOut;
+                        if (mo.lstMidiOutInfo.Count > mo.CurrentDev
+                            && mo.lstMidiOutInfo[mo.CurrentDev] != null)
+                        {
+                            row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
+                        }
                     }
+                }
+                catch(Exception e)
+                {
+                    Log.ForcedWrite(e);
                 }
             }
 
@@ -566,6 +573,15 @@ namespace Remcoposer64.App
 
         public void CloseProject(MIDIProject project)
         {
+            for (int i = 0; i < fProjects.Count; i++)
+            {
+                if (project == fProjects[i].Tag)
+                {
+                    fProjects.RemoveAt(i);
+                    i--;
+                }
+            }
+
             if (currentProject == project)
             {
                 currentProject = null;
