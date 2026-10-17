@@ -23,6 +23,8 @@ namespace Remcoposer64.Core
         private int Bch = 0;
         //既にタイトルを格納済みかどうかフラグ
         private bool titleSW = false;
+        //トラック毎の総合計Tick数
+        int trkTick = 0;
 
         //コンストラクタ
         public ImportStandardMIDI(string fn, Setting setting)
@@ -31,9 +33,6 @@ namespace Remcoposer64.Core
             this.setting = setting;
         }
 
-        //パブリックメソッド
-
-        //読み込み！
         public MIDIProject Load()
         {
             MIDIProject prj = new MIDIProject(setting);
@@ -43,7 +42,6 @@ namespace Remcoposer64.Core
             byte[] bs = null;
             int trkPtr = 14;
             int trkDatLen = 0;
-            int trkTick = 0;
             int stOutDevNum = 0;//このデバイスから順にトラック（或いはチャンネル）が振られる(暫定)
             int stInDevNum = 0;
 
@@ -178,7 +176,7 @@ namespace Remcoposer64.Core
                     {
                         trkStep[i] += delta;
                     }
-                    trkTick = delta;
+                    trkTick += delta;
                     int ch = 0;
                     //コマンド取得
                     byte cmd = bs[trkPtr];
@@ -212,6 +210,8 @@ namespace Remcoposer64.Core
                     }
 
                     int num = (format != 0) ? trkNum : ch;
+
+                    // 直前のイベントのSTに経過したTick値をここでセットする
                     LinkedListNode<MIDIEvent> evt = prtAry[num].getEndEventNode();
                     if (evt != null) evt.Value.ST = trkStep[num];
                     else
@@ -319,7 +319,7 @@ namespace Remcoposer64.Core
                         }
                         else
                         {
-                            Log.Write(LogLevel.Warning, "Not found NoteOFF event.");
+                            Log.Write(LogLevel.Warning, "Not found NoteOFF event.Track Number:{0}", track.Value.Number);
                         }
                         //次のNoteONイベント探しの旅へ
                         evt = prt.Value.getNextEventNode(evt);
@@ -335,7 +335,6 @@ namespace Remcoposer64.Core
             }
 
             #endregion
-
 
             #region イベント調整
 
@@ -440,6 +439,10 @@ namespace Remcoposer64.Core
                                     ev.Type = MIDIEventType.MetaTempo;
                                     ev.MIDIMessage = null;
                                     break;
+                                case MIDIEventType.MetaTimeSignature:
+                                    break;
+                                case MIDIEventType.BarLine:
+                                    break;
                                 default:
                                     Log.Write(LogLevel.Warning, "StandardMIDI変換時の未実装イベントタイプ:{0}", ev.Type);
                                     break;
@@ -464,8 +467,6 @@ namespace Remcoposer64.Core
 
             #region 小節線の追加
 
-
-
             track = prj.getStartTrackNode();
             while (track != null)
             {
@@ -474,42 +475,127 @@ namespace Remcoposer64.Core
 
                 try
                 {
+
                     LinkedListNode<MIDIPart> prt = track.Value.getStartPartNode();
+                    Dictionary<int, ActiveNote> dicActiveNote = new Dictionary<int, ActiveNote>();
+
                     while (prt != null)
                     {
                         int sum = 0;
                         LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
                         while (eventNode != null)
                         {
-
                             MIDIEvent ev = eventNode.Value;
-                            sum += ev.ST;
-                            int tsum = prj.Information.TimeBase * 4 / beatDen * beatMol;
 
-                            while (sum >= tsum)
+                            // noteイベントの時は発音リストに加える
+                            if (ev.Type == MIDIEventType.NoteON && ((MIDINoteEvent)ev).GT > 0)
                             {
-                                ev = eventNode.Value;
-                                ev.ST -= sum - tsum;
-                                //小節線を挿入
+                                if (dicActiveNote.ContainsKey(((MIDINoteEvent)ev).KeyNumber))
+                                    dicActiveNote[((MIDINoteEvent)ev).KeyNumber] = new ActiveNote(((MIDINoteEvent)ev).GT, eventNode);
+                                else
+                                    dicActiveNote.Add(((MIDINoteEvent)ev).KeyNumber, new ActiveNote(((MIDINoteEvent)ev).GT, eventNode));
+                            }
+
+
+
+                            int beforeSum = sum;
+                            sum += ev.ST;
+
+                            // 小節線が入るtickを計算する(拍子が変わる可能性がある(今はTBD)ため毎回計算する必要あり)
+                            int measureLen = prj.Information.TimeBase * 4 / beatDen * beatMol;
+
+                            if (sum < measureLen)
+                            {
+                                UpdateActiveNoteRemainGT(dicActiveNote, ev.ST);
+
+                                eventNode = prt.Value.getNextEventNode(eventNode);
+                                continue;
+                            }
+
+
+                            // 合計sumが小節線の位置に到達している間は分割処理を実施する
+
+                            // 直近のイベントが小節を跨ぐかどうか判定しておく
+                            bool crossedMeasure = false;
+                            if (sum > measureLen)
+                            {
+                                // 直前のイベントのSTを調整
+                                ev.ST = measureLen - beforeSum;
+                                crossedMeasure = true;
+                                sum -= measureLen;
+                            }
+
+                            UpdateActiveNoteRemainGT(dicActiveNote, ev.ST);
+
+                            bool firstMeasureSplit = true;
+                            while (sum > 0)
+                            {
+
+                                // 小節線を挿入
                                 LinkedListNode<MIDIEvent> barLineNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.BarLine, null);
                                 MIDIBarLineEvent barLineEvent = (MIDIBarLineEvent)barLineNode.Value;
-                                barLineEvent.MeasureTotalST = sum;
-                                eventNode = barLineNode;
 
-                                if (sum - tsum > 0)
+                                eventNode = barLineNode;
+                                ev = eventNode.Value;
+
+                                int st = 0;
+
+                                if (crossedMeasure)
                                 {
-                                    LinkedListNode<MIDIEvent> restNoteNode = prt.Value.insertEventNode(barLineNode, 0, MIDIEventType.NoteON, null);
-                                    ((MIDINoteEvent)restNoteNode.Value).KeyNumber = 0;
-                                    if (ev.Type == MIDIEventType.NoteON)
-                                        ((MIDINoteEvent)restNoteNode.Value).KeyNumber = ((MIDINoteEvent)ev).KeyNumber;
-                                    restNoteNode.Value.ST = sum - tsum;
-                                    eventNode = restNoteNode;
+                                    st = Math.Min(sum, measureLen);
+
+                                    if (dicActiveNote.Keys.Count < 1)
+                                    {
+                                        // 休符 (remcoposer64では GT:0 Vel:0 のNoteOnを休符として扱う)
+                                        LinkedListNode<MIDIEvent> restNoteNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.NoteON, null);
+                                        ((MIDINoteEvent)restNoteNode.Value).KeyNumber = 0;
+                                        ((MIDINoteEvent)restNoteNode.Value).ST = st;
+                                        ((MIDINoteEvent)restNoteNode.Value).GT = 0;
+                                        ((MIDINoteEvent)restNoteNode.Value).Vel = 0;
+                                        eventNode = restNoteNode;
+                                        ev = eventNode.Value;
+                                    }
+                                    else
+                                    {
+                                        var notes = dicActiveNote.Values.ToList();
+                                        for (int i = 0; i < notes.Count; i++)
+                                        {
+                                            ActiveNote item = notes[i];
+                                            if (firstMeasureSplit) ((MIDINoteEvent)item.NoteNode.Value).GT = item.OriginalGT - item.RemainGT + 1; 
+                                            LinkedListNode<MIDIEvent> activetNoteNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.NoteON, null);
+                                            ((MIDINoteEvent)activetNoteNode.Value).KeyNumber = ((MIDINoteEvent)item.NoteNode.Value).KeyNumber;
+                                            ((MIDINoteEvent)activetNoteNode.Value).ST = (i == notes.Count - 1) ? st : 0;
+                                            ((MIDINoteEvent)activetNoteNode.Value).GT = Math.Min(item.RemainGT, measureLen + 1);
+                                            ((MIDINoteEvent)activetNoteNode.Value).Vel = ((MIDINoteEvent)item.NoteNode.Value).Vel;
+                                            eventNode = activetNoteNode;
+                                            ev = eventNode.Value;
+
+                                        }
+                                        firstMeasureSplit = false;
+                                    }
                                 }
 
-                                sum -= tsum;
+                                UpdateActiveNoteRemainGT(dicActiveNote, st);
+
+
+                                if (sum < measureLen) 
+                                    break;
+
+                                sum -= measureLen;
+
+                                if (sum == 0 && crossedMeasure)
+                                {
+                                    // 小節線を挿入
+                                    barLineNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.BarLine, null);
+                                    barLineEvent = (MIDIBarLineEvent)barLineNode.Value;
+
+                                    eventNode = barLineNode;
+                                    ev = eventNode.Value;
+                                }
                             }
 
                             eventNode = prt.Value.getNextEventNode(eventNode);
+
                         }
                         prt = track.Value.getNextPartNode(prt);
                     }
@@ -531,8 +617,41 @@ namespace Remcoposer64.Core
             return prj;
         }
 
+        class ActiveNote
+        {
+            public int OriginalGT;
+            public int RemainGT;
+            public LinkedListNode<MIDIEvent> NoteNode;
 
-        //プライベートメソッド
+            public ActiveNote(int gT, LinkedListNode<MIDIEvent> eventNode)
+            {
+                OriginalGT = gT;
+                RemainGT = gT;
+                NoteNode = eventNode;
+            }
+        }
+
+        private static void UpdateActiveNoteRemainGT(
+            Dictionary<int, ActiveNote> dicActiveNote,
+            int tick)
+        {
+            List<int> removeKeys = new();
+
+            foreach (int key in dicActiveNote.Keys)
+            {
+                ActiveNote note = dicActiveNote[key];
+
+                note.RemainGT -= tick;
+
+                if (note.RemainGT <= 0)
+                    removeKeys.Add(key);
+            }
+
+            foreach (int key in removeKeys)
+            {
+                dicActiveNote.Remove(key);
+            }
+        }
 
         private int getDelta(ref int trkPtr, byte[] bs, List<byte> msg)
         {
@@ -717,21 +836,24 @@ namespace Remcoposer64.Core
                     msg.Add(bs[trkPtr++]);
                     msg.Add(bs[trkPtr++]);
                     break;
-                case 0x58://拍子
+                case 0x58://TimeSignature(拍子)
                     len = bs[trkPtr];
                     msg.Add(bs[trkPtr++]);
-                    prj.Information.BeatDen = (int)bs[trkPtr]; //分子
+                    if(trkTick==0) prj.Information.BeatDen = (int)bs[trkPtr]; //分子
                     msg.Add(bs[trkPtr++]);
-                    prj.Information.BeatMol = (int)Math.Pow(2.0, (double)bs[trkPtr]); //分母
+                    if (trkTick == 0) prj.Information.BeatMol = (int)Math.Pow(2.0, (double)bs[trkPtr]); //分母
                     msg.Add(bs[trkPtr++]);
                     msg.Add(bs[trkPtr++]);//1拍あたりのMIDIクロック数(無視)
                     msg.Add(bs[trkPtr++]);//MIDI4分音符(24MIDIクロック)の中に入る32分音符の数(無視)
                     break;
-                case 0x59://調号
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]); //♯や♭の数が入る。正数なら♯の数、負数なら♭の数を表す。(無視)
-                    msg.Add(bs[trkPtr++]); //長調か短調かを表すフラグで、0なら長調、1なら短調。(無視)
+                case 0x59://KeySignature(調号)
+                    len = bs[trkPtr++];
+                    //msg.Add(bs[trkPtr++]);
+                    prj.Information.KeySignature = bs[trkPtr++];
+                    //msg.Add(bs[trkPtr++]); //♯や♭の数が入る。正数なら♯の数、負数なら♭の数を表す。(無視)
+                    prj.Information.KeySignature += bs[trkPtr++] * 0x100;
+                    //msg.Add(bs[trkPtr++]); //長調か短調かを表すフラグで、0なら長調、1なら短調。(無視)
+                    msg.Clear();
                     break;
                 case 0x7F://シーケンサー特定メタイベント
                     len = getDelta(ref trkPtr, bs, msg);

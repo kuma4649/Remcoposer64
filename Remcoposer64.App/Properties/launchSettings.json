@@ -2,7 +2,7 @@
   "profiles": {
     "Remcoposer64.App": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\maryb\\OneDrive\\Desktop\\dancing2\\lp2.rcp\""
+      "commandLineArgs": "\"E:\\FM音源\\data\\MIDI\\ff9_fild.mid\""
     }
   }
 }

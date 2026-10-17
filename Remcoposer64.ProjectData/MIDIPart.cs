@@ -153,6 +153,15 @@ namespace Remcoposer64.ProjectData
             {
                 ((MIDIPitchBendEvent)eve).PitchValue = (short)((MIDImessage[2] << 7) | MIDImessage[1]);
             }
+            else if(eve is MIDIBarLineEvent)
+            {
+                ;
+                if (eve.Type == MIDIEventType.MetaTimeSignature)
+                {
+                    //
+                    eve.Type = MIDIEventType.BarLine;
+                }
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }

@@ -64,6 +64,8 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDISysExEvent();
                 case MIDIEventType.BankProgram:
                     return new MIDIBankProgramEvent();
+                case MIDIEventType.MetaTimeSignature:
+                    return new MIDIBarLineEvent();
                 default:
                     Log.Write("Detect unsupported commands.{0}", type);
                     return new MIDIMetaEvent();

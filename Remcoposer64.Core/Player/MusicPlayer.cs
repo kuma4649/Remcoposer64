@@ -319,7 +319,8 @@ namespace Remcoposer64.Core.Player
 
                     if (dicNoteOnTable.Length > trk.OutDevice
                         && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
-                        && !trk.Mute)
+                        && !trk.Mute
+                        && nevt.GT>0)
                         midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録

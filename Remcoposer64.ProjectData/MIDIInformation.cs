@@ -109,6 +109,14 @@ namespace Remcoposer64.ProjectData
                 return _Memo;
             }
         }
+
+        /// <summary>
+        /// Key Signature
+        /// rcpでは存在しない情報
+        /// midとの互換のために追加
+        /// </summary>
+        public int KeySignature { get; set; } = 0;
+
         public int Key
         {
             set
