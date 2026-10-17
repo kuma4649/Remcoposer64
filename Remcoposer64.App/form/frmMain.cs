@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App
@@ -379,7 +380,7 @@ namespace Remcoposer64.App
         private void ImportMidiFile()
         {
             var ofd = new OpenFileDialog();
-            ofd.Filter = "All support files (*.mid;*.rcp)|*.mid;*.rcp|MIDI Files (*.mid)|*.mid|RCP Files (*.rcp)|*.rcp";
+            ofd.Filter = "All support files (*.mid;*.rcp;*.g36)|*.mid;*.rcp;*.g36|MIDI Files (*.mid)|*.mid|RCP Files (*.rcp;*.g36)|*.rcp;*.g36";
 
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
@@ -399,12 +400,16 @@ namespace Remcoposer64.App
                 // プロジェクトをロード
                 project = importer.Load();
             }
-            else if (ext == ".rcp")
+            else if (ext == ".rcp" || ext == ".g36")
             {
                 // RCP → RMC 変換器を作成
                 ImportRcp importer = new ImportRcp(fileName, setting);
                 // プロジェクトをロード
                 project = importer.Load();
+            }
+            else if (ext == ".rmc")
+            {
+                project = MIDIProject.Load(fileName);
             }
 
             if (project == null)
