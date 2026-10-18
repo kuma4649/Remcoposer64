@@ -20,6 +20,7 @@ namespace Remcoposer64.App
         private RmPlayer player = null;
 
         private List<frmProject> fProjects = new List<frmProject>();
+        private List<frmStepEditor> stepEditors = new List<frmStepEditor>();
 
         public frmMain()
         {
@@ -154,7 +155,7 @@ namespace Remcoposer64.App
                         }
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Log.ForcedWrite(e);
                 }
@@ -194,7 +195,7 @@ namespace Remcoposer64.App
 
             // 開いていたファイルを全て記憶する
             setting.ui.OpenFiles = new List<string>();
-            foreach(var project in fProjects)
+            foreach (var project in fProjects)
             {
                 if (project?.Tag is not MIDIProject prj)
                     continue;
@@ -265,7 +266,7 @@ namespace Remcoposer64.App
         private void tsmiOpenInformation_Click(object sender, EventArgs e)
         {
             var info = new frmInformation(currentProject);
-            info.Show(dockPanel1, new Rectangle(0,0, 640, 480));
+            info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
             info.Size = new Size(640, 480);
         }
 
@@ -437,7 +438,7 @@ namespace Remcoposer64.App
         private void AddProjectTab(MIDIProject project)
         {
             // 新しいタブページを作成
-            frmProject tab = new frmProject(this,project);
+            frmProject tab = new frmProject(this, project);
             tab.Text = project.Information.FileName;
 
             // プロジェクトをタブに紐づける
@@ -480,8 +481,9 @@ namespace Remcoposer64.App
                 if (part == null)
                     return;
 
-                frmStepEditor frm = new frmStepEditor(trk, part.Value, undoMng);
-                frm.Show(dockPanel1,new Rectangle(0,0, 816, 480));
+                frmStepEditor frm = new frmStepEditor(this, trk, part.Value, undoMng);
+                stepEditors.Add(frm);
+                frm.Show(dockPanel1, new Rectangle(0, 0, 816, 480));
                 frm.Size = new Size(816, 480);
             };
 
@@ -607,7 +609,7 @@ namespace Remcoposer64.App
 
             if (opePanel.DockState == DockState.Unknown)
             {
-                opePanel.Show(dockPanel1, new Rectangle(0,0, 372, 121));
+                opePanel.Show(dockPanel1, new Rectangle(0, 0, 372, 121));
                 opePanel.Size = new Size(372, 121);
             }
         }
@@ -618,6 +620,31 @@ namespace Remcoposer64.App
             if (persistString.IndexOf("frmOpePanel") >= 0) return opePanel;
 
             return null;
+        }
+
+        public void CloseStepEditor(frmStepEditor frmStepEditor)
+        {
+            for (int i = 0; i < stepEditors.Count; i++)
+            {
+                var frm = stepEditors[i];
+                if (frm != frmStepEditor) continue;
+
+                stepEditors.Remove(frm);
+                break;
+            }
+        }
+
+        private void timerScreen_Tick(object sender, EventArgs e)
+        {
+
+            if (player != null && player.GetMusicState() == RmPlayer.PlayerState.Processing)
+            {
+                foreach(var stepeditor in stepEditors)
+                {
+                    stepeditor.Refresh();
+                }
+            }
+
         }
 
     }

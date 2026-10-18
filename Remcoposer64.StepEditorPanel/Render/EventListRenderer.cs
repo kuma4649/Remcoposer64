@@ -27,7 +27,7 @@ namespace Remcoposer64.StepEditorPanelControl
             uiep = new UIEventProvider(drawUtil);
         }
 
-        public void Render(EventManager eventManager, Rectangle rect, int scrollOffset, CursorInfo cursor, int playingCursorIndex)
+        public void Render(EventManager eventManager, Rectangle rect, int scrollOffset, CursorInfo cursor)
         {
             drawUtil.BeginPaint(rect);
 
@@ -40,6 +40,13 @@ namespace Remcoposer64.StepEditorPanelControl
 
             if (eventManager.EventCount > 0)
             {
+                CursorPosition playingCursorIndex = eventManager.GetPlayingCursorIndex();
+                
+                if (playingCursorIndex != null)
+                {
+                    scrollOffset = Math.Max(0, playingCursorIndex.Offset - 5);
+                }
+
                 int row = 0;
                 for (int i = scrollOffset; i < scrollOffset + parent.VisibleRows + 1; i++)
                 {
@@ -50,7 +57,7 @@ namespace Remcoposer64.StepEditorPanelControl
                     var mdl = eventManager.GetModel(node.Value.Type);
 
                     bool isCursor = i == cursor.Index;
-                    bool isPlayingCursor = i == playingCursorIndex;
+                    bool isPlayingCursor = (playingCursorIndex != null && node.Value.Meas == playingCursorIndex.Meas && node.Value.Step == playingCursorIndex.Step);
                     UIEvent uie = uiep.Get(node.Value.Type);
 
                     ProcessStepDisplayControl(ref oldStep, ref dispStep, ref firstDisp, node.Value);

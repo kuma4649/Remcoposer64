@@ -40,4 +40,27 @@ namespace Remcoposer64.StepEditorPanelControl
         Selected
     }
 
+    /// <summary>
+    /// 小節、ステップ、オフセットで表される編集カーソルの位置を表すクラス。
+    /// </summary>
+    /// <remarks>各フィールドはそれぞれ小節番号 (Meas)、ステップ (Step)、オフセット (Offset) を表す整数。</remarks>
+    public class CursorPosition
+    {
+        // measure
+        public int Meas;
+
+        // step
+        public int Step;
+
+        // offset
+        public int Offset;
+
+        public CursorPosition(int meas, int step, int offset)
+        {
+            Meas = meas;
+            Step = step;
+            Offset = offset;
+        }
+    }
+
 }

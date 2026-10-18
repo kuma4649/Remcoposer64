@@ -67,6 +67,7 @@
             vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
             visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(components);
             toolStripContainer1 = new ToolStripContainer();
+            timerScreen = new System.Windows.Forms.Timer(components);
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             toolStripContainer1.BottomToolStripPanel.SuspendLayout();
@@ -370,6 +371,12 @@
             toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
             toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip1);
             // 
+            // timerScreen
+            // 
+            timerScreen.Enabled = true;
+            timerScreen.Interval = 20;
+            timerScreen.Tick += timerScreen_Tick;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -433,5 +440,6 @@
         private WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme vS2015DarkTheme1;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
         private ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.Timer timerScreen;
     }
 }

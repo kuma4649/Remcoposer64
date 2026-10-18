@@ -54,7 +54,6 @@ namespace Remcoposer64.StepEditorPanelControl
         public CursorInfo cursor = new CursorInfo();
         public int iconMergin;
 
-        private int playingCursorIndex = -1; // 演奏位置のインデックス(初期値は-1(非表示)で、演奏中ではないことを示す)
 
         private IGraph grp;
         private EventListRenderer renderer;
@@ -771,7 +770,7 @@ namespace Remcoposer64.StepEditorPanelControl
             vscroll.Visible = (eventManager != null);
 
             Rectangle rect = this.ClientRectangle;
-            renderer.Render(eventManager, rect, scrollOffset, cursor, playingCursorIndex);
+            renderer.Render(eventManager, rect, scrollOffset, cursor);
         }
 
 

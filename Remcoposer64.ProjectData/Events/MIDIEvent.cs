@@ -7,6 +7,7 @@
 
         public int Meas { get; set; }
         public int Step { get; set; }
+        public int Offset { get; set; }
 
         public int ST { get; set; }
         public int backupST;

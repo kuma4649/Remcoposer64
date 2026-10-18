@@ -287,7 +287,10 @@ namespace Remcoposer64.Core.Player
             }
 
             if (playedAllTracks)
+            {
                 _project.Information.Played = true;
+                IsFinished = true;
+            }
 
             frameCounter++;
 
@@ -747,6 +750,11 @@ namespace Remcoposer64.Core.Player
         internal int GetTick()
         {
             return _tick;
+        }
+
+        internal RmPlayer.PlayerState GetState()
+        {
+            return IsFinished ? RmPlayer.PlayerState.Stopped : RmPlayer.PlayerState.Processing;
         }
     }
 

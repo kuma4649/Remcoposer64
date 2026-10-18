@@ -9,6 +9,7 @@ namespace Remcoposer64.App.form
 {
     public partial class frmStepEditor : DockContent
     {
+        private frmMain parent;
         private MIDITrack trk;
         private MIDIPart prt;
 
@@ -17,10 +18,11 @@ namespace Remcoposer64.App.form
             InitializeComponent();
         }
 
-        public frmStepEditor(MIDITrack trk, MIDIPart prt, UndoRedoManager.UndoRedoManager mng)
+        public frmStepEditor(frmMain parent, MIDITrack trk, MIDIPart prt, UndoRedoManager.UndoRedoManager mng)
         {
             InitializeComponent();
-            
+
+            this.parent = parent;
             this.trk = trk;
             this.prt = prt;
 
@@ -41,6 +43,7 @@ namespace Remcoposer64.App.form
 
         private void stepEditorPanel1_ExitStepEditor(object sender, EventArgs e)
         {
+            parent.CloseStepEditor(this);
             this.Close();
         }
 

@@ -482,6 +482,7 @@ namespace Remcoposer64.StepEditorPanelControl
         {
             int meas = 0;
             int step = 0;
+            int offset = 0;
             int sum = 0;
 
             LinkedListNode<MIDIEvent> node = events.First;
@@ -491,9 +492,13 @@ namespace Remcoposer64.StepEditorPanelControl
 
                 ev.Meas = meas;
                 ev.Step = step;
+                ev.Offset = offset++;
                 ev.STsum = sum + ev.ST;
+
                 if (ev.ST != 0) step++;
+
                 sum += ev.ST;
+
                 if (ev.Type == MIDIEventType.BarLine)
                 {
                     ((MIDIBarLineEvent)ev).MeasureTotalST = sum;
@@ -701,17 +706,28 @@ namespace Remcoposer64.StepEditorPanelControl
             LinkedListNode<MIDIEvent> workEvent2 = workEvent;
 
             int meas;
+            int offset;
+
             if (workEvent.Previous != null)
+            {
                 meas = workEvent.Previous.Value.Meas + 1;
+                offset = workEvent.Previous.Value.Offset + 1;
+            }
             else
             {
+
                 meas = workEvent.Value.Meas;
+                offset = workEvent.Value.Offset;
+
                 if (acticonEventType == MIDIEventType.BarLine
                     || acticonEventType == MIDIEventType.SameMeas
                     || workEvent.Value.Type == MIDIEventType.BarLine
                     || workEvent.Value.Type == MIDIEventType.SameMeas
                         ) meas--;
+
                 meas = Math.Max(0, meas);
+                offset = Math.Max(0, offset);
+
             }
 
             int step = 0;
@@ -722,6 +738,8 @@ namespace Remcoposer64.StepEditorPanelControl
             {
                 workEvent.Value.Meas = meas;
                 workEvent.Value.Step = step;
+                workEvent.Value.Offset = offset++;
+
                 if (workEvent.Value.ST != 0) step++;
                 sum += workEvent.Value.ST;
 
@@ -907,6 +925,13 @@ namespace Remcoposer64.StepEditorPanelControl
             }
 
             return null;
+        }
+
+        public CursorPosition GetPlayingCursorIndex()
+        {
+            if (prt == null || prt.CurrentEvent == null || prt.CurrentEvent.Previous == null) return null;
+            LinkedListNode<MIDIEvent> activeNode = prt.CurrentEvent.Previous;
+            return new CursorPosition(activeNode.Value.Meas, activeNode.Value.Step, activeNode.Value.Offset);
         }
     }
 }

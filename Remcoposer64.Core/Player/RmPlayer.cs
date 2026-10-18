@@ -282,5 +282,9 @@ namespace Remcoposer64.Core.Player
             return musicPlayer.GetTick();
         }
 
+        public PlayerState GetMusicState()
+        {
+            return musicPlayer.GetState();
+        }
     }
 }
