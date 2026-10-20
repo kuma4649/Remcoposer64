@@ -1,10 +1,6 @@
-﻿using Remcoposer64.StepEditorPanelControl;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
-namespace Remcoposer64.StepEditorPanelControl.Render
+namespace Remcoposer64.Common.Render
 {
     public class AsciiMonoCache : IDisposable
     {

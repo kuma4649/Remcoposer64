@@ -1,12 +1,5 @@
-﻿using Remcoposer64.StepEditorPanelControl;
-using Remcoposer64.StepEditorPanelControl.Events;
-using Remcoposer64.StepEditorPanelControl.Render;
-using Remcoposer64.ProjectData;
+﻿using Remcoposer64.Common.Render;
 using Remcoposer64.ProjectData.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Remcoposer64.StepEditorPanelControl.Model;
 
 namespace Remcoposer64.StepEditorPanelControl.Render
 {

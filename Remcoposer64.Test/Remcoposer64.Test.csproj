@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Remcoposer64.Core\Remcoposer64.Core.csproj" />
+    <ProjectReference Include="..\Remcoposer64.TrackEditor\Remcoposer64.TrackEditor.csproj" />
   </ItemGroup>
 
 </Project>

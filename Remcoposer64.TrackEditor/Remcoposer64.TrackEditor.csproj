@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Remcoposer64.Common\Remcoposer64.Common.csproj" />
+    <ProjectReference Include="..\Remcoposer64.ProjectData\Remcoposer64.ProjectData.csproj" />
+  </ItemGroup>
+
+</Project>

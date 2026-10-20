@@ -199,7 +199,7 @@ namespace Remcoposer64.ProjectData
             }
             else if (eve.Type == MIDIEventType.LoopEnd)
             {
-                ((MIDILoopEndEvent)eve).LoopCounter = eve.MIDIMessageLst[0][0];
+                ((MIDILoopEndEvent)eve).LoopCounter = eve.MIDIMessageLst[0][0] + (eve.MIDIMessageLst[0][1] << 8);
             }
             else if (eve.Type == MIDIEventType.SysExF0)
             {

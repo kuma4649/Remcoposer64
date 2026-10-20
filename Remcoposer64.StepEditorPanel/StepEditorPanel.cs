@@ -1,4 +1,6 @@
-﻿using Remcoposer64.ProjectData;
+﻿using Remcoposer64.Common;
+using Remcoposer64.Common.Render;
+using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
@@ -9,11 +11,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Channels;
-using System.Windows.Forms;
+using static Remcoposer64.Common.WinApi;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
-using static Remcoposer64.StepEditorPanelControl.WinApi;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace Remcoposer64.StepEditorPanelControl
 {

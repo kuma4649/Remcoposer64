@@ -1,17 +1,12 @@
-﻿using Remcoposer64.StepEditorPanelControl.Render;
-using System;
-using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using Vortice;
-using Vortice.DCommon;
 using Vortice.Direct2D1;
 using Vortice.DirectWrite;
 using Vortice.DXGI;
 using Vortice.Mathematics;
 using Vortice.WIC;
 
-namespace Remcoposer64.StepEditorPanelControl.Render
+namespace Remcoposer64.Common.Render
 {
     public class GraphVortice :IGraph, IDisposable
     {

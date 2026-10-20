@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 //using Vortice.Mathematics;
 
-namespace Remcoposer64.StepEditorPanelControl
+namespace Remcoposer64.Common
 {
     public static class WinApi
     {

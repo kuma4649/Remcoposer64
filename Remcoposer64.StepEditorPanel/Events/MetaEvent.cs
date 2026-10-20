@@ -1,4 +1,5 @@
-﻿
+﻿using Remcoposer64.Common;
+
 namespace Remcoposer64.StepEditorPanelControl.Events
 {
     public class MetaEvent : Event

@@ -1,7 +1,7 @@
 ﻿using Remcoposer64.StepEditorPanelControl.Command;
 using System.Xml.Linq;
 using static Remcoposer64.StepEditorPanelControl.Events.NoteEvent;
-using static Remcoposer64.StepEditorPanelControl.WinApi;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.StepEditorPanelControl.Events
 {

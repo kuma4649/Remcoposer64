@@ -15,6 +15,8 @@ namespace Remcoposer64.Common
         public MidiIn midiIn { get; set; } = new();
         public UI ui = new();
 
+        public Setting.Common common = new();
+
         public Setting()
         {
             //MIDIOutDeviceList.Add(new MIDIDeviceList());
@@ -35,6 +37,7 @@ namespace Remcoposer64.Common
             setting.midiOut = this.midiOut.Copy();
             setting.midiIn = this.midiIn.Copy();
             setting.ui = this.ui.Copy();
+            setting.common = this.common.Copy();
 
             return setting;
         }
@@ -43,8 +46,8 @@ namespace Remcoposer64.Common
         {
             try
             {
-                string fullPath = Common.settingFilePath;
-                fullPath = Path.Combine(fullPath, Common.cntSettingFileName);
+                string fullPath = Remcoposer64.Common.Common.settingFilePath;
+                fullPath = Path.Combine(fullPath, Remcoposer64.Common.Common.cntSettingFileName);
 
                 XmlSerializer serializer = new(typeof(Setting), typeof(Setting).GetNestedTypes());
                 using StreamWriter sw = new(fullPath, false, new UTF8Encoding(false));
@@ -60,8 +63,8 @@ namespace Remcoposer64.Common
         {
             try
             {
-                string fullPath = Common.settingFilePath;
-                fullPath = Path.Combine(fullPath, Common.cntSettingFileName);
+                string fullPath = Remcoposer64.Common.Common.settingFilePath;
+                fullPath = Path.Combine(fullPath, Remcoposer64.Common.Common.cntSettingFileName);
 
                 if (!File.Exists(fullPath))
                     return new Setting(); 
@@ -241,6 +244,24 @@ namespace Remcoposer64.Common
 
                 return ui;
             }
+        }
+
+        [Serializable]
+        public class Common
+        {
+            public GraphType GraphType { get; set; } = GraphType.Vortice;
+
+            public Common Copy()
+            {
+                Common cmn = new Common();
+                cmn.GraphType = this.GraphType;
+
+                return cmn;
+            }
+        }
+        public enum GraphType
+        {
+            GDI,Vortice
         }
     }
 }

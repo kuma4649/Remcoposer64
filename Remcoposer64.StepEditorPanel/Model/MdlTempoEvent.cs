@@ -2,6 +2,7 @@
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
 using Remcoposer64.StepEditorPanelControl.Events;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.StepEditorPanelControl.Model
 {

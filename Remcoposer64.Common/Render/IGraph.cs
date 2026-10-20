@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 
-namespace Remcoposer64.StepEditorPanelControl.Render
+namespace Remcoposer64.Common.Render
 {
     public interface IGraph : IDisposable
     {

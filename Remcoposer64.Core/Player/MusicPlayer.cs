@@ -215,7 +215,7 @@ namespace Remcoposer64.Core.Player
         public void ProcessFrame(long seqCounter)
         {
 
-            ProcessNoteOff();
+            bool zanGT = ProcessNoteOff();
 
             _tick++;
             if (_tick >= _ppq * (4.0 / _den))
@@ -286,7 +286,7 @@ namespace Remcoposer64.Core.Player
                 nTrk = nTrk.Next;
             }
 
-            if (playedAllTracks)
+            if (playedAllTracks && !zanGT)
             {
                 _project.Information.Played = true;
                 IsFinished = true;
@@ -596,7 +596,9 @@ namespace Remcoposer64.Core.Player
                     {
                         lcnt = leEvt.LoopCounter;
                     }
+
                     lcnt--;
+
                     if (lcnt > 0)
                     {
                         trk.LoopStack.Push((levt, lcnt));
@@ -660,11 +662,12 @@ namespace Remcoposer64.Core.Player
             dicNoteOnTable[device][channel].Add(key, gate);
         }
 
-        private void ProcessNoteOff()
+        private bool ProcessNoteOff()
         {
-            if (dicNoteOnTable == null) return;
-            if (midiOutDevice == null) return;
+            if (dicNoteOnTable == null) return false;
+            if (midiOutDevice == null) return false;
 
+            bool ret = false;
             for (int device = 0; device < dicNoteOnTable.Length; device++)
             {
                 for (int ch = 0; ch < dicNoteOnTable[device].Length; ch++)
@@ -695,6 +698,7 @@ namespace Remcoposer64.Core.Player
                         {
                             // 残りGateを更新
                             table[key] = gateRemaining;
+                            ret = true;
                         }
                     }
 
@@ -703,6 +707,8 @@ namespace Remcoposer64.Core.Player
                         table.Remove(key);
                 }
             }
+
+            return ret;
         }
 
         internal int GetTempo()

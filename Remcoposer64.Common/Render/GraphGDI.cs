@@ -1,10 +1,6 @@
-﻿using Remcoposer64.StepEditorPanelControl.Render;
-using System.Drawing;
-using Vortice.Mathematics;
-//using Vortice.Mathematics;
-using static Remcoposer64.StepEditorPanelControl.WinApi;
+﻿using static Remcoposer64.Common.WinApi;
 
-namespace Remcoposer64.StepEditorPanelControl.Render
+namespace Remcoposer64.Common.Render
 {
     //
     // 参考:Azukiのソースコードを参考にしています。

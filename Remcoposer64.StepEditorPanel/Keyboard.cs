@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.StepEditorPanelControl
 {

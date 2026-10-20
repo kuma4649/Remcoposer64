@@ -854,14 +854,28 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xf8: // Loop End
-                    trkn.Part.First.Value.insertSpEventNode(
-                        pEvt,
-                        0,
-                        MIDISpEventType.LoopEnd,
-                        new byte[1][] {
-                                [ (byte)pk[1] ]
-                        }
-                    );
+                    if (IsG36)
+                    {
+                        trkn.Part.First.Value.insertSpEventNode(
+                            pEvt,
+                            0,
+                            MIDISpEventType.LoopEnd,
+                            new byte[1][] {
+                                [(byte)pk[1] , (byte)(pk[1] >> 8) ]
+                            }
+                        );
+                    }
+                    else
+                    {
+                        trkn.Part.First.Value.insertSpEventNode(
+                            pEvt,
+                            0,
+                            MIDISpEventType.LoopEnd,
+                            new byte[1][] {
+                                [ (byte)pk[1] , 0 ]
+                            }
+                        );
+                    }
                     pt += skipPtr;
                     break;
 
