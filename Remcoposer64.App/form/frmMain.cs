@@ -639,12 +639,124 @@ namespace Remcoposer64.App
 
             if (player != null && player.GetMusicState() == RmPlayer.PlayerState.Processing)
             {
-                foreach(var stepeditor in stepEditors)
+                foreach (var stepeditor in stepEditors)
                 {
                     stepeditor.Refresh();
                 }
             }
 
+        }
+
+        private static readonly HashSet<string> SupportedExtensions =
+    new(StringComparer.OrdinalIgnoreCase)
+    {
+                ".rcp",
+                ".g36",
+                ".mid",
+                ".midi"
+    };
+
+        private void dockPanel1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void dockPanel1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            string[] files =
+                (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            foreach (string file in files)
+            {
+                OpenPath(file);
+            }
+        }
+
+        /// <summary>
+        /// ファイル・フォルダ共通入口
+        /// </summary>
+        private void OpenPath(string path)
+        {
+            foreach (string file in EnumerateSupportedFiles(path))
+            {
+                OpenFile(file);
+            }
+        }
+
+        /// <summary>
+        /// ファイルならそのまま返す
+        /// フォルダなら再帰で取得
+        /// </summary>
+        private IEnumerable<string> EnumerateSupportedFiles(string path)
+        {
+            if (File.Exists(path))
+            {
+                if (IsSupportedFile(path))
+                {
+                    yield return path;
+                }
+
+                yield break;
+            }
+
+            if (!Directory.Exists(path))
+                yield break;
+
+            foreach (string file in Directory.EnumerateFiles(
+                         path,
+                         "*.*",
+                         SearchOption.AllDirectories))
+            {
+                if (IsSupportedFile(file))
+                {
+                    yield return file;
+                }
+            }
+        }
+
+        private bool IsSupportedFile(string filename)
+        {
+            string ext = Path.GetExtension(filename);
+
+            return SupportedExtensions.Contains(ext);
+        }
+
+        /// <summary>
+        /// 実際の読み込み
+        /// </summary>
+        private void OpenFile(string filename)
+        {
+            try
+            {
+                string ext = Path.GetExtension(filename);
+
+                switch (ext.ToLowerInvariant())
+                {
+                    case ".rcp":
+                    case ".g36":
+                        ImportMidiFile(filename);
+                        break;
+
+                    case ".mid":
+                    case ".midi":
+                        ImportMidiFile(filename);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogLevel.Error, $"Error! open file[{filename}]\r\n{ex.Message}");
+            }
         }
 
     }

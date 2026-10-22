@@ -343,6 +343,8 @@
             dockPanel1.TabIndex = 4;
             dockPanel1.ActiveDocumentChanged += dockPanel1_ActiveDocumentChanged;
             dockPanel1.ActiveContentChanged += dockPanel1_ActiveContentChanged;
+            dockPanel1.DragDrop += dockPanel1_DragDrop;
+            dockPanel1.DragEnter += dockPanel1_DragEnter;
             // 
             // visualStudioToolStripExtender1
             // 
@@ -379,6 +381,7 @@
             // 
             // frmMain
             // 
+            AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 538);
@@ -386,6 +389,8 @@
             MainMenuStrip = menuStrip1;
             Name = "frmMain";
             Text = "Remcoposer64";
+            DragDrop += dockPanel1_DragDrop;
+            DragEnter += dockPanel1_DragEnter;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             toolStrip1.ResumeLayout(false);

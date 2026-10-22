@@ -68,10 +68,29 @@ namespace Remcoposer64.Core
 
             #endregion
 
-            Header();
-            Rythm();
-            UserEx();
-            TrackData();
+            int retryCount = 2;
+            while (retryCount > 0)
+            {
+                try
+                {
+
+                    if (retryCount != 1) Header();
+                    else Header(true);
+
+                    Rythm();
+                    UserEx();
+                    TrackData();
+                    break;
+                }
+                catch (IndexOutOfRangeException ex)
+                {
+                    prj.Track.Clear();
+                    prj.Rythm.Clear();
+                    prj.UserExclusive.Clear();
+                    ptr = 0;
+                    retryCount--;
+                }
+            }
 
             LinkedListNode<MIDITrack> nTrk = prj.Track.Last;
             while (nTrk!=null)
@@ -99,7 +118,7 @@ namespace Remcoposer64.Core
             return prj;
         }
 
-        private void Header()
+        private void Header(bool force = false)
         {
             string str = "";
 
@@ -132,7 +151,7 @@ namespace Remcoposer64.Core
             }
             else
             {
-                Header_RCP();
+                Header_RCP(force);
             }
         }
 
@@ -214,7 +233,7 @@ namespace Remcoposer64.Core
             ptr += 80;
         }
 
-        private void Header_RCP()
+        private void Header_RCP(bool force)
         {
             string str = "";
 
@@ -269,7 +288,8 @@ namespace Remcoposer64.Core
             switch (trkLen)
             {
                 case 0:
-                    trkLen = 36;
+                    if (!force) trkLen = 36;
+                    else trkLen = 18;
                     rcpVer = 0;
                     break;
                 case 18:
