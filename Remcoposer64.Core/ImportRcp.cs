@@ -110,8 +110,11 @@ namespace Remcoposer64.Core
             int i = 0;
             while (nTrk != null)
             {
-                nTrk.Value.Name =
-                    enc.GetString(trackNameAry[i++]).Replace("\0", "");
+                if (trackNameAry.Count != i)
+                {
+                    nTrk.Value.Name =
+                        enc.GetString(trackNameAry[i++]).Replace("\0", "");
+                }
                 nTrk = nTrk.Next;
             }
 

@@ -38,7 +38,7 @@ namespace Remcoposer64.App
                 var file = args[1];
                 if (File.Exists(file))
                 {
-                    ImportMidiFile(file);
+                    if (dockPanel1.Contents.Count < MAX_OPEN_FILES) ImportMidiFile(file);
                 }
             }
         }
@@ -379,7 +379,7 @@ namespace Remcoposer64.App
 
             foreach (string fn in setting.ui.OpenFiles)
             {
-                if (File.Exists(fn))
+                if (dockPanel1.Contents.Count < MAX_OPEN_FILES && File.Exists(fn))
                     ImportMidiFile(fn);
             }
 
@@ -393,7 +393,8 @@ namespace Remcoposer64.App
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
-            ImportMidiFile(ofd.FileName);
+            if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
+                ImportMidiFile(ofd.FileName);
         }
 
         private void ImportMidiFile(string fileName)
@@ -668,6 +669,8 @@ namespace Remcoposer64.App
             }
         }
 
+        private const int MAX_OPEN_FILES = 100;
+
         private void dockPanel1_DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -678,7 +681,10 @@ namespace Remcoposer64.App
 
             foreach (string file in files)
             {
-                OpenPath(file);
+                if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
+                {
+                    OpenPath(file);
+                }
             }
         }
 
@@ -689,7 +695,8 @@ namespace Remcoposer64.App
         {
             foreach (string file in EnumerateSupportedFiles(path))
             {
-                OpenFile(file);
+                if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
+                    OpenFile(file);
             }
         }
 
