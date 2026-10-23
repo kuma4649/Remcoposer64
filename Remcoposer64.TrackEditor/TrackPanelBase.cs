@@ -11,6 +11,7 @@ namespace Remcoposer64.TrackEditor
     internal abstract class TrackPanelBase : Panel
     {
         protected IGraph graph;
+        protected int pxFontHeight { get; private set; } = 16;
 
         public MIDIProject Project { get; private set; } = null;
         public Setting Setting { get; private set; } = null;
@@ -25,6 +26,8 @@ namespace Remcoposer64.TrackEditor
         {
             Project = project;
             Setting = setting;
+
+            this.pxFontHeight = Setting.common.FontSize;
 
             CreateGraph();
             Invalidate();
@@ -51,6 +54,8 @@ namespace Remcoposer64.TrackEditor
                 == Setting.GraphType.GDI
                 ? new GraphGDI(Handle)
                 : new GraphVortice(Handle);
+
+            graph.SetFontSize(pxFontHeight);
         }
 
         protected sealed override void OnPaint(PaintEventArgs e)

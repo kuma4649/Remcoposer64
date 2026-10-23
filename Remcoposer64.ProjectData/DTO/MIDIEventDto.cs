@@ -21,6 +21,7 @@ namespace Remcoposer64.ProjectData.DTO
     [XmlInclude(typeof(MIDILoopStartEventDto))]
     [XmlInclude(typeof(MIDILoopEndEventDto))]
     [XmlInclude(typeof(MIDIBankProgramEventDto))]
+    [XmlInclude(typeof(MIDIMarkerEventDto))]
     public abstract class MIDIEventDto
     {
         public MIDIEventType Type { get; set; }

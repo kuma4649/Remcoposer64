@@ -250,11 +250,13 @@ namespace Remcoposer64.Common
         public class Common
         {
             public GraphType GraphType { get; set; } = GraphType.Vortice;
+            public int FontSize { get; set; } = 16;
 
             public Common Copy()
             {
                 Common cmn = new Common();
                 cmn.GraphType = this.GraphType;
+                cmn.FontSize = this.FontSize;
 
                 return cmn;
             }

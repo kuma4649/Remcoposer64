@@ -30,5 +30,7 @@ namespace Remcoposer64.ProjectData.DTO
         public int? tEndIndex { get; set; }
         public int tNumber { get; set; }
         public int tCounter { get; set; }
+
+        public int MaxLengthMIDIOut { get; set; }
     }
 }

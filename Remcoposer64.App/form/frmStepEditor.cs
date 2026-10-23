@@ -32,8 +32,14 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.ExitStepEditor += stepEditorPanel1_ExitStepEditor;
             stepEditorPanel1.SysExEditRequested = ExecuteSysExEditor;
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
+            stepEditorPanel1.GetScrollLockState = GetScrollLockState;
 
             UpdateFormTitle();
+        }
+
+        private bool GetScrollLockState()
+        {
+            return parent.GetScrollLockState();
         }
 
         private void stepEditorPanel1_InputModeChanged(object sender, ModeChangedEventArgs e)

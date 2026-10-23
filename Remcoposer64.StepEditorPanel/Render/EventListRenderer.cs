@@ -43,7 +43,7 @@ namespace Remcoposer64.StepEditorPanelControl
             {
                 CursorPosition playingCursorIndex = eventManager.GetPlayingCursorIndex();
                 
-                if (playingCursorIndex != null)
+                if (playingCursorIndex != null && parent.GetStateScrollLock())
                 {
                     scrollOffset = Math.Max(0, playingCursorIndex.Offset - 5);
                 }

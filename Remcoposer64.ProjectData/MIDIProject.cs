@@ -330,7 +330,8 @@ namespace Remcoposer64.ProjectData
                 tStartIndex = inf.tStartIndex,
                 tEndIndex = inf.tEndIndex,
                 tNumber = inf.tNumber,
-                tCounter = inf.tCounter
+                tCounter = inf.tCounter,
+                MaxLengthMIDIOut=inf.MaxLengthMIDIOut
             };
         }
 
@@ -497,6 +498,9 @@ namespace Remcoposer64.ProjectData
 
                 case MIDIBankProgramEvent bp:
                     return ConvertBankProgramEvent(bp);
+
+                case MIDIMarkerEvent me:
+                    return ConvertMarkerEvent(me);
 
                 default:
                     throw new NotImplementedException($"未対応のイベント: {ev.GetType().Name}");
@@ -811,6 +815,26 @@ namespace Remcoposer64.ProjectData
             };
         }
 
+        private MIDIEventDto ConvertMarkerEvent(MIDIMarkerEvent me)
+        {
+            return new MIDIMarkerEventDto
+            {
+                Type = me.Type,
+                Meas = me.Meas,
+                Step = me.Step,
+                ST = me.ST,
+                MIDIMessage = me.MIDIMessage,
+                MIDIMessageLst = me.MIDIMessageLst,
+
+                Text = me.Text
+            };
+        }
+
+
+
+
+
+
 
         public static MIDIProject Load(string fileName)
         {
@@ -1006,6 +1030,7 @@ namespace Remcoposer64.ProjectData
             inf.tEndIndex = dto.tEndIndex;
             inf.tNumber = dto.tNumber;
             inf.tCounter = dto.tCounter;
+            inf.MaxLengthMIDIOut = dto.MaxLengthMIDIOut;
 
             return inf;
         }
@@ -1183,6 +1208,23 @@ namespace Remcoposer64.ProjectData
                     bp.ProgramNumber = ((MIDIBankProgramEventDto)dto).ProgramNumber;
                     bp.ControlChange = ((MIDIBankProgramEventDto)dto).ControlChange;
                     return bp;
+
+                case MIDIEventType.MetaMarker:
+                    var mae = new MIDIMarkerEvent();
+                    mae.Meas = dto.Meas;
+                    mae.Step = dto.Step;
+                    mae.ST = dto.ST;
+                    mae.Text = ((MIDIMarkerEventDto)dto).Text;
+                    return mae;
+
+                case MIDIEventType.MetaSMPTEOffset:
+                    var smpteEve = new MIDIMetaEvent();
+                    smpteEve.Meas = dto.Meas;
+                    smpteEve.Step = dto.Step;
+                    smpteEve.ST = dto.ST;
+                    smpteEve.MIDIMessage = dto.MIDIMessage;
+                    smpteEve.MIDIMessageLst = dto.MIDIMessageLst;
+                    return smpteEve;
             }
 
             throw new Exception("Unknown event type: " + dto.Type);

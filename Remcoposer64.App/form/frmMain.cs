@@ -427,7 +427,7 @@ namespace Remcoposer64.App
                 return;
             }
 
-            Log.Write(LogLevel.Information, $"Import {fileName} is succed.");
+            Log.Write(LogLevel.Information, $"Import {fileName} is success.");
 
             projects.Add(project);
             currentProject = project;
@@ -766,5 +766,9 @@ namespace Remcoposer64.App
             }
         }
 
+        public bool GetScrollLockState()
+        {
+            return player.GetMusicState() != RmPlayer.PlayerState.Stopped;
+        }
     }
 }

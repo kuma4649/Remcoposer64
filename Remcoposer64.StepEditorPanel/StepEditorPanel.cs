@@ -31,6 +31,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public event EventHandler<StatusBarMessageEventArgs> ChangeStatusBarMessage;
         public Func<SysExEditRequest, SysExEditResult> SysExEditRequested;
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
+        public Func<bool> GetScrollLockState;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -1376,6 +1377,12 @@ namespace Remcoposer64.StepEditorPanelControl
             vscroll.Maximum = Math.Max(0, eventManager.EventCount);
             vscroll.LargeChange = VisibleRows;
             vscroll.SmallChange = 1;
+        }
+
+        public bool GetStateScrollLock()
+        {
+            if (GetScrollLockState == null) return false;
+            return GetScrollLockState.Invoke();
         }
     }
 }

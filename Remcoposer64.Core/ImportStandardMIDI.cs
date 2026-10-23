@@ -130,7 +130,7 @@ namespace Remcoposer64.Core
                     trk[i].Name = (i == 0)
                         ? Common.Common.cntSMF1ConductorTrackName
                         : string.Format(Common.Common.cntSMF1DefaultTrackName, i + 1);
-                    trk[i].OutDevice = i / 16;
+                    trk[i].OutDevice = 0;// i / 16;
                     trk[i].OutChannel = i % 16;
                     trk[i].InDevice = i / 16;
                     trk[i].InChannel = null;
@@ -203,7 +203,7 @@ namespace Remcoposer64.Core
                             msg = setMIDIEvent(ref cmd, ref ch, ref trkPtr, bs);
                             if (format == 1)
                             {
-                                trk[trkNum].OutDevice = stOutDevNum;
+                                //trk[trkNum].OutDevice = trkNum / 16;// stOutDevNum;
                                 trk[trkNum].OutChannel = ch;
                             }
                             break;
@@ -442,6 +442,18 @@ namespace Remcoposer64.Core
                                 case MIDIEventType.MetaTimeSignature:
                                     break;
                                 case MIDIEventType.BarLine:
+                                    break;
+                                case MIDIEventType.MetaSMPTEOffset:
+                                    break;
+                                case MIDIEventType.MetaMarker:
+                                    bytes = new byte[ev.MIDIMessage.Length - 2];
+                                    Array.Copy(ev.MIDIMessage, 2, bytes, 0, ev.MIDIMessage.Length - 2);
+
+                                    encoding = Common.Common.GetCode(ev.MIDIMessage, 2, ev.MIDIMessage.Length - 2);
+                                    if (encoding == null) encoding = Encoding.UTF8;
+                                    strFromByte = encoding.GetString(bytes).Replace("\0", "");
+                                    ((MIDIMarkerEvent)ev).Text = strFromByte;
+                                    ev.MIDIMessage = null;
                                     break;
                                 default:
                                     Log.Write(LogLevel.Warning, "StandardMIDI変換時の未実装イベントタイプ:{0}", ev.Type);

@@ -31,6 +31,9 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
         private readonly UIBankProgramEvent bankProgramEvent;
 
+        private readonly UIMarkerEvent markerEvent;
+
+
         public UIEventProvider(DrawUtil drawUtil)
         {
             noteEvent = new(drawUtil);
@@ -52,6 +55,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             loopStartEvent = new(drawUtil);
             loopEndEvent = new(drawUtil);
             bankProgramEvent = new(drawUtil);
+            markerEvent = new(drawUtil);
         }
 
         public UIEvent Get(MIDIEventType type)
@@ -82,7 +86,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 MIDIEventType.MetaTrackName => memoEvent,
                 MIDIEventType.MetaInstrumentName => metaEvent,
                 MIDIEventType.MetaLyric => metaEvent,
-                MIDIEventType.MetaMarker => metaEvent,
+                MIDIEventType.MetaMarker => markerEvent,
                 MIDIEventType.MetaCuePoint => metaEvent,
                 MIDIEventType.MetaProgramName => memoEvent,
                 MIDIEventType.MetaDeviceName => metaEvent,

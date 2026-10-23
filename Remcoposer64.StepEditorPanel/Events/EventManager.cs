@@ -21,6 +21,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public MdlSameMeasEvent mdlSameMeasEvent;
         public MdlBarLineEvent mdlBarLineEvent;
         public MdlEndEvent mdlEndEvent;
+        public MdlMarkerEvent mdlMarkerEvent;
 
         private LinkedList<MIDIEvent> events = new();
 
@@ -72,6 +73,7 @@ namespace Remcoposer64.StepEditorPanelControl
             mdlSameMeasEvent = new MdlSameMeasEvent(this);
             mdlBarLineEvent = new MdlBarLineEvent(this);
             mdlEndEvent = new MdlEndEvent(this);
+            mdlMarkerEvent = new MdlMarkerEvent(this);
 
             this.parent = parent;
             for (int i = 0; i < tieWork.Length; i++) tieWork[i] = new MIDITieCache();
@@ -679,8 +681,10 @@ namespace Remcoposer64.StepEditorPanelControl
         {
             var ev = node.Value;
             var cur = node;
+            
             LinkedListNode<MIDIEvent> returnNode;
 
+            
             while (cur.Previous != null)
             {
                 if (cur.Previous.Value.Type == MIDIEventType.BarLine ||
@@ -905,7 +909,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 case MIDIEventType.MetaLyric:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaMarker:
-                    return mdlMetaEvent;
+                    return mdlMarkerEvent;
                 case MIDIEventType.MetaPortPrefix:
                     return mdlMetaEvent;
                 case MIDIEventType.MetaProgramName:
