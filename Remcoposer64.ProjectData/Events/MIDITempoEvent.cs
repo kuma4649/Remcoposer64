@@ -13,6 +13,14 @@ namespace Remcoposer64.ProjectData.Events
         public int backupTempoValue;
         public static int oTempoValue;
 
+        public bool RelativeTempoChange { get; set; } = false;
+        public bool backupRelativeTempoChange;
+        public static bool oRelativeTempoChange;
+
+        public int RelativeTempoChangeValue { get; set; } = 0;
+        public int backupRelativeTempoChangeValue;
+        public static int oRelativeTempoChangeValue;
+
         public MIDITempoEvent()
         {
             Type = MIDIEventType.MetaTempo;
@@ -29,7 +37,8 @@ namespace Remcoposer64.ProjectData.Events
                 ST = this.ST,
 
                 TempoValue = this.TempoValue,
-
+                RelativeTempoChange=this.RelativeTempoChange,
+                RelativeTempoChangeValue=this.RelativeTempoChangeValue,
             };
         }
 

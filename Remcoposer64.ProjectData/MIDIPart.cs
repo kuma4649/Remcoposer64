@@ -213,6 +213,10 @@ namespace Remcoposer64.ProjectData
                 ((MIDIBankProgramEvent)eve).ProgramNumber = eve.MIDIMessageLst[0][1];
                 ((MIDIBankProgramEvent)eve).ControlChange = eve.MIDIMessageLst[1][2];
             }
+            else if (eve.Type == MIDIEventType.MetaTempo)
+            {
+                ((MIDITempoEvent)eve).TempoValue = -1;
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }

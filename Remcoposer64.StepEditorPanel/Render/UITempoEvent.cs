@@ -57,11 +57,14 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 else
                     drawUtil.DrawCell(te.ST.ToString(), ref pos, ref x, COL_ST, aryFb[0]);
 
-                // GT列をスキップ
-                x += 5;
+                // RelativeTempoChangeValue(GT)
+                if (cursor.Position == 3)
+                    drawUtil.DrawCell(val, ref pos, ref x, COL_GT, fbC);
+                else
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
 
                 // BPM (VEL)
-                if (cursor.Position > 2)
+                if (cursor.Position == 4)
                     drawUtil.DrawCell(val, ref pos, ref x, COL_VEL, fbC);
                 else
                     drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_VEL, aryFb[0]);
@@ -82,8 +85,11 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 else
                     drawUtil.DrawCell(te.ST != 0 ? te.ST.ToString() : "    ", ref pos, ref x, COL_ST, aryFb[0]);
 
-                // GT列をスキップ
-                x += 5;
+                // RelativeTempoChangeValue(GT)
+                if (state == RowState.Cursor && cursor.Position == 3)
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, fbC);
+                else
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
 
                 // BPM (VEL)
                 if (state == RowState.Cursor && cursor.Position > 2)

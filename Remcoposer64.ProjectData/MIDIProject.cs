@@ -694,7 +694,9 @@ namespace Remcoposer64.ProjectData
                 MIDIMessage = te.MIDIMessage,
                 MIDIMessageLst = te.MIDIMessageLst,
 
-                TempoValue = te.TempoValue
+                TempoValue = te.TempoValue,
+                RelativeTempoChange=te.RelativeTempoChange,
+                RelativeTempoChangeValue=te.RelativeTempoChangeValue
             };
         }
 
@@ -1098,6 +1100,8 @@ namespace Remcoposer64.ProjectData
                     te.Step = dto.Step;
                     te.ST = dto.ST;
                     te.TempoValue = ((MIDITempoEventDto)dto).TempoValue;
+                    te.RelativeTempoChange = ((MIDITempoEventDto)dto).RelativeTempoChange;
+                    te.RelativeTempoChangeValue = ((MIDITempoEventDto)dto).RelativeTempoChangeValue;
                     return te;
 
                 case MIDIEventType.Memo:

@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using System.Runtime.Intrinsics.Arm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Remcoposer64.Core.Player
 {
@@ -14,7 +15,11 @@ namespace Remcoposer64.Core.Player
         // --- Tempo / Timing ---
         private int _ppq = 480;               // デフォルトPPQ（後でプロジェクトから取得）
         private double _bpm = 120;               // 人間が扱うテンポ
-        
+        private bool RelativeTempoChangeSW = false;
+        private double RelativeTempoChangeTargetTempo = 120.0;
+        public double RelativeTempoChangeTickSlice = 1.0;
+        //public double RelativeTempoChangeNowTempo = 120.0;
+
         private int _meas = 0;
         private int _step = 0;
         private int _tick = 0;
@@ -49,6 +54,8 @@ namespace Remcoposer64.Core.Player
 
             FireFrameProcess = 0;
             IsFinished = true;
+
+            RelativeTempoChangeSW = false;
 
             //if (_midiOutInfo != null)
             //{
@@ -215,6 +222,22 @@ namespace Remcoposer64.Core.Player
         public void ProcessFrame(long seqCounter)
         {
 
+            if (RelativeTempoChangeSW)
+            {
+                double RelativeTempoChangeNowTempo = _bpm;
+                RelativeTempoChangeNowTempo += RelativeTempoChangeTickSlice * 1;// Tick.Sabun;
+                if (
+                    (RelativeTempoChangeTickSlice > 0.0 && RelativeTempoChangeNowTempo >= RelativeTempoChangeTargetTempo)
+                    || (RelativeTempoChangeTickSlice < 0.0 && RelativeTempoChangeNowTempo <= RelativeTempoChangeTargetTempo)
+                    )
+                {
+                    RelativeTempoChangeSW = false;
+                    RelativeTempoChangeNowTempo = RelativeTempoChangeTargetTempo;
+                }
+
+                _bpm = RelativeTempoChangeNowTempo;
+            }
+
             bool zanGT = ProcessNoteOff();
 
             _tick++;
@@ -349,12 +372,25 @@ namespace Remcoposer64.Core.Player
             {
                 MIDITempoEvent tevt = (MIDITempoEvent)evt;
 
-                double bpm = tevt.TempoValue;
+                if (!tevt.RelativeTempoChange)
+                {
+                    double bpm = tevt.TempoValue;
 
-                _bpm = bpm;   // ← UpdateTimer() に反映される
+                    _bpm = bpm;   // ← UpdateTimer() に反映される
 
-                // デバッグ用
-                Console.WriteLine($"Tempo Change: {bpm} BPM");
+                    // デバッグ用
+                    Console.WriteLine($"Tempo Change: {bpm} BPM");
+                }
+                else
+                {
+                    int Tempo = (int)((double)_bpm * tevt.TempoValue);
+                    if (Tempo < 10) Tempo = 10;
+                    double s = (double)(Tempo - _bpm) * 256.0 / ((256.0 - tevt.RelativeTempoChangeValue) * _ppq);
+
+                    RelativeTempoChangeTargetTempo = Tempo;
+                    RelativeTempoChangeTickSlice = (_bpm < Tempo) ? s : -s;
+                    RelativeTempoChangeSW = true;
+                }
             }
             else if (evt.Type == MIDIEventType.ControlChange)
             {

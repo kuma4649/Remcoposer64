@@ -70,6 +70,8 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIMemoEvent();
                 case MIDIEventType.MetaMarker:
                     return new MIDIMarkerEvent();
+                case MIDIEventType.TempoChange:
+                    return new MIDITempoEvent();
                 default:
                     Log.Write("Detect unsupported commands.{0}", type);
                     return new MIDIMetaEvent();

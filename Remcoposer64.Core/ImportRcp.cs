@@ -2,6 +2,7 @@
 using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -752,12 +753,31 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xe7: // TempoChange
-                    trkn.Part.First.Value.insertSpEventNode(
+                    LinkedListNode<MIDIEvent> nEvt= trkn.Part.First.Value.insertSpEventNode(
                         pEvt,
                         pk[1],
                         MIDISpEventType.TempoChange,
                         new byte[1][] { new byte[2] { (byte)pk[2], (byte)pk[3] } }
                     );
+                    MIDITempoEvent eve = (MIDITempoEvent)nEvt.Value;
+
+                    double mul = eve.MIDIMessageLst[0][0] / 64.0;
+                    if (eve.MIDIMessageLst[0][1] == 0)
+                    {
+                        int Tempo = (int)((double)prj.Information.Tempo * mul);
+                        if (Tempo < 10) Tempo = 10;
+                        else if (Tempo > 240) Tempo = 240;
+
+                        eve.TempoValue = Tempo;
+                    }
+                    else
+                    {
+                        int Tempo = (int)((double)prj.Information.Tempo * mul);
+                        eve.TempoValue = Tempo;
+                        eve.RelativeTempoChange = true;
+                        eve.RelativeTempoChangeValue = eve.MIDIMessageLst[0][1];
+                    }
+
                     pt += skipPtr;
                     break;
 
