@@ -61,13 +61,13 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 if (cursor.Position == 3)
                     drawUtil.DrawCell(val, ref pos, ref x, COL_GT, fbC);
                 else
-                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
+                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
 
                 // BPM (VEL)
                 if (cursor.Position == 4)
                     drawUtil.DrawCell(val, ref pos, ref x, COL_VEL, fbC);
                 else
-                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_VEL, aryFb[0]);
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_VEL, aryFb[0]);
             }
             else
             {
@@ -87,15 +87,15 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
                 // RelativeTempoChangeValue(GT)
                 if (state == RowState.Cursor && cursor.Position == 3)
-                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, fbC);
+                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_GT, fbC);
                 else
-                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
+                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_GT, aryFb[0]);
 
                 // BPM (VEL)
                 if (state == RowState.Cursor && cursor.Position > 2)
-                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_VEL, fbC);
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_VEL, fbC);
                 else
-                    drawUtil.DrawCell(te.TempoValue.ToString(), ref pos, ref x, COL_VEL, aryFb[0]);
+                    drawUtil.DrawCell(te.RelativeTempoChangeValue.ToString(), ref pos, ref x, COL_VEL, aryFb[0]);
             }
         }
 

@@ -217,6 +217,11 @@ namespace Remcoposer64.ProjectData
             {
                 ((MIDITempoEvent)eve).TempoValue = -1;
             }
+            else if (eve.Type == MIDIEventType.UserExclusive1)
+            {
+                ((MIDIUsrExEvent)eve).GT = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 2];
+                ((MIDIUsrExEvent)eve).VEL = eve.MIDIMessageLst[0][eve.MIDIMessageLst[0].Length - 1];
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }

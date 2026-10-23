@@ -502,6 +502,9 @@ namespace Remcoposer64.ProjectData
                 case MIDIMarkerEvent me:
                     return ConvertMarkerEvent(me);
 
+                case MIDIUsrExEvent uee:
+                    return ConvertUsrExEvent(uee);
+
                 default:
                     throw new NotImplementedException($"未対応のイベント: {ev.GetType().Name}");
             }
@@ -829,6 +832,24 @@ namespace Remcoposer64.ProjectData
                 MIDIMessageLst = me.MIDIMessageLst,
 
                 Text = me.Text
+            };
+        }
+
+        private MIDIEventDto ConvertUsrExEvent(MIDIUsrExEvent uee)
+        {
+            return new MIDIUsrExEventDto
+            {
+                Type = uee.Type,
+                Meas = uee.Meas,
+                Step = uee.Step,
+                ST = uee.ST,
+                MIDIMessage = uee.MIDIMessage,
+                MIDIMessageLst = uee.MIDIMessageLst,
+
+                Data = uee.Data,
+                Name = uee.Name,
+                GT = uee.GT,
+                VEL = uee.VEL,
             };
         }
 
@@ -1229,6 +1250,25 @@ namespace Remcoposer64.ProjectData
                     smpteEve.MIDIMessage = dto.MIDIMessage;
                     smpteEve.MIDIMessageLst = dto.MIDIMessageLst;
                     return smpteEve;
+
+                case MIDIEventType.UserExclusive1:
+                case MIDIEventType.UserExclusive2:
+                case MIDIEventType.UserExclusive3:
+                case MIDIEventType.UserExclusive4:
+                case MIDIEventType.UserExclusive5:
+                case MIDIEventType.UserExclusive6:
+                case MIDIEventType.UserExclusive7:
+                case MIDIEventType.UserExclusive8:
+                    var uee = new MIDIUsrExEvent();
+                    uee.Meas = dto.Meas;
+                    uee.Step = dto.Step;
+                    uee.ST = dto.ST;
+                    uee.GT = ((MIDIUsrExEventDto)dto).GT;
+                    uee.VEL = ((MIDIUsrExEventDto)dto).VEL;
+                    uee.Data = ((MIDIUsrExEventDto)dto).Data;
+                    uee.Name = ((MIDIUsrExEventDto)dto).Name;
+                    return uee;
+
             }
 
             throw new Exception("Unknown event type: " + dto.Type);

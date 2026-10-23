@@ -2,8 +2,7 @@
 using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
-using System.Runtime.Intrinsics.Arm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+//using static Remcoposer64.Common.Setting;
 
 namespace Remcoposer64.Core.Player
 {
@@ -324,7 +323,7 @@ namespace Remcoposer64.Core.Player
             MIDIPart prt = nPrt.Value;
             MIDIEvent evt = nEvt.Value;
 
-            MidiOut midiOut = null;
+            NAudio.Midi.MidiOut midiOut = null;
             if (midiOutDevice == null) return nEvt.Next;
 
             if (trk.OutDevice < midiOutDevice.Length)
@@ -379,7 +378,7 @@ namespace Remcoposer64.Core.Player
                     _bpm = bpm;   // ← UpdateTimer() に反映される
 
                     // デバッグ用
-                    Console.WriteLine($"Tempo Change: {bpm} BPM");
+                    Common.Log.Write(LogLevel.Debug, $"Tempo Change: {bpm} BPM");
                 }
                 else
                 {
@@ -390,6 +389,8 @@ namespace Remcoposer64.Core.Player
                     RelativeTempoChangeTargetTempo = Tempo;
                     RelativeTempoChangeTickSlice = (_bpm < Tempo) ? s : -s;
                     RelativeTempoChangeSW = true;
+
+                    Common.Log.Write(LogLevel.Debug, $"Tempo Change ( Relative ) : {Tempo} BPM   TickSlice : {RelativeTempoChangeTickSlice}");
                 }
             }
             else if (evt.Type == MIDIEventType.ControlChange)
@@ -473,47 +474,7 @@ namespace Remcoposer64.Core.Player
             else if (evt.Type == MIDIEventType.SysExF0)
             {
                 MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                List<byte> buf = new List<byte>();
-
-                int j = 0;
-                int chksum = 0;
-
-                while (j < sevt.Data.Length)
-                {
-                    byte? n = sevt.Data[j++];
-
-                    switch (n)
-                    {
-                        case 0x80:
-                            n = sevt.GT;
-                            break;
-                        case 0x81:
-                            n = sevt.VEL;
-                            break;
-                        case 0x82:
-                            n = (byte)trk.OutChannel;
-                            break;
-                        case 0x83:
-                            chksum = 0;
-                            n = null;
-                            break;
-                        case 0x84:
-                            n = (byte)(128 - (chksum % 128));
-                            break;
-                    }
-
-                    if (n != null)
-                    {
-                        buf.Add((byte)n);
-                        chksum += (byte)n;
-                    }
-
-                    if (n == 0xf7) break;
-                }
-
-
-                // SysEx はそのまま送る
-                midiOut?.SendBuffer(buf.ToArray());
+                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, (byte)trk.OutChannel);
             }
             else if (evt.Type == MIDIEventType.RolandDevice)
             {
@@ -666,12 +627,70 @@ namespace Remcoposer64.Core.Player
 
                 }
             }
+            else if (evt.Type == MIDIEventType.Memo)
+            {
+                // 今のところ何もしない
+            }
+            else if (evt.Type == MIDIEventType.UserExclusive1)
+            {
+                MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
+                byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
+                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, (byte)trk.OutChannel);
+
+            }
             else
             {
                 //T.B.D.
+                Common.Log.Write(LogLevel.Debug, $"TBD {evt.Type}");
             }
 
             return nEvt.Next;
+        }
+
+        private void SendSysEx(NAudio.Midi.MidiOut midiOut, byte[] dat,byte GT,byte Vel,byte trkOutChannel)
+        {
+            List<byte> buf = new List<byte>();
+
+            int j = 0;
+            int chksum = 0;
+
+            while (j < dat.Length)
+            {
+                byte? n = dat[j++];
+
+                switch (n)
+                {
+                    case 0x80:
+                        n = GT;
+                        break;
+                    case 0x81:
+                        n = Vel;
+                        break;
+                    case 0x82:
+                        n = trkOutChannel;
+                        break;
+                    case 0x83:
+                        chksum = 0;
+                        n = null;
+                        break;
+                    case 0x84:
+                        n = (byte)(128 - (chksum % 128));
+                        break;
+                }
+
+                if (n != null)
+                {
+                    buf.Add((byte)n);
+                    chksum += (byte)n;
+                }
+
+                if (n == 0xf7) break;
+            }
+
+
+            // SysEx はそのまま送る
+            midiOut?.SendBuffer(buf.ToArray());
+
         }
 
         private void ResetPlayedFlagsForMeasure(LinkedListNode<MIDIEvent> jumpNode)
