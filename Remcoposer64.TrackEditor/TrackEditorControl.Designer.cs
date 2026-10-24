@@ -13,8 +13,9 @@ namespace Remcoposer64.TrackEditor
         private void InitializeComponent()
         {
             splitContainer1 = new SplitContainer();
-            trackHeaderPanel = new Internal.TrackHeaderPanel();
-            trackCanvasPanel = new Internal.TrackCanvasPanel();
+            trackHeaderPanel = new Remcoposer64.TrackEditor.Internal.TrackHeaderPanel();
+            trackCanvasPanel = new Remcoposer64.TrackEditor.Internal.TrackCanvasPanel();
+            vScrollBar1 = new VScrollBar();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -23,46 +24,55 @@ namespace Remcoposer64.TrackEditor
             // 
             // splitContainer1
             // 
-            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             splitContainer1.FixedPanel = FixedPanel.Panel1;
             splitContainer1.Location = new Point(0, 0);
             splitContainer1.Name = "splitContainer1";
-            splitContainer1.IsSplitterFixed = false;
-            splitContainer1.BorderStyle = BorderStyle.None;
-            splitContainer1.Panel1MinSize = 120;
             // 
             // splitContainer1.Panel1
             // 
             splitContainer1.Panel1.Controls.Add(trackHeaderPanel);
+            splitContainer1.Panel1MinSize = 120;
             // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(trackCanvasPanel);
-            splitContainer1.Size = new Size(510, 435);
+            splitContainer1.Size = new Size(490, 435);
             splitContainer1.SplitterDistance = 121;
             splitContainer1.TabIndex = 0;
             // 
             // trackHeaderPanel
             // 
+            trackHeaderPanel.BackColor = Color.FromArgb(48, 48, 48);
             trackHeaderPanel.Dock = DockStyle.Fill;
             trackHeaderPanel.Location = new Point(0, 0);
             trackHeaderPanel.Name = "trackHeaderPanel";
             trackHeaderPanel.Size = new Size(121, 435);
             trackHeaderPanel.TabIndex = 0;
-            trackHeaderPanel.BackColor = Color.FromArgb(48, 48, 48);
             // 
             // trackCanvasPanel
             // 
+            trackCanvasPanel.BackColor = Color.FromArgb(32, 32, 32);
             trackCanvasPanel.Dock = DockStyle.Fill;
             trackCanvasPanel.Location = new Point(0, 0);
             trackCanvasPanel.Name = "trackCanvasPanel";
-            trackCanvasPanel.Size = new Size(385, 435);
+            trackCanvasPanel.Size = new Size(365, 435);
             trackCanvasPanel.TabIndex = 0;
-            trackCanvasPanel.BackColor = Color.FromArgb(32, 32, 32);
+            // 
+            // vScrollBar1
+            // 
+            vScrollBar1.Dock = DockStyle.Right;
+            vScrollBar1.Location = new Point(493, 0);
+            vScrollBar1.Name = "vScrollBar1";
+            vScrollBar1.Size = new Size(17, 435);
+            vScrollBar1.TabIndex = 1;
+            vScrollBar1.Scroll += vScrollBar1_Scroll;
+            vScrollBar1.ValueChanged += vScrollBar1_ValueChanged;
             // 
             // TrackEditorControl
             // 
             AutoScaleMode = AutoScaleMode.None;
+            Controls.Add(vScrollBar1);
             Controls.Add(splitContainer1);
             Name = "TrackEditorControl";
             Size = new Size(510, 435);
@@ -76,5 +86,6 @@ namespace Remcoposer64.TrackEditor
         private SplitContainer splitContainer1;
         private Internal.TrackHeaderPanel trackHeaderPanel;
         private Internal.TrackCanvasPanel trackCanvasPanel;
+        private VScrollBar vScrollBar1;
     }
 }

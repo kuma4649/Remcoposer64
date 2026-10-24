@@ -11,8 +11,17 @@ namespace Remcoposer64.TrackEditor
     internal abstract class TrackPanelBase : Panel
     {
         protected IGraph graph;
-        protected int pxFontHeight { get; private set; } = 16;
+        protected int pxFontHeight { get; private set; }
+        protected int pxOSFontHeight { get; private set; }
+        protected int pxFixedFontWidth { get; private set; }
+        protected int pxTrackMarginTop { get; private set; }
+        protected int pxTrackMarginBottom { get; private set; }
+        protected int pxTrackMarginLeft { get; private set; }
+        protected int pxTrackBorderLineThin { get; private set; }
 
+        public int pxTrackHeight => TrackEditorControl.HeaderLine * (pxFontHeight + pxTrackMarginTop + pxTrackMarginBottom);
+
+        public TrackEditorControl TrackEditorControl { get; private set; } = null;
         public MIDIProject Project { get; private set; } = null;
         public Setting Setting { get; private set; } = null;
         protected bool IsReady =>
@@ -20,14 +29,39 @@ namespace Remcoposer64.TrackEditor
     && Project != null
     && Setting != null;
 
+
+        protected TrackPanelBase()
+        {
+            //SetStyle(
+            //    ControlStyles.UserPaint |
+            //    ControlStyles.AllPaintingInWmPaint |
+            //    ControlStyles.OptimizedDoubleBuffer,
+            //    true);
+
+            //DoubleBuffered = true;
+
+            SetStyle(
+                ControlStyles.AllPaintingInWmPaint,
+                true);
+        }
+
+
         public virtual void SetContext(
+            TrackEditorControl trackEditorControl,
             MIDIProject project,
             Setting setting)
         {
+            TrackEditorControl = trackEditorControl;
             Project = project;
             Setting = setting;
 
             this.pxFontHeight = Setting.common.FontSize;
+            pxFixedFontWidth = pxFontHeight;
+            pxOSFontHeight = Math.Max(1, (int)(pxFontHeight * 0.75));
+            pxTrackMarginTop = Math.Max(1, (int)(pxFontHeight * 0.125));
+            pxTrackMarginBottom = Math.Max(1, (int)(pxFontHeight * 0.125));
+            pxTrackMarginLeft = Math.Max(1, (int)(pxFontHeight * 0.125));
+            pxTrackBorderLineThin = Math.Max(1, (int)(pxFontHeight * 0.0625));
 
             CreateGraph();
             Invalidate();
@@ -56,6 +90,11 @@ namespace Remcoposer64.TrackEditor
                 : new GraphVortice(Handle);
 
             graph.SetFontSize(pxFontHeight);
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // 何もしない
         }
 
         protected sealed override void OnPaint(PaintEventArgs e)

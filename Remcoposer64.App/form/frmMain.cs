@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using Remcoposer64.TrackEditor;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -50,6 +51,8 @@ namespace Remcoposer64.App
                 MessageBox.Show("再生するプロジェクトがありません。");
                 return;
             }
+
+            Stop();
 
             player.InitialPlay();
             player.PlayMusic(currentProject);
@@ -141,19 +144,8 @@ namespace Remcoposer64.App
                 try
                 {
                     MIDIProject project = (MIDIProject)tab.Tag;
-                    DataGridView dgv = (DataGridView)tab.Controls[0];
-
-                    foreach (DataGridViewRow row in dgv.Rows)
-                    {
-                        LinkedListNode<MIDITrack> trkNode = (LinkedListNode<MIDITrack>)row.Tag;
-                        MIDITrack trk = trkNode.Value;
-                        Setting.MidiOut mo = setting.midiOut;
-                        if (mo.lstMidiOutInfo.Count > mo.CurrentDev
-                            && mo.lstMidiOutInfo[mo.CurrentDev] != null)
-                        {
-                            row.Cells["Device"].Value = mo.lstMidiOutInfo[mo.CurrentDev][Math.Min(trk.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1)].name;
-                        }
-                    }
+                    TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
+                    tec.Refresh();
                 }
                 catch (Exception e)
                 {
@@ -447,81 +439,120 @@ namespace Remcoposer64.App
             project.parentForm = tab;
             fProjects.Add(tab);
 
-            DataGridView dgvTracks = new DataGridView();
-            dgvTracks.Dock = DockStyle.Fill;
-            dgvTracks.AllowUserToAddRows = false;
-            dgvTracks.AllowUserToDeleteRows = false;
-            dgvTracks.AllowUserToResizeRows = false;
-            dgvTracks.RowHeadersVisible = false;
-            dgvTracks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvTracks.EditMode = DataGridViewEditMode.EditOnEnter;
-            dgvTracks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            //DataGridView dgvTracks = new DataGridView();
+            //dgvTracks.Dock = DockStyle.Fill;
+            //dgvTracks.AllowUserToAddRows = false;
+            //dgvTracks.AllowUserToDeleteRows = false;
+            //dgvTracks.AllowUserToResizeRows = false;
+            //dgvTracks.RowHeadersVisible = false;
+            //dgvTracks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            //dgvTracks.EditMode = DataGridViewEditMode.EditOnEnter;
+            //dgvTracks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
-            dgvTracks.Columns.Clear();
-            dgvTracks.Columns.Add("No", "No");
-            dgvTracks.Columns.Add("Name", "Name");
-            dgvTracks.Columns.Add("Device", "Device");
-            dgvTracks.Columns.Add("Channel", "Ch");
-            dgvTracks.Columns.Add("Parts", "Parts");
-            dgvTracks.Columns["Parts"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            dgvTracks.Columns["Parts"].ReadOnly = true;
-            dgvTracks.Columns["Parts"].Width = 80;
-            dgvTracks.Columns.Add("Spacer", "");
-            dgvTracks.Columns["Spacer"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dgvTracks.Columns["Spacer"].ReadOnly = true;
-            dgvTracks.CellDoubleClick += (s, e) =>
-            {
-                // Parts 列以外は無視
-                if (e.ColumnIndex != dgvTracks.Columns["Parts"].Index)
-                    return;
+            //dgvTracks.Columns.Clear();
+            //dgvTracks.Columns.Add("No", "No");
+            //dgvTracks.Columns.Add("Name", "Name");
+            //dgvTracks.Columns.Add("Device", "Device");
+            //dgvTracks.Columns.Add("Channel", "Ch");
+            //dgvTracks.Columns.Add("Parts", "Parts");
+            //dgvTracks.Columns["Parts"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            //dgvTracks.Columns["Parts"].ReadOnly = true;
+            //dgvTracks.Columns["Parts"].Width = 80;
+            //dgvTracks.Columns.Add("Spacer", "");
+            //dgvTracks.Columns["Spacer"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            //dgvTracks.Columns["Spacer"].ReadOnly = true;
+            //dgvTracks.CellDoubleClick += (s, e) =>
+            //{
+            //    // Parts 列以外は無視
+            //    if (e.ColumnIndex != dgvTracks.Columns["Parts"].Index)
+            //        return;
 
-                int trackIndex = e.RowIndex;
-                MIDITrack trk = project.getTrack4TrackNumber(trackIndex);
+            //    int trackIndex = e.RowIndex;
+            //    MIDITrack trk = project.getTrack4TrackNumber(trackIndex);
 
-                LinkedListNode<MIDIPart> part = trk.getStartPartNode();
-                if (part == null)
-                    return;
+            //    LinkedListNode<MIDIPart> part = trk.getStartPartNode();
+            //    if (part == null)
+            //        return;
 
-                frmStepEditor frm = new frmStepEditor(this, trk, part.Value, undoMng);
-                stepEditors.Add(frm);
-                frm.Show(dockPanel1, new Rectangle(0, 0, 816, 480));
-                frm.Size = new Size(816, 480);
-            };
+            //    frmStepEditor frm = new frmStepEditor(this, trk, part.Value, undoMng);
+            //    stepEditors.Add(frm);
+            //    frm.Show(dockPanel1, new Rectangle(0, 0, 816, 480));
+            //    frm.Size = new Size(816, 480);
+            //};
 
-            dgvTracks.Rows.Clear();
+            //dgvTracks.Rows.Clear();
 
-            Setting.MidiOut mo = setting.midiOut;
-            LinkedListNode<MIDITrack> trk = project.getStartTrackNode();
-            while (trk != null)
-            {
-                string name = "";
-                if (mo != null
-                    && mo.lstMidiOutInfo != null
-                    && mo.lstMidiOutInfo.Count > 0
-                    && mo.lstMidiOutInfo.Count > mo.CurrentDev
-                    && mo.lstMidiOutInfo[mo.CurrentDev] != null
-                )
-                    name = mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name;
+            //Setting.MidiOut mo = setting.midiOut;
+            //LinkedListNode<MIDITrack> trk = project.getStartTrackNode();
+            //while (trk != null)
+            //{
+            //    string name = "";
+            //    if (mo != null
+            //        && mo.lstMidiOutInfo != null
+            //        && mo.lstMidiOutInfo.Count > 0
+            //        && mo.lstMidiOutInfo.Count > mo.CurrentDev
+            //        && mo.lstMidiOutInfo[mo.CurrentDev] != null
+            //    )
+            //        name = mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name;
 
-                dgvTracks.Rows.Add(
-                    trk.Value.Number + 1,
-                    trk.Value.Name,
-                    name,
-                    trk.Value.OutChannel + 1,
-                    MakePartDots(trk.Value)
-                );
-                dgvTracks.Rows[dgvTracks.Rows.Count - 1].Tag = trk;
+            //    dgvTracks.Rows.Add(
+            //        trk.Value.Number + 1,
+            //        trk.Value.Name,
+            //        name,
+            //        trk.Value.OutChannel + 1,
+            //        MakePartDots(trk.Value)
+            //    );
+            //    dgvTracks.Rows[dgvTracks.Rows.Count - 1].Tag = trk;
 
-                trk = project.getNextTrackNode(trk);
-            }
+            //    trk = project.getNextTrackNode(trk);
+            //}
 
-            tab.Controls.Add(dgvTracks);
+            //tab.Controls.Add(dgvTracks);
+
+            TrackEditorControl trackEditor = new TrackEditorControl();
+
+            trackEditor.Dock = DockStyle.Fill;
+
+            trackEditor.SetContext(
+                project,
+                setting);
+
+            trackEditor.TrackDoubleClicked +=
+                TrackEditor_TrackDoubleClicked;
+
+            tab.Controls.Add(trackEditor);
 
             // タブを追加
             tab.Show(dockPanel1, DockState.Document);
 
             // そのタブを選択
             tab.Activate();
+        }
+        
+        private void TrackEditor_TrackDoubleClicked(object sender, TrackDoubleClickEventArgs e)
+        {
+            MIDITrack trk = e.TrackNode.Value;
+
+            LinkedListNode<MIDIPart> part =
+                trk.getStartPartNode();
+
+            if (part == null)
+                return;
+
+            frmStepEditor frm =
+                new frmStepEditor(
+                    this,
+                    trk,
+                    part.Value,
+                    undoMng);
+
+            stepEditors.Add(frm);
+
+            frm.Show(
+                dockPanel1,
+                new Rectangle(0, 0, 816, 480));
+
+            frm.Size = new Size(816, 480);
         }
 
         private void UpdateInformation(MIDIProject project)
