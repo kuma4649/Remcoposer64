@@ -78,7 +78,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     pxTrackHeight - pxTrackBorderLineThin*4);
 
 
-                graph.BackColor = Color.DimGray;
+                graph.BackColor = Color.FromArgb(0, 90, 80, 190);
                 graph.FillRectangle(
                     0,
                     y + pxTrackHeight - 1,

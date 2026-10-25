@@ -68,12 +68,18 @@
             visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(components);
             toolStripContainer1 = new ToolStripContainer();
             timerScreen = new System.Windows.Forms.Timer(components);
+            toolStrip2 = new ToolStrip();
+            toolStripLabel2 = new ToolStripLabel();
+            tsbTrackRow1 = new ToolStripButton();
+            tsbTrackRow2 = new ToolStripButton();
+            tsbTrackRow3 = new ToolStripButton();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             toolStripContainer1.ContentPanel.SuspendLayout();
             toolStripContainer1.TopToolStripPanel.SuspendLayout();
             toolStripContainer1.SuspendLayout();
+            toolStrip2.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -372,12 +378,58 @@
             // 
             toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
             toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip1);
+            toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip2);
             // 
             // timerScreen
             // 
             timerScreen.Enabled = true;
             timerScreen.Interval = 20;
             timerScreen.Tick += timerScreen_Tick;
+            // 
+            // toolStrip2
+            // 
+            toolStrip2.Dock = DockStyle.None;
+            toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel2, tsbTrackRow1, tsbTrackRow2, tsbTrackRow3 });
+            toolStrip2.Location = new Point(241, 24);
+            toolStrip2.Name = "toolStrip2";
+            toolStrip2.Size = new Size(169, 25);
+            toolStrip2.TabIndex = 2;
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(57, 22);
+            toolStripLabel2.Text = "TrackRow";
+            // 
+            // tsbTrackRow1
+            // 
+            tsbTrackRow1.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbTrackRow1.Image = (Image)resources.GetObject("tsbTrackRow1.Image");
+            tsbTrackRow1.ImageTransparentColor = Color.Magenta;
+            tsbTrackRow1.Name = "tsbTrackRow1";
+            tsbTrackRow1.Size = new Size(23, 22);
+            tsbTrackRow1.Text = "1";
+            tsbTrackRow1.Click += tsbTrackRow1_Click;
+            // 
+            // tsbTrackRow2
+            // 
+            tsbTrackRow2.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbTrackRow2.Image = (Image)resources.GetObject("tsbTrackRow2.Image");
+            tsbTrackRow2.ImageTransparentColor = Color.Magenta;
+            tsbTrackRow2.Name = "tsbTrackRow2";
+            tsbTrackRow2.Size = new Size(23, 22);
+            tsbTrackRow2.Text = "2";
+            tsbTrackRow2.Click += tsbTrackRow2_Click;
+            // 
+            // tsbTrackRow3
+            // 
+            tsbTrackRow3.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbTrackRow3.Image = (Image)resources.GetObject("tsbTrackRow3.Image");
+            tsbTrackRow3.ImageTransparentColor = Color.Magenta;
+            tsbTrackRow3.Name = "tsbTrackRow3";
+            tsbTrackRow3.Size = new Size(23, 22);
+            tsbTrackRow3.Text = "3";
+            tsbTrackRow3.Click += tsbTrackRow3_Click;
             // 
             // frmMain
             // 
@@ -402,6 +454,8 @@
             toolStripContainer1.TopToolStripPanel.PerformLayout();
             toolStripContainer1.ResumeLayout(false);
             toolStripContainer1.PerformLayout();
+            toolStrip2.ResumeLayout(false);
+            toolStrip2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -446,5 +500,10 @@
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
         private ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.Timer timerScreen;
+        private ToolStrip toolStrip2;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripButton tsbTrackRow1;
+        private ToolStripButton tsbTrackRow2;
+        private ToolStripButton tsbTrackRow3;
     }
 }

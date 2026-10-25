@@ -32,6 +32,7 @@ namespace Remcoposer64.Core.Player
         public bool IsFinished { get; set; } = true;
 
         private MIDIProject _project = null;
+        // フレーム(Tick)刻みのカウンター
         public long frameCounter;
         // 44100Hz刻みのカウンター
         public long timerCounter=0;
@@ -99,11 +100,19 @@ namespace Remcoposer64.Core.Player
             _currentPpq = 0;
 
             ClearPlayedFlag();
-            frameCounter = 0;
+            
+            int minSt = 0;
+
+            foreach (var trk in _project.Track)
+            {
+                minSt = Math.Min(minSt, trk.St);
+            }
+
+            frameCounter = minSt;
             timerCounter = 0;
             _meas = 0;
             _step = 0;
-            _tick = 0;
+            _tick = minSt;
             _den = _project.Information.BeatDen;
             _mol = _project.Information.BeatMol;
 
@@ -285,14 +294,14 @@ namespace Remcoposer64.Core.Player
 
                     playedAllParts = false;
 
-                    if (frameCounter < prt.CurrentEventFrame)
+                    if (frameCounter < prt.CurrentEventFrame + trk.St)
                         break;
 
                     while (prt.CurrentEvent != null)
                     {
                         MIDIEvent evt = prt.CurrentEvent.Value;
 
-                        if (frameCounter < prt.CurrentEventFrame)
+                        if (frameCounter < prt.CurrentEventFrame + trk.St)
                             break;
 
                         prt.CurrentEvent = PlayEvent(trk, nPrt, prt.CurrentEvent);
@@ -329,6 +338,7 @@ namespace Remcoposer64.Core.Player
             if (trk.OutDevice < midiOutDevice.Length)
                 midiOut = midiOutDevice[trk.OutDevice];
             int? channel = trk.OutChannel;
+            int transpose = trk.Key ?? 0;
 
             if (evt.Type == MIDIEventType.NoteON)
             {
@@ -338,18 +348,19 @@ namespace Remcoposer64.Core.Player
                     int ch = (int)(channel & 0x0F);
 
                     int status = 0x90 | ch; // NoteOn
+                    byte key = (byte)Math.Clamp((nevt.KeyNumber + transpose), 0, 127);
                     int msg = status
-                              + (nevt.KeyNumber << 8)
+                              + (key << 8)
                               + (nevt.Vel << 16);
 
                     if (dicNoteOnTable.Length > trk.OutDevice
-                        && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
+                        && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(key)
                         && !trk.Mute
                         && nevt.GT > 0)
                         midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録
-                    SetNoteTable(trk.OutDevice, ch, nevt.KeyNumber, nevt.GT);
+                    SetNoteTable(trk.OutDevice, ch, key, nevt.GT);
                 }
             }
             else if (evt.Type == MIDIEventType.NoteOff)
@@ -360,8 +371,9 @@ namespace Remcoposer64.Core.Player
                     int ch = (int)(channel & 0x0F);
 
                     int status = 0x80 | ch; // NoteOff
+                    byte key = (byte)Math.Clamp((nevt.KeyNumber + transpose), 0, 127);
                     int msg = status
-                              + (nevt.KeyNumber << 8)
+                              + (key << 8)
                               + (nevt.Vel << 16);
 
                     midiOut?.Send(msg);

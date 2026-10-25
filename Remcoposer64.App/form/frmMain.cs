@@ -157,6 +157,25 @@ namespace Remcoposer64.App
 
         }
 
+        private void SetTrackEditorRow()
+        {
+
+            // MIDIデバイスの表示を更新する
+            foreach (frmProject tab in fProjects)
+            {
+                try
+                {
+                    TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
+                    tec.SetHeaderLine(setting.common.TrackEditorRow);
+                }
+                catch (Exception e)
+                {
+                    Log.ForcedWrite(e);
+                }
+            }
+
+        }
+
         private void tsmiImport_Click(object sender, EventArgs e)
         {
             ImportMidiFile();
@@ -273,53 +292,75 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_A_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_A);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_A);
             setting.midiOut.CurrentDev = 0;
             SetDevice();
         }
 
         private void tsbMIDIOut_B_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_B);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_B);
             setting.midiOut.CurrentDev = 1;
             SetDevice();
         }
 
         private void tsbMIDIOut_C_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_C);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_C);
             setting.midiOut.CurrentDev = 2;
             SetDevice();
         }
 
         private void tsbMIDIOut_D_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_D);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_D);
             setting.midiOut.CurrentDev = 3;
             SetDevice();
         }
 
         private void tsbMIDIOut_E_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_E);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_E);
             setting.midiOut.CurrentDev = 4;
             SetDevice();
         }
 
         private void tsbMIDIOut_F_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_F);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_F);
             setting.midiOut.CurrentDev = 5;
             SetDevice();
         }
 
         private void tsbMIDIOut_G_Click(object sender, EventArgs e)
         {
-            SelectPresetButton(tsbMIDIOut_G);
+            SelectPresetButton(toolStrip1.Items, tsbMIDIOut_G);
             setting.midiOut.CurrentDev = 6;
             SetDevice();
         }
 
+        private void tsbTrackRow1_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip2.Items, tsbTrackRow1);
+            setting.common.TrackEditorRow = 1;
+            SetTrackEditorRow();
+        }
+
+        private void tsbTrackRow2_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip2.Items, tsbTrackRow2);
+            setting.common.TrackEditorRow = 2;
+            SetTrackEditorRow();
+
+        }
+
+        private void tsbTrackRow3_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip2.Items, tsbTrackRow3);
+            setting.common.TrackEditorRow = 3;
+            SetTrackEditorRow();
+
+        }
 
 
 
@@ -344,25 +385,39 @@ namespace Remcoposer64.App
             {
                 case 0:
                 default:
-                    SelectPresetButton(tsbMIDIOut_A);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_A);
                     break;
                 case 1:
-                    SelectPresetButton(tsbMIDIOut_B);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_B);
                     break;
                 case 2:
-                    SelectPresetButton(tsbMIDIOut_C);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_C);
                     break;
                 case 3:
-                    SelectPresetButton(tsbMIDIOut_D);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_D);
                     break;
                 case 4:
-                    SelectPresetButton(tsbMIDIOut_E);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_E);
                     break;
                 case 5:
-                    SelectPresetButton(tsbMIDIOut_F);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_F);
                     break;
                 case 6:
-                    SelectPresetButton(tsbMIDIOut_G);
+                    SelectPresetButton(toolStrip1.Items, tsbMIDIOut_G);
+                    break;
+            }
+
+            switch(setting.common.TrackEditorRow)
+            {
+                case 1:
+                default:
+                    SelectPresetButton(toolStrip2.Items, tsbTrackRow1);
+                    break;
+                case 2:
+                    SelectPresetButton(toolStrip2.Items, tsbTrackRow2);
+                    break;
+                case 3:
+                    SelectPresetButton(toolStrip2.Items, tsbTrackRow3);
                     break;
             }
 
@@ -518,6 +573,8 @@ namespace Remcoposer64.App
 
             trackEditor.TrackDoubleClicked +=
                 TrackEditor_TrackDoubleClicked;
+            
+            trackEditor.SetHeaderLine(setting.common.TrackEditorRow);
 
             tab.Controls.Add(trackEditor);
 
@@ -527,7 +584,7 @@ namespace Remcoposer64.App
             // そのタブを選択
             tab.Activate();
         }
-        
+
         private void TrackEditor_TrackDoubleClicked(object sender, TrackDoubleClickEventArgs e)
         {
             MIDITrack trk = e.TrackNode.Value;
@@ -574,9 +631,9 @@ namespace Remcoposer64.App
             return new string('●', count);
         }
 
-        private void SelectPresetButton(ToolStripButton selected)
+        private void SelectPresetButton(ToolStripItemCollection collection, ToolStripButton selected)
         {
-            foreach (ToolStripItem item in toolStrip1.Items)
+            foreach (ToolStripItem item in collection)
             {
                 if (item is ToolStripButton btn)
                 {
@@ -800,5 +857,6 @@ namespace Remcoposer64.App
         {
             return player.GetMusicState() != RmPlayer.PlayerState.Stopped;
         }
+
     }
 }
