@@ -486,7 +486,7 @@ namespace Remcoposer64.Core.Player
             else if (evt.Type == MIDIEventType.SysExF0)
             {
                 MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, (byte)trk.OutChannel);
+                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, trk.OutChannel);
             }
             else if (evt.Type == MIDIEventType.RolandDevice)
             {
@@ -647,7 +647,7 @@ namespace Remcoposer64.Core.Player
             {
                 MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
                 byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
-                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, (byte)trk.OutChannel);
+                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, trk.OutChannel);
 
             }
             else if (evt.Type == MIDIEventType.MetaPortPrefix)
@@ -664,12 +664,13 @@ namespace Remcoposer64.Core.Player
             return nEvt.Next;
         }
 
-        private void SendSysEx(NAudio.Midi.MidiOut midiOut, byte[] dat,byte GT,byte Vel,byte trkOutChannel)
+        private void SendSysEx(NAudio.Midi.MidiOut midiOut, byte[] dat,byte GT,byte Vel,int? trkOutChannel)
         {
             List<byte> buf = new List<byte>();
 
             int j = 0;
             int chksum = 0;
+            bool err = false;
 
             while (j < dat.Length)
             {
@@ -684,7 +685,14 @@ namespace Remcoposer64.Core.Player
                         n = Vel;
                         break;
                     case 0x82:
-                        n = trkOutChannel;
+                        // OutChannelが指定されていないトラックにも関わらず0x82が指定されているExはエラーとして送信しない
+                        if (trkOutChannel == null)
+                        {
+                            Log.Write(LogLevel.Error, "A SysEx with the value 0x82 was detected, even though no OutChannel was specified for that track; therefore, it was not sent.");
+                            err = true;
+                        }
+                        else
+                            n = (byte)trkOutChannel;
                         break;
                     case 0x83:
                         chksum = 0;
@@ -706,7 +714,7 @@ namespace Remcoposer64.Core.Player
 
 
             // SysEx はそのまま送る
-            midiOut?.SendBuffer(buf.ToArray());
+            if (!err) midiOut?.SendBuffer(buf.ToArray());
 
         }
 

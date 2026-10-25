@@ -103,8 +103,16 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
                 MIDIEventType.LoopStart => loopStartEvent,
                 MIDIEventType.LoopEnd => loopEndEvent,
-
                 MIDIEventType.BankProgram => bankProgramEvent,
+
+                MIDIEventType.UserExclusive1 => metaEvent,
+                MIDIEventType.UserExclusive2 => metaEvent,
+                MIDIEventType.UserExclusive3 => metaEvent,
+                MIDIEventType.UserExclusive4 => metaEvent,
+                MIDIEventType.UserExclusive5 => metaEvent,
+                MIDIEventType.UserExclusive6 => metaEvent,
+                MIDIEventType.UserExclusive7 => metaEvent,
+                MIDIEventType.UserExclusive8 => metaEvent,
 
                 _ => throw new NotSupportedException()
             };

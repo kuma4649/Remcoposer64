@@ -115,5 +115,10 @@ namespace Remcoposer64.TrackEditor
 
             vScrollBar1.Value = value;
         }
+
+        public void SetInitialSplitDistance()
+        {
+            splitContainer1.SplitterDistance = ClientSize.Width / 3;
+        }
     }
 }

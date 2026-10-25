@@ -580,6 +580,7 @@ namespace Remcoposer64.App
 
             // タブを追加
             tab.Show(dockPanel1, DockState.Document);
+            trackEditor.SetInitialSplitDistance();
 
             // そのタブを選択
             tab.Activate();
