@@ -47,6 +47,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
             Debug.WriteLine($"KeyDown: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
 
+
             //CCのポップアップウィンドウが表示中の場合はカーソルキーなどの情報を渡して処理終了
             var ccForm = parent.CCcandidateForm;
             // ★ 先に候補フォームが表示中かチェック

@@ -75,7 +75,7 @@ namespace Remcoposer64.Core
                 throw new Exceptions.RcFailedOpenSMFTrackNumberException();
             }
 
-            if (format == 2)
+            if (format >= 2)
             {
                 //現在、Format2には対応していません。
                 throw new Exceptions.RcFailedOpenSMFNotSupportSMF2Exception();
@@ -455,8 +455,11 @@ namespace Remcoposer64.Core
                                     ((MIDIMarkerEvent)ev).Text = strFromByte;
                                     ev.MIDIMessage = null;
                                     break;
+                                case MIDIEventType.MetaPortPrefix:
+                                    ((MIDIPortPrefixEvent)ev).PortNumber = ev.MIDIMessage[1];
+                                    break;
                                 default:
-                                    Log.Write(LogLevel.Warning, "StandardMIDI変換時の未実装イベントタイプ:{0}", ev.Type);
+                                    Log.Write(LogLevel.Warning, $" ImportStandardMIDI.cs : 変換時の未実装イベントタイプ:{ev.Type}");
                                     break;
                             }
                             eventNode = prt.Value.getNextEventNode(eventNode);
@@ -818,6 +821,7 @@ namespace Remcoposer64.Core
                     if (format == 1)
                     {
                         stDevNum = bs[trkPtr + 1];
+                        msg.Add((byte)stDevNum);
                         trk.OutDevice = stDevNum;
 
                         //int dev = (stOutDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
@@ -825,7 +829,6 @@ namespace Remcoposer64.Core
                         //trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
                     }
                     trkPtr += 2;
-                    msg.Clear();
                     break;
                 case 0x2f://トラックの終端
                     len = bs[trkPtr];
@@ -875,6 +878,7 @@ namespace Remcoposer64.Core
                     }
                     break;
                 default:
+                    Log.Write(LogLevel.Warning, $"Not support Meta event type ={cmd}");
                     break;
             }
 

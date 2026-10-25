@@ -81,8 +81,10 @@ namespace Remcoposer64.ProjectData.Events
                 case MIDIEventType.UserExclusive7:
                 case MIDIEventType.UserExclusive8:
                     return new MIDIUsrExEvent();
+                case MIDIEventType.MetaPortPrefix:
+                    return new MIDIPortPrefixEvent();
                 default:
-                    Log.Write("Detect unsupported commands.{0}", type);
+                    Log.Write(LogLevel.Warning, $" MIDIEventsFactory.cs : Detect unsupported commands.{type}");
                     return new MIDIMetaEvent();
             }
         }

@@ -33,6 +33,8 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
         private readonly UIMarkerEvent markerEvent;
 
+        private readonly UIPortPrefixEvent portPrefixEvent;
+
 
         public UIEventProvider(DrawUtil drawUtil)
         {
@@ -56,6 +58,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             loopEndEvent = new(drawUtil);
             bankProgramEvent = new(drawUtil);
             markerEvent = new(drawUtil);
+            portPrefixEvent = new(drawUtil);
         }
 
         public UIEvent Get(MIDIEventType type)
@@ -91,7 +94,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                 MIDIEventType.MetaProgramName => memoEvent,
                 MIDIEventType.MetaDeviceName => metaEvent,
                 MIDIEventType.MetaChannelPrefix => metaEvent,
-                MIDIEventType.MetaPortPrefix => metaEvent,
+                MIDIEventType.MetaPortPrefix => portPrefixEvent,
                 MIDIEventType.MetaSeqNumber => metaEvent,
 
                 MIDIEventType.RolandDevice => rolandDeviceEvent,

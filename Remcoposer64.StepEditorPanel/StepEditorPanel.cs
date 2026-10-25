@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using static Remcoposer64.Common.WinApi;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.StepEditorPanelControl
 {
@@ -32,6 +33,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public Func<SysExEditRequest, SysExEditResult> SysExEditRequested;
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
         public Func<bool> GetScrollLockState;
+        public event EventHandler<KeyEventArgs> KeyDown;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -505,6 +507,20 @@ namespace Remcoposer64.StepEditorPanelControl
             {
                 return;
             }
+
+            // 親ウィンドウにキー操作を送信する
+            switch (e.KeyCode)
+            {
+                case Keys.F5://再生
+                case Keys.F10://停止
+                    if (KeyDown != null)
+                    {
+                        KeyDown?.Invoke(this, e);
+                        return;
+                    }
+                    break;
+            }
+
 
             if (keyb == null)
             {
@@ -1384,5 +1400,6 @@ namespace Remcoposer64.StepEditorPanelControl
             if (GetScrollLockState == null) return false;
             return GetScrollLockState.Invoke();
         }
+
     }
 }

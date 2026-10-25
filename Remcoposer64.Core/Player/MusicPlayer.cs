@@ -345,7 +345,7 @@ namespace Remcoposer64.Core.Player
                     if (dicNoteOnTable.Length > trk.OutDevice
                         && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(nevt.KeyNumber)
                         && !trk.Mute
-                        && nevt.GT>0)
+                        && nevt.GT > 0)
                         midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録
@@ -564,7 +564,7 @@ namespace Remcoposer64.Core.Player
 
                 }
             }
-            else if(evt.Type==MIDIEventType.BarLine)
+            else if (evt.Type == MIDIEventType.BarLine)
             {
                 if (trk.SameMeasStack.Count > 0)
                 {
@@ -579,7 +579,7 @@ namespace Remcoposer64.Core.Player
                     return trk.SameMeasStack.Pop();
                 }
             }
-            else if(evt.Type==MIDIEventType.LoopStart)
+            else if (evt.Type == MIDIEventType.LoopStart)
             {
                 trk.LoopStack.Push((nEvt.Next, null));
             }
@@ -629,7 +629,7 @@ namespace Remcoposer64.Core.Player
             }
             else if (evt.Type == MIDIEventType.Memo)
             {
-                // 今のところ何もしない
+                Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
             }
             else if (evt.Type == MIDIEventType.UserExclusive1)
             {
@@ -638,10 +638,15 @@ namespace Remcoposer64.Core.Player
                 SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, (byte)trk.OutChannel);
 
             }
+            else if (evt.Type == MIDIEventType.MetaPortPrefix)
+            {
+                MIDIPortPrefixEvent pfe = (MIDIPortPrefixEvent)evt;
+                trk.OutDevice = pfe.PortNumber;
+            }
             else
             {
                 //T.B.D.
-                Common.Log.Write(LogLevel.Debug, $"TBD {evt.Type}");
+                Common.Log.Write(LogLevel.Warning, $" MusicPlayer.cs : TBD {evt.Type}");
             }
 
             return nEvt.Next;

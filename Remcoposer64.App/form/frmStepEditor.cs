@@ -33,8 +33,24 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.SysExEditRequested = ExecuteSysExEditor;
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
             stepEditorPanel1.GetScrollLockState = GetScrollLockState;
+            stepEditorPanel1.KeyDown += StepEditorPanel1_KeyDown;
 
             UpdateFormTitle();
+        }
+
+
+
+        private void StepEditorPanel1_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F5:
+                    parent.Play();
+                    break;
+                case Keys.F10:
+                    parent.Stop();
+                    break;
+            }
         }
 
         private bool GetScrollLockState()

@@ -4,7 +4,6 @@ using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.TrackEditor;
-using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App

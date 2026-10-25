@@ -505,6 +505,9 @@ namespace Remcoposer64.ProjectData
                 case MIDIUsrExEvent uee:
                     return ConvertUsrExEvent(uee);
 
+                case MIDIPortPrefixEvent pfe:
+                    return ConvertPortPrefixEvent(pfe);
+
                 default:
                     throw new NotImplementedException($"未対応のイベント: {ev.GetType().Name}");
             }
@@ -853,6 +856,20 @@ namespace Remcoposer64.ProjectData
             };
         }
 
+        private MIDIEventDto ConvertPortPrefixEvent(MIDIPortPrefixEvent pfe)
+        {
+            return new MIDIPortPrefixEventDto
+            {
+                Type = pfe.Type,
+                Meas = pfe.Meas,
+                Step = pfe.Step,
+                ST = pfe.ST,
+                MIDIMessage = pfe.MIDIMessage,
+                MIDIMessageLst = pfe.MIDIMessageLst,
+
+                PortNumber=pfe.PortNumber,
+            };
+        }
 
 
 
@@ -1268,6 +1285,14 @@ namespace Remcoposer64.ProjectData
                     uee.Data = ((MIDIUsrExEventDto)dto).Data;
                     uee.Name = ((MIDIUsrExEventDto)dto).Name;
                     return uee;
+
+                case MIDIEventType.MetaPortPrefix:
+                    var pfe = new MIDIPortPrefixEvent();
+                    pfe.Meas = dto.Meas;
+                    pfe.Step = dto.Step;
+                    pfe.ST = dto.ST;
+                    pfe.PortNumber = ((MIDIPortPrefixEventDto)dto).PortNumber;
+                    return pfe;
 
             }
 
