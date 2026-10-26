@@ -486,7 +486,7 @@ namespace Remcoposer64.Core.Player
             else if (evt.Type == MIDIEventType.SysExF0)
             {
                 MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, trk.OutChannel);
+                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
             }
             else if (evt.Type == MIDIEventType.RolandDevice)
             {
@@ -647,7 +647,7 @@ namespace Remcoposer64.Core.Player
             {
                 MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
                 byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
-                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, trk.OutChannel);
+                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
 
             }
             else if (evt.Type == MIDIEventType.MetaPortPrefix)

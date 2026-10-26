@@ -337,25 +337,34 @@ namespace Remcoposer64.Core
         {
             prj.UserExclusive = new List<MIDIUserExclusive>();
 
+            int numLen = 24;
+            int byLen = 25;
+            if (IsG36)
+            {
+                numLen = 23;
+                byLen = 26;
+            }
+
             for (int i = 0; i < 8; i++)
             {
                 MIDIUserExclusive ux = new MIDIUserExclusive();
-                enc = Common.Common.GetCode(bs, ptr, 24);
+                enc = Common.Common.GetCode(bs, ptr, numLen);
                 if (enc == null) enc = Encoding.UTF8;
-                ux.Name = enc.GetString(bs, ptr, 24).Replace("\0", "");
+                ux.Name = enc.GetString(bs, ptr, numLen).Replace("\0", "");
                 ux.Memo = ux.Name;
-                ptr += 24;
+                ptr += numLen;
 
-                ux.Exclusive = new byte[25];
+                ux.Exclusive = new byte[byLen];
                 ux.Exclusive[0] = 0xF0;
 
-                for (int j = 1; j < 25; j++)
+                for (int j = 1; j < byLen; j++)
                 {
                     ux.Exclusive[j] = bs[ptr++];
                 }
 
                 prj.UserExclusive.Add(ux);
             }
+
         }
 
         private void TrackData()

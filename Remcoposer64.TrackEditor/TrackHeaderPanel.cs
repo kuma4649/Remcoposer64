@@ -35,9 +35,9 @@ namespace Remcoposer64.TrackEditor.Internal
         private const int COL_KEY = 11;
         private const int COL_TRACKNAME = 16;
         private const int COL_MIDIOUTCH = 6;
-        private const int COL_MIDIOUT = 9;
+        private const int COL_MIDIOUT = 10;
         private const int COL_MIDIINCH = 6;
-        private const int COL_MIDIIN = 9;
+        private const int COL_MIDIIN = 10;
 
         protected override void Render()
         {
@@ -158,8 +158,9 @@ namespace Remcoposer64.TrackEditor.Internal
                     // MIDI Out Ch
                     pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIOUTCH;
                     pos.Y = pxTrackMarginTop*2 + trackPanelPosY + pxFontHeight;
+                    string num = trk.Value.OutChannel == null ? "Off" : $"{trk.Value.OutChannel + 1:D2}";
                     graph.DrawString(
-                        $"{trk.Value.OutChannel + 1:D2}",
+                        num,
                         ref pos,
                         mojiColor,
                         backColor);
@@ -187,10 +188,11 @@ namespace Remcoposer64.TrackEditor.Internal
                     // MIDI In Ch
                     pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIINCH;
                     pos.Y = pxTrackMarginTop * 3 + trackPanelPosY + pxFontHeight * 2;
+                    string num = trk.Value.InChannel == null ? "Off" : $"{trk.Value.InChannel + 1:D2}";
                     graph.DrawString(
-                        $"{trk.Value.InChannel + 1:D2}",
+                        num,
                         ref pos,
-                        Color.WhiteSmoke,
+                        mojiColor,
                         backColor);
 
                     // MIDI In
@@ -206,7 +208,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     graph.DrawStringOSFont(
                         name,
                         ref pos,
-                        Color.WhiteSmoke,
+                        mojiColor,
                         Color.Black
                         );
                 }
