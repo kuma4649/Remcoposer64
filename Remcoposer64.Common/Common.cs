@@ -13,13 +13,13 @@ namespace Remcoposer64.Common
         public static readonly string cntLayoutFileName = "layout.xml";
         public static readonly string cntLogFilename = "log.txt";
         public static readonly string cntTimeFormat="yyMMddHHmmssfff";
-        public static readonly string cntExceptionFormat= "例外発生:\r\n- Type ------\r\n{0}\r\n- Message ------\r\n{1}\r\n- Source ------\r\n{2}\r\n- StackTrace ------\r\n{3}\r\n";
-        public static readonly string cntInnerExceptionFormat= "内部例外:\r\n- Type ------\r\n{0}\r\n- Message ------\r\n{1}\r\n- Source ------\r\n{2}\r\n- StackTrace ------\r\n{3}\r\n";
+        public static readonly string cntExceptionFormat= "Exception:\r\n- Type ------\r\n{0}\r\n- Message ------\r\n{1}\r\n- Source ------\r\n{2}\r\n- StackTrace ------\r\n{3}\r\n";
+        public static readonly string cntInnerExceptionFormat= "InnerException:\r\n- Type ------\r\n{0}\r\n- Message ------\r\n{1}\r\n- Source ------\r\n{2}\r\n- StackTrace ------\r\n{3}\r\n";
         public static readonly string cntNoTitle="No title";
         public static readonly string cntSMF0DefaultTrackName= "Channel {0}";
         public static readonly string cntNullDevice= "Null Device";
         public static readonly string cntSMF0DefaultPartName= "Channel {0} Part";
-        public static readonly string cntSMF1ConductorTrackName= "コンダクタートラック";
+        public static readonly string cntSMF1ConductorTrackName= "Conductor track";
         public static readonly string cntSMF1DefaultTrackName = "Track {0}";
         public static readonly string cntSMF1DefaultPartName = "Track {0} Part";
 

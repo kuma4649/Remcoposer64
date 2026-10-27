@@ -456,7 +456,7 @@ namespace Remcoposer64.Core
                                     ev.MIDIMessage = null;
                                     break;
                                 case MIDIEventType.MetaPortPrefix:
-                                    ((MIDIPortPrefixEvent)ev).PortNumber = ev.MIDIMessage[1];
+                                    ((MIDIPortPrefixEvent)ev).PortNumber = ev.MIDIMessage[2];
                                     break;
                                 default:
                                     Log.Write(LogLevel.Warning, $" ImportStandardMIDI.cs : 変換時の未実装イベントタイプ:{ev.Type}");
@@ -729,49 +729,38 @@ namespace Remcoposer64.Core
         private byte[] MetaEvent(MIDIProject prj, MIDITrack trk, int format, ref int trkPtr, ref int stDevNum, byte[] bs)
         {
             List<byte> msg = new List<byte>();
+            List<byte> nam = new List<byte>();
 
             byte cmd = bs[trkPtr++];
             msg.Add(cmd);
-            int len = 0;
-            byte[] nam = null;
+            int len = getDelta(ref trkPtr, bs, msg);
+            for (int i = 0; i < len; i++)
+            {
+                byte b = bs[trkPtr++];
+                nam.Add(b);
+                msg.Add(b);
+            }
+
             string strFromByte = "";
             Encoding enc;
+
             switch (cmd)
             {
                 case 0x01://テキスト
-                    len = getDelta(ref trkPtr, bs, msg);
-                    nam = new byte[len];
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        nam[i] = bs[trkPtr];
-                        msg.Add(nam[i]);
-                    }
-                    //strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    enc = Common.Common.GetCode(nam.ToArray());
+                    if (enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     break;
                 case 0x02://著作権表示
-                    len = getDelta(ref trkPtr, bs, msg);
-                    nam = new byte[len];
-                    enc = Common.Common.GetCode(bs, trkPtr, len);
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        nam[i] = bs[trkPtr];
-                        msg.Add(nam[i]);
-                    }
+                    enc = Common.Common.GetCode(nam.ToArray());
                     if (enc == null) enc = Encoding.UTF8;
-                    strFromByte = enc.GetString(nam).Replace("\0", "");
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     prj.Information.Copyright = strFromByte;
                     break;
                 case 0x03://曲名或いはトラック名
-                    len = getDelta(ref trkPtr, bs, msg);
-                    nam = new byte[len];
-                    enc = Common.Common.GetCode(bs, trkPtr, len);
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        nam[i] = bs[trkPtr];
-                        msg.Add(nam[i]);
-                    }
+                    enc = Common.Common.GetCode(nam.ToArray());
                     if (enc == null) enc = Encoding.UTF8;
-                    strFromByte = enc.GetString(nam).Replace("\0", "");
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     if ((format == 0 || (format == 1 && trk.Number == 0)) && !titleSW)
                     {
                         prj.Information.Title = strFromByte;
@@ -783,16 +772,9 @@ namespace Remcoposer64.Core
                     }
                     break;
                 case 0x04://楽器名
-                    len = getDelta(ref trkPtr, bs, msg);
-                    nam = new byte[len];
-                    enc = Common.Common.GetCode(bs, trkPtr, len);
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        nam[i] = bs[trkPtr];
-                        msg.Add(nam[i]);
-                    }
+                    enc = Common.Common.GetCode(nam.ToArray());
                     if (enc == null) enc = Encoding.UTF8;
-                    strFromByte = enc.GetString(nam).Replace("\0", "");
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     trk.Name = strFromByte;
                     break;
                 case 0x05://歌詞
@@ -800,82 +782,39 @@ namespace Remcoposer64.Core
                 case 0x07://キューポイント 
                 case 0x08://プログラム名 (音色名) 
                 case 0x09://デバイス名 (音源名) 
-                    len = getDelta(ref trkPtr, bs, msg);
-                    nam = new byte[len];
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        nam[i] = bs[trkPtr];
-                        msg.Add(nam[i]);
-                    }
-                    //strFromByte = Encoding.GetEncoding("Shift_JIS").GetString(nam).Replace("\0", "");
+                    enc = Common.Common.GetCode(nam.ToArray());
+                    if (enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     break;
                 case 0x20://MIDIチャンネルプリフィックス
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
                     break;
-                case 0x21://出力ポート指定
-                    len = bs[trkPtr];
-                    //msg.Add(bs[trkPtr++]);
-                    //msg.Add(bs[trkPtr++]);
-                    if (format == 1)
+                case 0x21://出力 PortPrefix
+                    if (format == 1 && msg.Count > 1)
                     {
-                        stDevNum = bs[trkPtr + 1];
-                        msg.Add((byte)stDevNum);
+                        stDevNum = nam[0];
                         trk.OutDevice = stDevNum;
-
-                        //int dev = (stOutDevNum + bs[trkPtr]) % setting.MIDIOutDeviceList.Count;
-                        //trk.OutUserDeviceNumber = setting.MIDIOutDeviceList[dev].UsrNumber;
-                        //trk.OutUserDeviceName = setting.MIDIOutDeviceList[dev].UsrName;
                     }
-                    trkPtr += 2;
                     break;
                 case 0x2f://トラックの終端
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
                     break;
                 case 0x51://テンポ
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
-                    prj.Information.Tempo = 60000000 / (bs[trkPtr] * 0x10000 + bs[trkPtr + 1] * 0x100 + bs[trkPtr + 2]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
+                    prj.Information.Tempo = 60000000 / (nam[0] * 0x10000 + nam[1] * 0x100 + nam[2]);
                     break;
                 case 0x54://SMPTE オフセット
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);
                     break;
                 case 0x58://TimeSignature(拍子)
-                    len = bs[trkPtr];
-                    msg.Add(bs[trkPtr++]);
-                    if(trkTick==0) prj.Information.BeatDen = (int)bs[trkPtr]; //分子
-                    msg.Add(bs[trkPtr++]);
-                    if (trkTick == 0) prj.Information.BeatMol = (int)Math.Pow(2.0, (double)bs[trkPtr]); //分母
-                    msg.Add(bs[trkPtr++]);
-                    msg.Add(bs[trkPtr++]);//1拍あたりのMIDIクロック数(無視)
-                    msg.Add(bs[trkPtr++]);//MIDI4分音符(24MIDIクロック)の中に入る32分音符の数(無視)
+                    if (trkTick == 0)
+                    {
+                        prj.Information.BeatDen = (int)nam[0]; //分子
+                        prj.Information.BeatMol = (int)Math.Pow(2.0, (double)nam[1]); //分母
+                    }
                     break;
                 case 0x59://KeySignature(調号)
-                    len = bs[trkPtr++];
-                    //msg.Add(bs[trkPtr++]);
-                    prj.Information.KeySignature = bs[trkPtr++];
-                    //msg.Add(bs[trkPtr++]); //♯や♭の数が入る。正数なら♯の数、負数なら♭の数を表す。(無視)
-                    prj.Information.KeySignature += bs[trkPtr++] * 0x100;
-                    //msg.Add(bs[trkPtr++]); //長調か短調かを表すフラグで、0なら長調、1なら短調。(無視)
+                    prj.Information.KeySignature = nam[0];
+                    prj.Information.KeySignature += nam[1] * 0x100;
                     msg.Clear();
                     break;
                 case 0x7F://シーケンサー特定メタイベント
-                    len = getDelta(ref trkPtr, bs, msg);
-                    for (int i = 0; i < len; i++, trkPtr++)
-                    {
-                        msg.Add(bs[trkPtr]);
-                    }
                     break;
                 default:
                     Log.Write(LogLevel.Warning, $"Not support Meta event type ={cmd}");
