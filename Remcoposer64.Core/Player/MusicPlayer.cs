@@ -360,7 +360,8 @@ namespace Remcoposer64.Core.Player
                         midiOut?.Send(msg);
 
                     // Gate（持続時間）を NoteOff のために記録
-                    SetNoteTable(trk.OutDevice, ch, key, nevt.GT);
+                    if (nevt.GT != 0 && nevt.Vel != 0)
+                        SetNoteTable(trk.OutDevice, ch, key, nevt.GT);
                 }
             }
             else if (evt.Type == MIDIEventType.NoteOff)
