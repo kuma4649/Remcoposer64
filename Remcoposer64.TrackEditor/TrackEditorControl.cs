@@ -1,5 +1,6 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -12,6 +13,8 @@ namespace Remcoposer64.TrackEditor
         public int HeaderLine { get; private set; } = 2;
 
         internal int pxScrollY = 0;
+        internal int pxScrollX = 0;
+        internal int pxHeaderScrollX = 0;
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
@@ -54,38 +57,160 @@ namespace Remcoposer64.TrackEditor
 
             splitContainer1.SplitterDistance = this.ClientSize.Width / 2;
 
-            UpdateVScrollRange();
-
+            UpdateScrollRange();
+            trackCanvasPanel.Invalidate();
             //Invalidate();
         }
 
         public void SetHeaderLine(int v)
         {
+            pxScrollY = 0;
+            vScrollBar1.Value = 0;
+
             HeaderLine = Math.Min(Math.Max(1, v), 3);
 
             trackHeaderPanel.Invalidate();
             trackCanvasPanel.Invalidate();
 
-            UpdateVScrollRange();
+            UpdateScrollRange();
+            trackCanvasPanel.Invalidate();
         }
 
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
         }
 
+        private void UpdateScrollRange()
+        {
+            UpdateVScrollRange();
+            UpdateHeaderHScrollRange();
+            UpdateHScrollRange();
+        }
+
         private void UpdateVScrollRange()
         {
             vScrollBar1.Minimum = 0;
-            vScrollBar1.Maximum =
+            vScrollBar1.LargeChange = trackCanvasPanel.ClientSize.Height;
+
+            if (Project == null) return;
+
+            try
+            {
+                int maxScroll =
+                    Math.Max(
+                        0,
+                        Project.Track.Count * (trackHeaderPanel.pxTrackHeight+1)
+                        - trackHeaderPanel.ClientSize.Height
+                        );
+
+                vScrollBar1.Maximum =
+                    maxScroll + vScrollBar1.LargeChange - 1;
+
+            }
+            catch { }
+        }
+
+        private void UpdateHeaderHScrollRange()
+        {
+            hHeaderScrollBar.LargeChange =
+                trackHeaderPanel.ClientSize.Width;
+
+            int pxHeaderWidth =
+                trackHeaderPanel.GetMaxWidth();
+
+            int maxScroll =
                 Math.Max(
                     0,
-                    Project.Track.Count * trackHeaderPanel.pxTrackHeight
-                    - trackHeaderPanel.ClientSize.Height);
+                    pxHeaderWidth
+                    - trackHeaderPanel.ClientSize.Width);
+
+            hHeaderScrollBar.Maximum =
+                maxScroll
+                + hHeaderScrollBar.LargeChange
+                - 1;
+        }
+
+        private void UpdateHScrollRange()
+        {
+            hScrollBar1.LargeChange = trackCanvasPanel.ClientSize.Width;
+
+            if (Project == null) return;
+
+            int maxTick = 0;
+
+            LinkedListNode<MIDITrack> trk =
+                Project.Track.First;
+
+            while (trk != null)
+            {
+                LinkedListNode<MIDIPart> part =
+                    trk.Value.getStartPartNode();
+
+                while (part != null)
+                {
+                    maxTick = Math.Max(
+                        maxTick,
+                        part.Value.StartTick
+                        + part.Value.LengthTick);
+
+                    part = part.Next;
+                }
+
+                trk = trk.Next;
+            }
+
+            int maxScroll =
+                Math.Max(
+                    0,
+                    trackCanvasPanel.TickToWidth(maxTick)
+                    - trackCanvasPanel.ClientSize.Width);
+
+            hScrollBar1.Maximum =
+                maxScroll + hScrollBar1.LargeChange - 1;
         }
 
         private void vScrollBar1_ValueChanged(object sender, EventArgs e)
         {
             UpdateScrollPosition();
+
+            int totalHeight =
+                Project.Track.Count * trackHeaderPanel.pxTrackHeight;
+
+            int visibleHeight =
+                trackHeaderPanel.ClientSize.Height;
+
+            int maxScroll =
+                Math.Max(
+                    0,
+                    totalHeight - visibleHeight);
+
+            //Debug.WriteLine($"TrackCount={Project.Track.Count}");
+            //Debug.WriteLine($"TrackHeight={trackHeaderPanel.pxTrackHeight}");
+            //Debug.WriteLine($"TotalHeight={totalHeight}");
+            //Debug.WriteLine($"VisibleHeight={visibleHeight}");
+            //Debug.WriteLine($"MaxScroll={maxScroll}");
+            //Debug.WriteLine($"LargeChange={vScrollBar1.LargeChange}");
+            //Debug.WriteLine($"ScrollY={pxScrollY}");
+            //Debug.WriteLine($"HeaderHeight={trackHeaderPanel.ClientSize.Height}");
+            //Debug.WriteLine($"CanvasHeight={trackCanvasPanel.ClientSize.Height}");
+            //Debug.WriteLine($"First={FirstVisibleTrack}");
+            //Debug.WriteLine($"Last={LastVisibleTrack}");
+        }
+
+        private void hScrollBar1_ValueChanged(object sender, EventArgs e)
+        {
+            pxScrollX = hScrollBar1.Value;
+
+            trackCanvasPanel.Invalidate();
+        }
+        
+        private void hHeaderScrollBar_ValueChanged(
+    object sender,
+    EventArgs e)
+        {
+            pxHeaderScrollX = hHeaderScrollBar.Value;
+
+            trackHeaderPanel.Invalidate();
         }
 
         private void UpdateScrollPosition()
@@ -116,9 +241,26 @@ namespace Remcoposer64.TrackEditor
             vScrollBar1.Value = value;
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            if (Project == null) return;
+
+            UpdateScrollRange();
+            trackCanvasPanel.Invalidate();
+        }
+
+        private void splitContainer1_SplitterMoved(    object sender,    SplitterEventArgs e)
+        {
+            UpdateScrollRange();
+            trackCanvasPanel.Invalidate();
+        }
+
         public void SetInitialSplitDistance()
         {
             splitContainer1.SplitterDistance = ClientSize.Width / 3;
         }
+
     }
 }

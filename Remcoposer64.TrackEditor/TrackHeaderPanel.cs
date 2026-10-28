@@ -4,6 +4,7 @@ using Remcoposer64.ProjectData;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -97,7 +98,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
 
                 // Track Number
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_TRACKNO;
+                pos.X = ColX(COL_TRACKNO);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawString(
                     $"{i + 1:D2} ",
@@ -106,7 +107,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // Mute Button
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MUTE;
+                pos.X = ColX(COL_MUTE);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawString(
                     "M",
@@ -115,7 +116,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // Solo Button
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_SOLO;
+                pos.X = ColX(COL_SOLO);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawString(
                     "S",
@@ -124,7 +125,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // ST+
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_ST;
+                pos.X = ColX(COL_ST);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawString(
                     $"{trk.Value.St:+000;-000; 000}",
@@ -133,7 +134,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // KEY+
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_KEY;
+                pos.X = ColX(COL_KEY);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawString(
                     $"{trk.Value.Key:+000;-000; 000}",
@@ -142,7 +143,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // Track Name
-                pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_TRACKNAME;
+                pos.X = ColX(COL_TRACKNAME);
                 pos.Y = pxTrackMarginTop + trackPanelPosY;
                 graph.DrawStringOSFont(
                     trk.Value.Name,
@@ -156,7 +157,7 @@ namespace Remcoposer64.TrackEditor.Internal
                 if (TrackEditorControl.HeaderLine > 1)
                 {
                     // MIDI Out Ch
-                    pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIOUTCH;
+                    pos.X = ColX(COL_MIDIOUTCH);
                     pos.Y = pxTrackMarginTop*2 + trackPanelPosY + pxFontHeight;
                     string num = trk.Value.OutChannel == null ? "Off" : $"{trk.Value.OutChannel + 1:D2}";
                     graph.DrawString(
@@ -172,7 +173,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         int dev = Math.Clamp(trk.Value.OutDevice, 0, midiOutDevices.Length - 1);
                         name = midiOutDevices[dev]?.name ?? "";
                     }
-                    pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIOUT;
+                    pos.X = ColX(COL_MIDIOUT);
                     pos.Y = pxTrackMarginTop*2 + trackPanelPosY + pxFontHeight;
                     graph.DrawStringOSFont(
                         name,
@@ -186,7 +187,7 @@ namespace Remcoposer64.TrackEditor.Internal
                 if (TrackEditorControl.HeaderLine > 2)
                 {
                     // MIDI In Ch
-                    pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIINCH;
+                    pos.X = ColX(COL_MIDIINCH);
                     pos.Y = pxTrackMarginTop * 3 + trackPanelPosY + pxFontHeight * 2;
                     string num = trk.Value.InChannel == null ? "Off" : $"{trk.Value.InChannel + 1:D2}";
                     graph.DrawString(
@@ -203,7 +204,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         int dev = Math.Clamp(trk.Value.InDevice, 0, midiInDevices.Length - 1);
                         name = midiInDevices[dev]?.name ?? "";
                     }
-                    pos.X = pxTrackMarginLeft + pxFixedFontWidth * COL_MIDIIN;
+                    pos.X = ColX(COL_MIDIIN);
                     pos.Y = pxTrackMarginTop * 3 + trackPanelPosY + pxFontHeight * 2;
                     graph.DrawStringOSFont(
                         name,
@@ -228,7 +229,7 @@ namespace Remcoposer64.TrackEditor.Internal
                 //pos.X = this.ClientSize.Width - 1 - pxTrackBorderLineThin;
                 //pos.Y = 0 + trackPanelPosY;
                 //graph.FillRectangle(pos.X, pos.Y, pxTrackBorderLineThin, pxFontHeight + pxTrackMarginTop + pxTrackMarginBottom - 1);
-
+                //Debug.WriteLine($"Pos.Y:{pos.Y}");
 
                 trk = trk.Next;
 
@@ -259,6 +260,27 @@ namespace Remcoposer64.TrackEditor.Internal
             }
 
             TrackEditorControl.RaiseTrackDoubleClicked(trk);
+        }
+
+        private int ColX(int col)
+        {
+            return pxTrackMarginLeft
+                + pxFixedFontWidth * col
+                - TrackEditorControl.pxHeaderScrollX;
+        }
+
+        public int GetMaxWidth()
+        {
+            int maxCol = COL_TRACKNAME;
+
+            if (TrackEditorControl.HeaderLine > 1)
+                maxCol = Math.Max(maxCol, COL_MIDIOUT);
+
+            if (TrackEditorControl.HeaderLine > 2)
+                maxCol = Math.Max(maxCol, COL_MIDIIN);
+
+            return pxTrackMarginLeft
+                 + pxFixedFontWidth * (maxCol + 40);
         }
 
     }

@@ -11,6 +11,8 @@ namespace Remcoposer64.ProjectData
         public int Number { get; set; } = 0;
         public string Name { get; set; } = "";
         public int StartTick { get; set; } = 0;
+        public int LengthTick { get; set; } = 0;
+
         /// <summary>
         /// イベントリスト
         /// </summary>
@@ -37,29 +39,7 @@ namespace Remcoposer64.ProjectData
             return eve.Next;
         }
 
-        ////指定したイベントの前のイベントを得る
-        //public MIDIEvent getPrevEvent(MIDIEvent eve)
-        //{
-        //    if (eve == null || eve.BeforeIndex == null) return null;
-
-        //    return Event[(int)eve.BeforeIndex];
-        //}
-
-        ////指定したイベントを除外する（メモリには残る）
-        //public bool removeEvent(MIDIEvent eve)
-        //{
-        //    if (eve == null) return false;
-        //    MIDIEvent pEvent = getPrevEvent(eve);
-        //    MIDIEvent nEvent = getNextEvent(eve);
-        //    if (pEvent != null) pEvent.AfterIndex = (nEvent == null) ? null : (int?)nEvent.Number;
-        //    if (nEvent != null) nEvent.BeforeIndex = (pEvent == null) ? null : (int?)pEvent.Number;
-        //    pEvent.ST += eve.ST;
-        //    this.eCounter--;
-
-        //    return true;
-        //}
-
-        //指定したイベントをメモリから消去する(removeEventに比べ低速)
+        //指定したイベントをメモリから消去する
         public bool clearEventNode(LinkedListNode<MIDIEvent> eve)
         {
             if (eve == null) return false;
@@ -67,22 +47,9 @@ namespace Remcoposer64.ProjectData
             return true;
         }
 
-        ////全てのイベントをメモリから消去する
-        //public void clearAllEventMemory()
-        //{
-        //    this.Event.Clear();
-        //    this.eCounter = 0;
-        //    this.eStartIndex = null;
-        //    this.eEndIndex = null;
-        //    this.eNumber = 0;
-        //}
-
         //全てのイベントを消去する
         public void clearEventNode()
         {
-            //this.eCounter = 0;
-            //this.eStartIndex = null;
-            //this.eEndIndex = null;
         }
 
         /// <summary>
@@ -232,55 +199,18 @@ namespace Remcoposer64.ProjectData
             if (this.Event == null)
             {
                 this.Event = new LinkedList<MIDIEvent>();
+                this.LengthTick = 0;
             }
-            if (TargetEvent == null || this.Event.Count == 0 
-                //|| this.eStartIndex == null
-                )//初めのイベント
+
+            if (TargetEvent == null || this.Event.Count == 0)//初めのイベント
             {
+                this.LengthTick = eve.ST;
                 return this.Event.AddLast(eve);
             }
 
+            this.LengthTick += eve.ST;
             return this.Event.AddAfter(TargetEvent, eve);
         }
-
-        ///// <summary>
-        ///// Tickを考慮せずに最後のイベントの後ろに追加する。
-        ///// </summary>
-        ///// <param name="Tick"></param>
-        ///// <param name="Type"></param>
-        ///// <param name="MIDImessage"></param>
-        //public void addEvent(int ST, MIDIEventType Type, byte[] MIDImessage)
-        //{
-        //    if (MIDImessage == null) return;
-        //    MIDIEvent eve = new MIDIEvent();
-        //    eve.Type = Type;
-        //    eve.MIDIMessage = MIDImessage;
-        //    eve.MIDIMessageLst = null;
-        //    eve.ST = ST;
-
-        //    MIDIEvent lastEvent = this.getEndEvent();
-        //    if (lastEvent == null)//初めのイベント
-        //    {
-        //        eve.AfterIndex = null;
-        //        eve.BeforeIndex = null;
-        //        eve.Number = this.eNumber;
-        //        this.Event.Add(eve);
-        //        this.eStartIndex = 0;
-        //        this.eEndIndex = 0;
-        //        this.eCounter = 1;
-        //        this.eNumber++;
-        //        return;
-        //    }
-
-        //    eve.BeforeIndex = lastEvent.Number;
-        //    eve.AfterIndex = null;
-        //    eve.Number = this.eNumber;
-        //    this.eEndIndex = this.eNumber;
-        //    this.Event.Add(eve);
-        //    this.eCounter++;
-        //    this.eNumber++;
-        //    lastEvent.AfterIndex = eve.Number;
-        //}
 
     }
 

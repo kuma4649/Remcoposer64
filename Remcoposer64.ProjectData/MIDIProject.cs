@@ -419,6 +419,7 @@ namespace Remcoposer64.ProjectData
                     Number = part.Number,
                     Name = part.Name,
                     StartTick = part.StartTick,
+                    LengthTick = part.LengthTick,
                     Events = GetEventDto(part.Event)
                 });
             }
@@ -958,6 +959,7 @@ namespace Remcoposer64.ProjectData
                 part.Number = p.Number;
                 part.Name = p.Name;
                 part.StartTick = p.StartTick;
+                part.LengthTick = p.LengthTick;
 
                 // イベント復元
                 foreach (var evDto in p.Events)
