@@ -626,6 +626,43 @@ namespace Remcoposer64.Core
 
             #endregion
 
+            #region そのた
+
+            track = prj.getStartTrackNode();
+            while (track != null)
+            {
+
+                try
+                {
+
+                    LinkedListNode<MIDIPart> prt = track.Value.getStartPartNode();
+                    Dictionary<int, ActiveNote> dicActiveNote = new Dictionary<int, ActiveNote>();
+
+                    while (prt != null)
+                    {
+                        prt.Value.LengthTick = 0;
+                        LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
+                        while (eventNode != null)
+                        {
+                            MIDIEvent ev = eventNode.Value;
+                            prt.Value.LengthTick += ev.ST;
+                            eventNode = prt.Value.getNextEventNode(eventNode);
+
+                        }
+                        prt = track.Value.getNextPartNode(prt);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.ForcedWrite(ex);
+                    throw;
+                }
+
+                track = prj.getNextTrackNode(track);
+            }
+
+            #endregion
+
             if (format == 0) prj.Information.MaxLengthMIDIOut = stOutDevNum + 1;
             else prj.Information.MaxLengthMIDIOut = trkLen / 16 + 1;
 
