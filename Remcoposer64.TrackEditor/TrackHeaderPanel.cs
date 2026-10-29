@@ -45,10 +45,6 @@ namespace Remcoposer64.TrackEditor.Internal
         protected override void Render()
         {
 
-            //int firstTrack = Math.Max(0, TrackEditorControl.pxScrollY / pxTrackHeight);
-            //int visibleTracks = ClientSize.Height / pxTrackHeight + 2;
-            //int lastTrack = Math.Min(Project.Track.Count, firstTrack + visibleTracks);
-
             LinkedListNode<MIDITrack> trk = Project.Track.First;
             for (int i = 0; i < TrackEditorControl.FirstVisibleTrack; i++)
             {
@@ -160,7 +156,7 @@ namespace Remcoposer64.TrackEditor.Internal
                 {
                     // MIDI Out Ch
                     pos.X = ColX(COL_MIDIOUTCH);
-                    pos.Y = pxTrackMarginTop*2 + trackPanelPosY + pxFontHeight;
+                    pos.Y = pxTrackMarginTop * 2 + trackPanelPosY + pxFontHeight;
                     string num = trk.Value.OutChannel == null ? "Off" : $"{trk.Value.OutChannel + 1:D2}";
                     graph.DrawString(
                         num,
@@ -176,7 +172,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         name = midiOutDevices[dev]?.name ?? "";
                     }
                     pos.X = ColX(COL_MIDIOUT);
-                    pos.Y = pxTrackMarginTop*2 + trackPanelPosY + pxFontHeight;
+                    pos.Y = pxTrackMarginTop * 2 + trackPanelPosY + pxFontHeight;
                     graph.DrawStringOSFont(
                         name,
                         ref pos,
@@ -216,26 +212,37 @@ namespace Remcoposer64.TrackEditor.Internal
                         );
                 }
 
-                // ベゼル
-                //graph.BackColor = Color.White;
-                //pos.X = 0;
-                //pos.Y = 0 + trackPanelPosY;
-                //graph.FillRectangle(pos.X, pos.Y, this.ClientSize.Width, pxTrackBorderLineThin);
-                //pos.X = 0;
-                //pos.Y = 0 + trackPanelPosY;
-                //graph.FillRectangle(pos.X, pos.Y, pxTrackBorderLineThin, pxFontHeight + pxTrackMarginTop + pxTrackMarginBottom - 1);
+                // ベゼル(区切り線)
                 graph.BackColor = Color.FromArgb(0, 90, 80, 190);
                 pos.X = 0;
                 pos.Y = 0 + trackPanelPosY + pxTrackHeight - pxTrackBorderLineThin;
                 graph.FillRectangle(pos.X, pos.Y, this.ClientSize.Width, pxTrackBorderLineThin);
-                //pos.X = this.ClientSize.Width - 1 - pxTrackBorderLineThin;
-                //pos.Y = 0 + trackPanelPosY;
-                //graph.FillRectangle(pos.X, pos.Y, pxTrackBorderLineThin, pxFontHeight + pxTrackMarginTop + pxTrackMarginBottom - 1);
-                //Debug.WriteLine($"Pos.Y:{pos.Y}");
+
+                // カーソル
+                if (ReferenceEquals(TrackEditorControl.TrackCursor.Track, trk))
+                {
+                    DrawFocusRect(0, trackPanelPosY, ClientSize.Width, pxTrackHeight, Color.White);
+                }
 
                 trk = trk.Next;
-
             }
+
+        }
+
+        private void DrawFocusRect(
+            int x,
+            int y,
+            int w,
+            int h,
+            Color color)
+        {
+            graph.BackColor = color;
+
+            graph.FillRectangle(x, y, w, 1);
+            graph.FillRectangle(x, y + h - 1, w, 1);
+
+            graph.FillRectangle(x, y, 1, h);
+            graph.FillRectangle(x + w - 1, y, 1, h);
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)

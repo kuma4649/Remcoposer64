@@ -1,7 +1,6 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,6 +12,8 @@ namespace Remcoposer64.TrackEditor
         public Setting Setting { get; private set; } = null;
         public RmPlayer Player { get; private set; } = null;
         public int HeaderLine { get; private set; } = 2;
+        public TrackEditorCursor TrackCursor = new();
+        public TrackEditorSelection TrackSelection = new();
 
         internal int pxScrollY = 0;
         internal int pxScrollX = 0;
@@ -47,6 +48,8 @@ namespace Remcoposer64.TrackEditor
             InitializeComponent();
 
             BackColor = Color.FromArgb(40, 40, 40);
+            TrackCursor.Clear();
+            TrackSelection.Clear();
         }
 
         public void SetContext(MIDIProject project, Setting setting, RmPlayer player)
@@ -60,9 +63,15 @@ namespace Remcoposer64.TrackEditor
 
             splitContainer1.SplitterDistance = this.ClientSize.Width / 2;
 
+            TrackCursor.Clear();
+            TrackSelection.Clear();
+            if (project != null && project.Track != null)
+                TrackCursor.Track = project.Track.First;
+            if (TrackCursor.Track != null && TrackCursor.Track.Value.Part != null)
+                TrackCursor.Part = TrackCursor.Track.Value.Part.First;
+
             UpdateScrollRange();
             trackCanvasPanel.Invalidate();
-            //Invalidate();
         }
 
         public void SetHeaderLine(int v)
@@ -207,9 +216,7 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Invalidate();
         }
 
-        private void hHeaderScrollBar_ValueChanged(
-    object sender,
-    EventArgs e)
+        private void hHeaderScrollBar_ValueChanged(    object sender,    EventArgs e)
         {
             pxHeaderScrollX = hHeaderScrollBar.Value;
 
@@ -287,6 +294,82 @@ namespace Remcoposer64.TrackEditor
                     hScrollBar1.Value = playX;
             }
 
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Home:
+                    MoveCursorTrack(Project.Track.First);
+                    RefreshCursor();
+                    return true;
+
+                case Keys.End:
+                    MoveCursorTrack(Project.Track.Last);
+                    RefreshCursor();
+                    return true;
+
+                case Keys.Up:
+                    if (TrackCursor.Track?.Previous != null)
+                        MoveCursorTrack(TrackCursor.Track.Previous);
+                    RefreshCursor();
+                    return true;
+
+                case Keys.Down:
+                    if (TrackCursor.Track?.Next != null)
+                        MoveCursorTrack(TrackCursor.Track.Next);
+                    RefreshCursor();
+                    return true;
+
+                case Keys.Enter:
+                    RaiseTrackDoubleClicked(TrackCursor.Track);
+                    return true;
+            }
+
+            return base.ProcessCmdKey(
+                ref msg,
+                keyData);
+        }
+
+        private void MoveCursorTrack(    LinkedListNode<MIDITrack> trk)
+        {
+            TrackCursor.Track = trk;
+            TrackCursor.Part = trk.Value.Part?.First;
+            EnsureCursorVisible();
+        }
+        private void EnsureCursorVisible()
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            int index = TrackCursor.Track.Value.Number;
+
+            int y = index * trackHeaderPanel.pxTrackHeight;
+
+            if (y < pxScrollY)
+            {
+                vScrollBar1.Value =
+                    Math.Max(
+                        0,
+                        y);
+            }
+            else if (
+                y + trackHeaderPanel.pxTrackHeight >
+                pxScrollY + trackCanvasPanel.ClientSize.Height)
+            {
+                vScrollBar1.Value =
+                    Math.Min(
+                        vScrollBar1.Maximum,
+                        y + trackHeaderPanel.pxTrackHeight
+                        - trackCanvasPanel.ClientSize.Height);
+            }
+        }
+
+        private void RefreshCursor()
+        {
+            trackHeaderPanel.Refresh();
+            trackCanvasPanel.Refresh();
         }
     }
 }
