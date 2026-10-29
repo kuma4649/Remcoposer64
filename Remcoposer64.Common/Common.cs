@@ -297,5 +297,6 @@ namespace Remcoposer64.Common
             Array.Copy(bs, ptr, dst, 0, v);
             return GetCode(dst);
         }
+
     }
 }

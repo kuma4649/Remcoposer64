@@ -1022,7 +1022,7 @@ namespace Remcoposer64.Core
                     LoopStack.Clear();
                     SameMeasStack.Clear();
                     measureStartNode.Clear();
-                    BuildMeasureStartNode(measureStartNode, nPrt.Value);
+                    BuildMeasureStartNode(measureStartNode, nPrt.Value, 0, 0);
 
                     LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
                     while(nEvt!=null)
@@ -1144,15 +1144,12 @@ namespace Remcoposer64.Core
             nEvt = nEvt.Next;
         }
 
-        private void BuildMeasureStartNode(
+        public static void BuildMeasureStartNode(
     Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
-    , MIDIPart prt)
+    , MIDIPart prt,int t,int p)
         {
-            measureStartNode.Clear();
             var node = prt.Event.First;
             int meas = 0;
-            int t = 0;
-            int p = 0;
 
             measureStartNode[(t, p, meas)] = node;
 

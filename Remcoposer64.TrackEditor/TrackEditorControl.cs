@@ -1,4 +1,5 @@
 ﻿using Remcoposer64.Common;
+using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,6 +11,7 @@ namespace Remcoposer64.TrackEditor
     {
         public MIDIProject Project { get; private set; } = null;
         public Setting Setting { get; private set; } = null;
+        public RmPlayer Player { get; private set; } = null;
         public int HeaderLine { get; private set; } = 2;
 
         internal int pxScrollY = 0;
@@ -47,13 +49,14 @@ namespace Remcoposer64.TrackEditor
             BackColor = Color.FromArgb(40, 40, 40);
         }
 
-        public void SetContext(MIDIProject project, Setting setting)
+        public void SetContext(MIDIProject project, Setting setting, RmPlayer player)
         {
             this.Project = project;
             this.Setting = setting;
+            this.Player = player;
 
-            trackHeaderPanel.SetContext(this, project, setting);
-            trackCanvasPanel.SetContext(this, project, setting);
+            trackHeaderPanel.SetContext(this, project, setting, player);
+            trackCanvasPanel.SetContext(this, project, setting, player);
 
             splitContainer1.SplitterDistance = this.ClientSize.Width / 2;
 
@@ -99,7 +102,7 @@ namespace Remcoposer64.TrackEditor
                 int maxScroll =
                     Math.Max(
                         0,
-                        Project.Track.Count * (trackHeaderPanel.pxTrackHeight+1)
+                        Project.Track.Count * (trackHeaderPanel.pxTrackHeight + 1)
                         - trackHeaderPanel.ClientSize.Height
                         );
 
@@ -203,7 +206,7 @@ namespace Remcoposer64.TrackEditor
 
             trackCanvasPanel.Invalidate();
         }
-        
+
         private void hHeaderScrollBar_ValueChanged(
     object sender,
     EventArgs e)
@@ -251,7 +254,7 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Invalidate();
         }
 
-        private void splitContainer1_SplitterMoved(    object sender,    SplitterEventArgs e)
+        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
         {
             UpdateScrollRange();
             trackCanvasPanel.Invalidate();
@@ -262,5 +265,28 @@ namespace Remcoposer64.TrackEditor
             splitContainer1.SplitterDistance = ClientSize.Width / 3;
         }
 
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            trackCanvasPanel.tickZoom = ((TrackBar)sender).Value * 0.002;
+            UpdateScrollRange();
+            trackCanvasPanel.Invalidate();
+
+        }
+
+        public void ScrollPlayingMarker()
+        {
+            if (Project == Player.GetPlayingProject())
+            {
+                int playX = trackCanvasPanel.TickToXAbsolute((int)Player.GetFrameCounter());
+                playX = Math.Max(playX - 50, 0);
+                if (hScrollBar1.Value == playX)
+                {
+                    trackCanvasPanel.Refresh();
+                }
+                else
+                    hScrollBar1.Value = playX;
+            }
+
+        }
     }
 }

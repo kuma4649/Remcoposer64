@@ -137,37 +137,8 @@ namespace Remcoposer64.Core.Player
                 for (int p = 0; p < trk.Value.Part.Count; p++)
                 {
                     var prt = nPrt.Value;
-                    var node = prt.Event.First;
-                    
-                    int meas = 0;
 
-                    measureStartNode[(t, p, meas)] = node;
-
-                    while (node != null)
-                    {
-                        var evt = node.Value;
-
-                        if (evt.Type == MIDIEventType.BarLine)
-                        {
-                            meas++;
-                            measureStartNode[(t, p, meas)] = node;
-                        }
-                        else if (evt.Type == MIDIEventType.SameMeas)
-                        {
-                            if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
-                            {
-                                meas++;
-                                measureStartNode[(t, p, meas)] = node;
-                            }
-                        }
-                        else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
-                        {
-                            meas++;
-                            measureStartNode[(t, p, meas)] = node;
-                        }
-
-                        node = node.Next;
-                    }
+                    ImportRcp.BuildMeasureStartNode(measureStartNode, prt, t, p);
 
                     nPrt = nPrt.Next;
                 }
@@ -839,9 +810,19 @@ namespace Remcoposer64.Core.Player
             return _tick;
         }
 
+        internal long GetFrameCounter()
+        {
+            return frameCounter;
+        }
+
         internal RmPlayer.PlayerState GetState()
         {
             return IsFinished ? RmPlayer.PlayerState.Stopped : RmPlayer.PlayerState.Processing;
+        }
+
+        internal MIDIProject GetPlayingProject()
+        {
+            return _project;
         }
     }
 

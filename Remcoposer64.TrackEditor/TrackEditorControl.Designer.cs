@@ -15,6 +15,7 @@ namespace Remcoposer64.TrackEditor
             splitContainer1 = new SplitContainer();
             hHeaderScrollBar = new HScrollBar();
             trackHeaderPanel = new Remcoposer64.TrackEditor.Internal.TrackHeaderPanel();
+            trackBar1 = new TrackBar();
             hScrollBar1 = new HScrollBar();
             trackCanvasPanel = new Remcoposer64.TrackEditor.Internal.TrackCanvasPanel();
             vScrollBar1 = new VScrollBar();
@@ -22,6 +23,7 @@ namespace Remcoposer64.TrackEditor
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -39,6 +41,7 @@ namespace Remcoposer64.TrackEditor
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(trackBar1);
             splitContainer1.Panel2.Controls.Add(hScrollBar1);
             splitContainer1.Panel2.Controls.Add(trackCanvasPanel);
             splitContainer1.Size = new Size(490, 435);
@@ -64,22 +67,34 @@ namespace Remcoposer64.TrackEditor
             trackHeaderPanel.Size = new Size(121, 435);
             trackHeaderPanel.TabIndex = 0;
             // 
+            // trackBar1
+            // 
+            trackBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            trackBar1.Location = new Point(291, 415);
+            trackBar1.Maximum = 100;
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(71, 45);
+            trackBar1.TabIndex = 0;
+            trackBar1.TickFrequency = 10;
+            trackBar1.Value = 50;
+            trackBar1.ValueChanged += trackBar1_ValueChanged;
+            // 
             // hScrollBar1
             // 
-            hScrollBar1.Dock = DockStyle.Bottom;
+            hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             hScrollBar1.Location = new Point(0, 418);
             hScrollBar1.Name = "hScrollBar1";
-            hScrollBar1.Size = new Size(365, 17);
+            hScrollBar1.Size = new Size(288, 17);
             hScrollBar1.TabIndex = 0;
             hScrollBar1.ValueChanged += hScrollBar1_ValueChanged;
             // 
             // trackCanvasPanel
             // 
+            trackCanvasPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             trackCanvasPanel.BackColor = Color.FromArgb(32, 32, 32);
-            trackCanvasPanel.Dock = DockStyle.Fill;
             trackCanvasPanel.Location = new Point(0, 0);
             trackCanvasPanel.Name = "trackCanvasPanel";
-            trackCanvasPanel.Size = new Size(365, 435);
+            trackCanvasPanel.Size = new Size(365, 415);
             trackCanvasPanel.TabIndex = 0;
             // 
             // vScrollBar1
@@ -101,8 +116,10 @@ namespace Remcoposer64.TrackEditor
             Size = new Size(510, 435);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             ResumeLayout(false);
         }
 
@@ -112,5 +129,6 @@ namespace Remcoposer64.TrackEditor
         private VScrollBar vScrollBar1;
         private HScrollBar hScrollBar1;
         private HScrollBar hHeaderScrollBar;
+        private TrackBar trackBar1;
     }
 }

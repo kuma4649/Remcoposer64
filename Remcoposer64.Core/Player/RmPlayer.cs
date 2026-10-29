@@ -282,9 +282,19 @@ namespace Remcoposer64.Core.Player
             return musicPlayer.GetTick();
         }
 
+        public long GetFrameCounter()
+        {
+            return musicPlayer.GetFrameCounter();
+        }
+
         public PlayerState GetMusicState()
         {
             return musicPlayer.GetState();
+        }
+
+        public MIDIProject GetPlayingProject()
+        {
+            return musicPlayer.GetPlayingProject();
         }
     }
 }

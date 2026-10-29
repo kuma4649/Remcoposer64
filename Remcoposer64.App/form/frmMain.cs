@@ -569,7 +569,8 @@ namespace Remcoposer64.App
 
             trackEditor.SetContext(
                 project,
-                setting);
+                setting,
+                player);
 
             trackEditor.TrackDoubleClicked +=
                 TrackEditor_TrackDoubleClicked;
@@ -731,6 +732,22 @@ namespace Remcoposer64.App
                 foreach (var stepeditor in stepEditors)
                 {
                     stepeditor.Refresh();
+                }
+
+                foreach(var cnt in dockPanel1.Contents)
+                {
+                    if (cnt is frmProject 
+                        && ((frmProject)cnt).Tag == currentProject 
+                        && player.GetPlayingProject() == currentProject)
+                    {
+                        foreach(var cnt2 in ((frmProject)cnt).Controls)
+                        {
+                            if(cnt2 is TrackEditorControl)
+                            {
+                                ((TrackEditorControl)cnt2).ScrollPlayingMarker();
+                            }
+                        }
+                    }
                 }
             }
 

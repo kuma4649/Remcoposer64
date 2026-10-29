@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.Core.Player;
 
 namespace Remcoposer64.TrackEditor.Internal
 {
@@ -27,15 +28,17 @@ namespace Remcoposer64.TrackEditor.Internal
         public override void SetContext(
             TrackEditorControl trackEditorControl,
             MIDIProject project,
-            Setting setting)
+            Setting setting,
+            RmPlayer player)
         {
-            base.SetContext(trackEditorControl, project, setting);
+            base.SetContext(trackEditorControl, project, setting, player);
 
         }
 
 
         protected override void Render()
         {
+
             graph.BackColor = backColor;
             graph.FillRectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
 
@@ -77,6 +80,18 @@ namespace Remcoposer64.TrackEditor.Internal
 
                 trk = trk.Next;
             }
+
+            if (Project == Player.GetPlayingProject())
+            {
+                int playX = TickToX((int)Player.GetFrameCounter());
+                graph.BackColor = Color.LimeGreen;
+                graph.FillRectangle(
+                    playX,
+                    0,
+                    2,
+                    ClientSize.Height);
+            }
+
         }
 
         private void DrawParts(LinkedListNode<MIDITrack> trk, int y)
@@ -140,7 +155,7 @@ namespace Remcoposer64.TrackEditor.Internal
             Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
             Stack<LinkedListNode<MIDIEvent>> SameMeasStack = new Stack<LinkedListNode<MIDIEvent>>();
             Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
-            BuildMeasureStartNode(measureStartNode, part);
+            Remcoposer64.Core.ImportRcp.BuildMeasureStartNode(measureStartNode, part, 0, 0);
 
             LinkedListNode<MIDIEvent> nEvt = part.Event.First;
             int tick = 0;
@@ -284,55 +299,18 @@ namespace Remcoposer64.TrackEditor.Internal
 
         }
 
-        private void BuildMeasureStartNode(
-            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
-            , MIDIPart prt)
-        {
-            measureStartNode.Clear();
-            var node = prt.Event.First;
-            int meas = 0;
-            int t = 0;
-            int p = 0;
+        public double tickZoom = 0.1;
 
-            measureStartNode[(t, p, meas)] = node;
-
-            while (node != null)
-            {
-                var evt = node.Value;
-
-                if (evt.Type == MIDIEventType.BarLine)
-                {
-                    meas++;
-                    measureStartNode[(t, p, meas)] = node;
-                }
-                else if (evt.Type == MIDIEventType.SameMeas)
-                {
-                    if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
-                    {
-                        meas++;
-                        measureStartNode[(t, p, meas)] = node;
-                    }
-                }
-                else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
-                {
-                    meas++;
-                    measureStartNode[(t, p, meas)] = node;
-                }
-
-                node = node.Next;
-            }
-
-
-        }
-
-        private double tickZoom = 0.1;
-
-        private int TickToX(int tick)
+        public int TickToX(int tick)
         {
             return (int)(tick * tickZoom) - TrackEditorControl.pxScrollX;
         }
         
         public int TickToWidth(int tick)
+        {
+            return (int)(tick * tickZoom);
+        }
+        public int TickToXAbsolute(int tick)
         {
             return (int)(tick * tickZoom);
         }

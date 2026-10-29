@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Remcoposer64.Common\Remcoposer64.Common.csproj" />
+    <ProjectReference Include="..\Remcoposer64.Core\Remcoposer64.Core.csproj" />
     <ProjectReference Include="..\Remcoposer64.ProjectData\Remcoposer64.ProjectData.csproj" />
   </ItemGroup>
 

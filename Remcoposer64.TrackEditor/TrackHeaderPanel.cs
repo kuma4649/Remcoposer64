@@ -1,5 +1,6 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.Common.Render;
+using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace Remcoposer64.TrackEditor.Internal
         public override void SetContext(
             TrackEditorControl trackEditorControl,
             MIDIProject project,
-            Setting setting) => base.SetContext(trackEditorControl, project, setting);
+            Setting setting,
+            RmPlayer player) => base.SetContext(trackEditorControl, project, setting, player);
 
         private const int COL_TRACKNO = 0;
         private const int COL_MUTE = 3;

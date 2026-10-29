@@ -1,5 +1,6 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.Common.Render;
+using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace Remcoposer64.TrackEditor
         public TrackEditorControl TrackEditorControl { get; private set; } = null;
         public MIDIProject Project { get; private set; } = null;
         public Setting Setting { get; private set; } = null;
+        public RmPlayer Player { get; private set; } = null;
+
         protected bool IsReady =>
     graph != null
     && Project != null
@@ -49,11 +52,13 @@ namespace Remcoposer64.TrackEditor
         public virtual void SetContext(
             TrackEditorControl trackEditorControl,
             MIDIProject project,
-            Setting setting)
+            Setting setting,
+            RmPlayer player)
         {
             TrackEditorControl = trackEditorControl;
             Project = project;
             Setting = setting;
+            Player = player;
 
             this.pxFontHeight = Setting.common.FontSize;
             pxFixedFontWidth = pxFontHeight;
