@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.IO;
+﻿using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
-using Remcoposer64.Common;
+using System.Text;
 
 namespace Remcoposer64.Core
 {

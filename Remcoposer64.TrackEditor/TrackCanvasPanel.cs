@@ -110,15 +110,17 @@ namespace Remcoposer64.TrackEditor.Internal
 
             graph.BackColor = Color.DarkOrange;
 
-            // Part chip
+            // Part chip外側
             graph.BackColor = Color.DarkOrange;
             graph.FillRectangle(
                 x,
                 y + pxTrackBorderLineThin,
                 w,
                 pxTrackHeight - pxTrackBorderLineThin * 2);
+
             if (w > pxTrackBorderLineThin * 2)
             {
+                // Part chip内側下地
                 graph.BackColor = Color.FromArgb(0, 40, 20, 10);
                 graph.FillRectangle(
                     x + pxTrackBorderLineThin,
@@ -126,45 +128,201 @@ namespace Remcoposer64.TrackEditor.Internal
                     w - pxTrackBorderLineThin * 2,
                     pxTrackHeight - pxTrackBorderLineThin * 4);
 
-                graph.BackColor = Color.DarkOrange;
-                int noteHeight = pxTrackHeight - pxTrackBorderLineThin * 4;
+                drawEasyPianoRoll(part,x,y,w);
+            }
+        }
 
-                LinkedListNode<MIDIEvent> nevt = part.Event.First;
-                int tick = 0;
-                while (nevt != null)
+        private void drawEasyPianoRoll(MIDIPart part, int x, int y, int w)
+        {
+            graph.BackColor = Color.DarkOrange;
+            int noteHeight = pxTrackHeight - pxTrackBorderLineThin * 4;
+
+            Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
+            Stack<LinkedListNode<MIDIEvent>> SameMeasStack = new Stack<LinkedListNode<MIDIEvent>>();
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
+            BuildMeasureStartNode(measureStartNode, part);
+
+            LinkedListNode<MIDIEvent> nEvt = part.Event.First;
+            int tick = 0;
+            while (nEvt != null)
+            {
+                switch (nEvt.Value.Type)
                 {
-                    if(nevt.Value.Type!= MIDIEventType.NoteON)
-                    {
-                        tick += nevt.Value.ST;
-                        nevt = nevt.Next;
-                        continue;
-                    }
+                    case MIDIEventType.NoteON:
 
-                    MIDINoteEvent ne = (MIDINoteEvent)nevt.Value;
-                    int neHeight = noteHeight - 1 - (noteHeight - 1) * ne.KeyNumber / 127;
-                    int neWidth = Math.Max(1, (int)(ne.GT * tickZoom));
-                    int drawX = x + pxTrackBorderLineThin + (int)(tick * tickZoom);
-                    if (drawX >= x + w)
-                    {
-                        tick += ne.ST;
-                        nevt = nevt.Next;
-                        continue;
-                    }
-                    neWidth =
-                        Math.Min(
-                            neWidth,
-                            x + w - drawX);
+                        MIDINoteEvent ne = (MIDINoteEvent)nEvt.Value;
 
-                    graph.BackColor = Color.FromArgb(Math.Min(255, ne.Vel * 2), 255, 180, 80);
-                    graph.FillRectangle(
-                        x + pxTrackBorderLineThin + (int)(tick * tickZoom),
-                        y + pxTrackBorderLineThin * 2 + neHeight,
-                        neWidth, 1);
-                    tick += ne.ST;
-                    nevt = nevt.Next;
+                        if (ne.GT == 0 || ne.Vel == 0)
+                        {
+                            tick += nEvt.Value.ST;
+                            nEvt = nEvt.Next;
+                            continue;
+                        }
+
+                        int neHeight = noteHeight - 1 - (noteHeight - 1) * ne.KeyNumber / 127;
+                        int neWidth = Math.Max(1, (int)(ne.GT * tickZoom));
+                        int drawX = x + pxTrackBorderLineThin + (int)(tick * tickZoom);
+                        if (drawX >= x + w)
+                        {
+                            tick += nEvt.Value.ST;
+                            nEvt = nEvt.Next;
+                            continue;
+                        }
+                        neWidth =
+                            Math.Min(
+                                neWidth,
+                                x + w - drawX);
+
+                        if (SameMeasStack.Count > 0 || LoopStack.Count > 0)
+                            graph.BackColor = Color.FromArgb(Math.Min(255, ne.Vel * 2), 80, 255, 80);
+                        else
+                            graph.BackColor = Color.FromArgb(Math.Min(255, ne.Vel * 2), 255, 180, 80);
+                        graph.FillRectangle(
+                            x + pxTrackBorderLineThin + (int)(tick * tickZoom),
+                            y + pxTrackBorderLineThin * 2 + neHeight,
+                            neWidth, 1);
+
+                        tick += nEvt.Value.ST;
+                        nEvt = nEvt.Next;
+                        continue;
+
+                    case MIDIEventType.LoopStart:
+                        LoopStack.Push((nEvt.Next, null));
+                        nEvt = nEvt.Next;
+                        continue;
+
+                    case MIDIEventType.LoopEnd:
+                        if (LoopStack.Count > 0)
+                        {
+                            var (levt, lcnt) = LoopStack.Pop();
+                            MIDILoopEndEvent leEvt = (MIDILoopEndEvent)nEvt.Value;
+                            if (lcnt == null)
+                            {
+                                lcnt = leEvt.LoopCounter;
+                            }
+
+                            lcnt--;
+
+                            if (lcnt > 0)
+                            {
+                                LoopStack.Push((levt, lcnt));
+                                nEvt = levt;
+                                continue;
+                            }
+                        }
+                        nEvt = nEvt.Next;
+                        continue;
+
+                    case MIDIEventType.SameMeas:
+                        if (SameMeasStack.Count > 0)
+                        {
+                            nEvt = SameMeasStack.Pop();
+                            continue;
+                        }
+
+                        bool first = true;
+                        while (nEvt.Value.Type == MIDIEventType.SameMeas)
+                        {
+                            var sevt = (MIDISameMeasEvent)nEvt.Value;
+                            int target = sevt.RepeatMeas;
+
+                            var key = (0, 0, target);
+
+                            if (!measureStartNode.TryGetValue(key, out var jumpNode))
+                                break;
+
+                            if (jumpNode.Value.Type == MIDIEventType.BarLine)
+                            {
+                                if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
+                                {
+                                    if (first) SameMeasStack.Push(nEvt.Next);
+                                    first = false;
+
+                                    nEvt = jumpNode.Next;
+                                    continue;
+                                }
+
+                                // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                                if (first) SameMeasStack.Push(nEvt.Next);
+                                nEvt = jumpNode.Next;
+                                break;
+                            }
+
+                            if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+                            {
+                                if (first) SameMeasStack.Push(nEvt.Next);
+                                first = false;
+
+                                nEvt = jumpNode;
+                                continue;
+                            }
+
+                            // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                            if (first) SameMeasStack.Push(nEvt.Next);
+
+                            nEvt = jumpNode;
+                            break;
+
+                        }
+                        continue;
+
+                    case MIDIEventType.BarLine:
+                    case MIDIEventType.MetaEndOfTrack:
+                        if (SameMeasStack.Count > 0)
+                        {
+                            nEvt= SameMeasStack.Pop();
+                            continue;
+                        }
+                        break;
                 }
 
+                tick += nEvt.Value.ST;
+                nEvt = nEvt.Next;
+                continue;
             }
+
+
+        }
+
+        private void BuildMeasureStartNode(
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
+            , MIDIPart prt)
+        {
+            measureStartNode.Clear();
+            var node = prt.Event.First;
+            int meas = 0;
+            int t = 0;
+            int p = 0;
+
+            measureStartNode[(t, p, meas)] = node;
+
+            while (node != null)
+            {
+                var evt = node.Value;
+
+                if (evt.Type == MIDIEventType.BarLine)
+                {
+                    meas++;
+                    measureStartNode[(t, p, meas)] = node;
+                }
+                else if (evt.Type == MIDIEventType.SameMeas)
+                {
+                    if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+                    {
+                        meas++;
+                        measureStartNode[(t, p, meas)] = node;
+                    }
+                }
+                else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
+                {
+                    meas++;
+                    measureStartNode[(t, p, meas)] = node;
+                }
+
+                node = node.Next;
+            }
+
+
         }
 
         private double tickZoom = 0.1;

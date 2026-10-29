@@ -1,10 +1,12 @@
 ﻿using NAudio.Midi;
 using Remcoposer64.Common;
+using Remcoposer64.Common.Render;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Remcoposer64.Core
 {
@@ -81,6 +83,7 @@ namespace Remcoposer64.Core
                     Rythm();
                     UserEx();
                     TrackData();
+
                     break;
                 }
                 catch (IndexOutOfRangeException ex)
@@ -118,6 +121,8 @@ namespace Remcoposer64.Core
                 }
                 nTrk = nTrk.Next;
             }
+
+            ComputeLength();
 
             return prj;
         }
@@ -999,6 +1004,187 @@ namespace Remcoposer64.Core
                     break;
             }
         }
+
+        private Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
+        private Stack<LinkedListNode<MIDIEvent>> SameMeasStack = new Stack<LinkedListNode<MIDIEvent>>();
+        private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
+
+        private void ComputeLength()
+        {
+            LinkedListNode<MIDITrack> nTrk = prj.Track.First;
+            while (nTrk != null)
+            {
+                LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
+                while (nPrt != null)
+                {
+                    nPrt.Value.LengthTick = 0;
+                    
+                    LoopStack.Clear();
+                    SameMeasStack.Clear();
+                    measureStartNode.Clear();
+                    BuildMeasureStartNode(measureStartNode, nPrt.Value);
+
+                    LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
+                    while(nEvt!=null)
+                    {
+                        ComputeTick(nPrt, ref nEvt);
+                    }
+
+                    nPrt = nPrt.Next;
+                }
+
+                nTrk = nTrk.Next;
+            }
+
+        }
+
+        private void ComputeTick(LinkedListNode<MIDIPart> nPrt, ref LinkedListNode<MIDIEvent> nEvt)
+        {
+
+            switch (nEvt.Value.Type)
+            {
+                case MIDIEventType.NoteON:
+
+                    MIDINoteEvent ne = (MIDINoteEvent)nEvt.Value;
+                    nPrt.Value.LengthTick += nEvt.Value.ST;
+                    nEvt = nEvt.Next;
+                    return;
+
+                case MIDIEventType.LoopStart:
+                    LoopStack.Push((nEvt.Next, null));
+                    nEvt = nEvt.Next;
+                    return;
+
+                case MIDIEventType.LoopEnd:
+                    if (LoopStack.Count > 0)
+                    {
+                        var (levt, lcnt) = LoopStack.Pop();
+                        MIDILoopEndEvent leEvt = (MIDILoopEndEvent)nEvt.Value;
+                        if (lcnt == null)
+                        {
+                            lcnt = leEvt.LoopCounter;
+                        }
+
+                        lcnt--;
+
+                        if (lcnt > 0)
+                        {
+                            LoopStack.Push((levt, lcnt));
+                            nEvt = levt;
+                            return;
+                        }
+                    }
+                    nEvt = nEvt.Next;
+                    return;
+
+                case MIDIEventType.SameMeas:
+                    if (SameMeasStack.Count > 0)
+                    {
+                        nEvt = SameMeasStack.Pop();
+                        return;
+                    }
+
+                    bool first = true;
+                    while (nEvt.Value.Type == MIDIEventType.SameMeas)
+                    {
+                        var sevt = (MIDISameMeasEvent)nEvt.Value;
+                        int target = sevt.RepeatMeas;
+
+                        var key = (0, 0, target);
+
+                        if (!measureStartNode.TryGetValue(key, out var jumpNode))
+                            break;
+
+                        if (jumpNode.Value.Type == MIDIEventType.BarLine)
+                        {
+                            if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
+                            {
+                                if (first) SameMeasStack.Push(nEvt.Next);
+                                first = false;
+
+                                nEvt = jumpNode.Next;
+                                continue;
+                            }
+
+                            // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                            if (first) SameMeasStack.Push(nEvt.Next);
+                            nEvt = jumpNode.Next;
+                            break;
+                        }
+
+                        if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+                        {
+                            if (first) SameMeasStack.Push(nEvt.Next);
+                            first = false;
+
+                            nEvt = jumpNode;
+                            continue;
+                        }
+
+                        // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                        if (first) SameMeasStack.Push(nEvt.Next);
+
+                        nEvt = jumpNode;
+                        break;
+
+                    }
+                    return;
+
+                case MIDIEventType.BarLine:
+                case MIDIEventType.MetaEndOfTrack:
+                    if (SameMeasStack.Count > 0)
+                    {
+                        nEvt = SameMeasStack.Pop();
+                        return;
+                    }
+                    break;
+            }
+
+            nPrt.Value.LengthTick += nEvt.Value.ST;
+            nEvt = nEvt.Next;
+        }
+
+        private void BuildMeasureStartNode(
+    Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
+    , MIDIPart prt)
+        {
+            measureStartNode.Clear();
+            var node = prt.Event.First;
+            int meas = 0;
+            int t = 0;
+            int p = 0;
+
+            measureStartNode[(t, p, meas)] = node;
+
+            while (node != null)
+            {
+                var evt = node.Value;
+
+                if (evt.Type == MIDIEventType.BarLine)
+                {
+                    meas++;
+                    measureStartNode[(t, p, meas)] = node;
+                }
+                else if (evt.Type == MIDIEventType.SameMeas)
+                {
+                    if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+                    {
+                        meas++;
+                        measureStartNode[(t, p, meas)] = node;
+                    }
+                }
+                else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
+                {
+                    meas++;
+                    measureStartNode[(t, p, meas)] = node;
+                }
+
+                node = node.Next;
+            }
+
+
+        }
+
 
 
     }
