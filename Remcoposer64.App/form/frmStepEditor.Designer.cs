@@ -73,6 +73,7 @@
             statusStrip1.Location = new Point(0, 0);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(800, 22);
+            statusStrip1.SizingGrip = false;
             statusStrip1.TabIndex = 0;
             // 
             // tsslIsOverwrite
