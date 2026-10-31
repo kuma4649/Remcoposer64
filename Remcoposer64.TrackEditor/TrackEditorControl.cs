@@ -292,7 +292,7 @@ namespace Remcoposer64.TrackEditor
                     trackCanvasPanel.Refresh();
                 }
                 else
-                    hScrollBar1.Value = playX;
+                    hScrollBar1.Value = Math.Min(playX, hScrollBar1.Maximum);
             }
 
         }
