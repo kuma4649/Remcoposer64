@@ -148,6 +148,7 @@ namespace Remcoposer64.Common
             public int id = 0;
             public int manufacturer = -1;
             public string name = "";
+            public string alias = "";
             public int type = 0;//GM / XG / GS / LA / GS(SC - 55_1) / GS(SC - 55_2)
 
             public int beforeSendType = 0;//None / GM Reset / XG Reset / GS Reset / Custom
@@ -161,6 +162,7 @@ namespace Remcoposer64.Common
                 moi.id = this.id;
                 moi.manufacturer = this.manufacturer;
                 moi.name = this.name;
+                moi.alias = this.alias;
                 moi.type = this.type;
                 moi.beforeSendType = this.beforeSendType;
                 moi.isVST = this.isVST;
@@ -210,6 +212,7 @@ namespace Remcoposer64.Common
             public int id = 0;
             public int manufacturer = -1;
             public string name = "";
+            public string alias = "";
             public int type = 0;//GM / XG / GS / LA / GS(SC - 55_1) / GS(SC - 55_2)
 
             public int beforeSendType = 0;//None / GM Reset / XG Reset / GS Reset / Custom
@@ -223,6 +226,7 @@ namespace Remcoposer64.Common
                 mii.id = this.id;
                 mii.manufacturer = this.manufacturer;
                 mii.name = this.name;
+                mii.alias = this.alias;
                 mii.type = this.type;
                 mii.beforeSendType = this.beforeSendType;
                 mii.isVST = this.isVST;
@@ -252,12 +256,14 @@ namespace Remcoposer64.Common
             public GraphType GraphType { get; set; } = GraphType.Vortice;
             public int FontSize { get; set; } = 16;
             public int TrackEditorRow { get; set; } = 2;
+            public EditorFontSize StepEditorFontSize { get; set; } = EditorFontSize.Large16;
 
             public Common Copy()
             {
                 Common cmn = new Common();
                 cmn.GraphType = this.GraphType;
                 cmn.FontSize = this.FontSize;
+                cmn.StepEditorFontSize = this.StepEditorFontSize;
                 cmn.TrackEditorRow = this.TrackEditorRow;
 
                 return cmn;

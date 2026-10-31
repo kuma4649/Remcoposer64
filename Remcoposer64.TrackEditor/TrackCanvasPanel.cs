@@ -315,6 +315,18 @@ namespace Remcoposer64.TrackEditor.Internal
             return (int)(tick * tickZoom);
         }
 
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            int trackNo = (e.Y + TrackEditorControl.pxScrollY) / pxTrackHeight;
+
+            LinkedListNode<MIDITrack> trk = TrackEditorControl.GetTrackByIndex(trackNo);
+            if (trk == null) return;
+
+            TrackEditorControl.MoveCursorTrack(trk);
+        }
+        
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
             base.OnMouseDoubleClick(e);

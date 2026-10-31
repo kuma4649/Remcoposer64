@@ -1,6 +1,7 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using Remcoposer64.ProjectData.Events;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -216,7 +217,7 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Invalidate();
         }
 
-        private void hHeaderScrollBar_ValueChanged(    object sender,    EventArgs e)
+        private void hHeaderScrollBar_ValueChanged(object sender, EventArgs e)
         {
             pxHeaderScrollX = hHeaderScrollBar.Value;
 
@@ -332,12 +333,14 @@ namespace Remcoposer64.TrackEditor
                 keyData);
         }
 
-        private void MoveCursorTrack(    LinkedListNode<MIDITrack> trk)
+        public void MoveCursorTrack(LinkedListNode<MIDITrack> trk)
         {
             TrackCursor.Track = trk;
             TrackCursor.Part = trk.Value.Part?.First;
             EnsureCursorVisible();
+            RefreshCursor();
         }
+
         private void EnsureCursorVisible()
         {
             if (TrackCursor.Track == null)
@@ -370,6 +373,56 @@ namespace Remcoposer64.TrackEditor
         {
             trackHeaderPanel.Refresh();
             trackCanvasPanel.Refresh();
+        }
+
+        public LinkedListNode<MIDITrack>? GetTrackByIndex(int trackNo)
+        {
+            if (trackNo < 0 || trackNo >= Project.Track.Count)
+                return null;
+
+            LinkedListNode<MIDITrack> trk =
+                Project.Track.First;
+
+            for (int i = 0; i < trackNo; i++)
+            {
+                if (trk == null)
+                    return null;
+
+                trk = trk.Next;
+            }
+
+            return trk;
+
+        }
+
+        private void btnStretch_Click(object sender, EventArgs e)
+        {
+            StretchZoom();
+        }
+
+        public void StretchZoom()
+        { 
+            if (Project == null || Project.Track.Count < 1) return;
+
+            int maxAbsTick = 0;
+            LinkedListNode<MIDITrack> nTrk = Project.Track.First;
+            while (nTrk != null)
+            {
+                LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
+                while (nPrt != null)
+                {
+
+                    int absTick = nPrt.Value.StartTick + nPrt.Value.LengthTick;
+                    maxAbsTick = Math.Max(maxAbsTick, absTick);
+
+                    nPrt = nPrt.Next;
+                }
+
+                nTrk = nTrk.Next;
+            }
+
+            double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.002;
+            trackBar1.Value = Math.Max((int)zm, 1);
         }
     }
 }

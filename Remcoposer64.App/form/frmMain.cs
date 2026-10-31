@@ -10,7 +10,7 @@ namespace Remcoposer64.App
 {
     public partial class frmMain : Form
     {
-        private Setting setting;
+        public Setting setting;
         private frmConsole console;
         private frmOpePanel opePanel;
         private UndoRedoManager.UndoRedoManager undoMng;
@@ -144,6 +144,7 @@ namespace Remcoposer64.App
                 {
                     MIDIProject project = (MIDIProject)tab.Tag;
                     TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
+                    tec.SetContext(project, setting, player);
                     tec.Refresh();
                 }
                 catch (Exception e)
@@ -172,6 +173,22 @@ namespace Remcoposer64.App
                 {
                     Log.ForcedWrite(e);
                 }
+            }
+
+        }
+
+        private void SetStepEditor()
+        {
+            List<frmStepEditor> lst = new List<frmStepEditor>();
+            foreach (var ctrl in dockPanel1.Contents)
+            {
+                if (!(ctrl is frmStepEditor)) continue;
+                frmStepEditor fse = (frmStepEditor)ctrl;
+                lst.Add(fse);
+            }
+            for (int i = 0; i < lst.Count; i++)
+            {
+                lst[i].Close();//.UpdateFontSize();
             }
 
         }
@@ -339,6 +356,7 @@ namespace Remcoposer64.App
             SetDevice();
         }
 
+
         private void tsbTrackRow1_Click(object sender, EventArgs e)
         {
             SelectPresetButton(toolStrip2.Items, tsbTrackRow1);
@@ -363,6 +381,29 @@ namespace Remcoposer64.App
         }
 
 
+        private void tsbSEFont8_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip3.Items, tsbSEFont8);
+            setting.common.StepEditorFontSize = EditorFontSize.Small8;
+            SetStepEditor();
+        }
+
+        private void tsbSEFont12_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip3.Items, tsbSEFont12);
+            setting.common.StepEditorFontSize = EditorFontSize.Medium12;
+            SetStepEditor();
+
+        }
+
+        private void tsbSEFont16_Click(object sender, EventArgs e)
+        {
+            SelectPresetButton(toolStrip3.Items, tsbSEFont16);
+            setting.common.StepEditorFontSize = EditorFontSize.Large16;
+            SetStepEditor();
+
+        }
+
 
 
 
@@ -373,6 +414,7 @@ namespace Remcoposer64.App
             Log.Write(LogLevel.Information, "Start initialization.");
 
             dockPanel1.Theme = vS2015DarkTheme1;
+            dockPanel1.DocumentStyle = DocumentStyle.DockingSdi;
 
             Common.Common.SetExecutablePath(Application.ExecutablePath);
             setting = Setting.Load();
@@ -407,7 +449,7 @@ namespace Remcoposer64.App
                     break;
             }
 
-            switch(setting.common.TrackEditorRow)
+            switch (setting.common.TrackEditorRow)
             {
                 case 1:
                 default:
@@ -421,11 +463,25 @@ namespace Remcoposer64.App
                     break;
             }
 
+            switch (setting.common.StepEditorFontSize)
+            {
+                case EditorFontSize.Small8:
+                    SelectPresetButton(toolStrip3.Items, tsbSEFont8);
+                    break;
+                case EditorFontSize.Medium12:
+                    SelectPresetButton(toolStrip3.Items, tsbSEFont12);
+                    break;
+                case EditorFontSize.Large16:
+                default:
+                    SelectPresetButton(toolStrip3.Items, tsbSEFont16);
+                    break;
+            }
+
             RestoreLayout();
 
             foreach (string fn in setting.ui.OpenFiles)
             {
-                if (dockPanel1.Contents.Count < MAX_OPEN_FILES && File.Exists(fn))
+                if (File.Exists(fn))
                     ImportMidiFile(fn);
             }
 
@@ -439,12 +495,14 @@ namespace Remcoposer64.App
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
-            if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
-                ImportMidiFile(ofd.FileName);
+            //if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
+            ImportMidiFile(ofd.FileName);
         }
 
         private void ImportMidiFile(string fileName)
         {
+            CloseProject();
+
             MIDIProject project = null;
 
             string ext = Path.GetExtension(fileName).ToLower();
@@ -479,6 +537,7 @@ namespace Remcoposer64.App
             currentProject = project;
 
             AddProjectTab(project);
+            UpdateTitle();
             //UpdateInformation(project);
         }
 
@@ -493,76 +552,6 @@ namespace Remcoposer64.App
             project.parentForm = tab;
             fProjects.Add(tab);
 
-            //DataGridView dgvTracks = new DataGridView();
-            //dgvTracks.Dock = DockStyle.Fill;
-            //dgvTracks.AllowUserToAddRows = false;
-            //dgvTracks.AllowUserToDeleteRows = false;
-            //dgvTracks.AllowUserToResizeRows = false;
-            //dgvTracks.RowHeadersVisible = false;
-            //dgvTracks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            //dgvTracks.EditMode = DataGridViewEditMode.EditOnEnter;
-            //dgvTracks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-            //dgvTracks.Columns.Clear();
-            //dgvTracks.Columns.Add("No", "No");
-            //dgvTracks.Columns.Add("Name", "Name");
-            //dgvTracks.Columns.Add("Device", "Device");
-            //dgvTracks.Columns.Add("Channel", "Ch");
-            //dgvTracks.Columns.Add("Parts", "Parts");
-            //dgvTracks.Columns["Parts"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            //dgvTracks.Columns["Parts"].ReadOnly = true;
-            //dgvTracks.Columns["Parts"].Width = 80;
-            //dgvTracks.Columns.Add("Spacer", "");
-            //dgvTracks.Columns["Spacer"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            //dgvTracks.Columns["Spacer"].ReadOnly = true;
-            //dgvTracks.CellDoubleClick += (s, e) =>
-            //{
-            //    // Parts 列以外は無視
-            //    if (e.ColumnIndex != dgvTracks.Columns["Parts"].Index)
-            //        return;
-
-            //    int trackIndex = e.RowIndex;
-            //    MIDITrack trk = project.getTrack4TrackNumber(trackIndex);
-
-            //    LinkedListNode<MIDIPart> part = trk.getStartPartNode();
-            //    if (part == null)
-            //        return;
-
-            //    frmStepEditor frm = new frmStepEditor(this, trk, part.Value, undoMng);
-            //    stepEditors.Add(frm);
-            //    frm.Show(dockPanel1, new Rectangle(0, 0, 816, 480));
-            //    frm.Size = new Size(816, 480);
-            //};
-
-            //dgvTracks.Rows.Clear();
-
-            //Setting.MidiOut mo = setting.midiOut;
-            //LinkedListNode<MIDITrack> trk = project.getStartTrackNode();
-            //while (trk != null)
-            //{
-            //    string name = "";
-            //    if (mo != null
-            //        && mo.lstMidiOutInfo != null
-            //        && mo.lstMidiOutInfo.Count > 0
-            //        && mo.lstMidiOutInfo.Count > mo.CurrentDev
-            //        && mo.lstMidiOutInfo[mo.CurrentDev] != null
-            //    )
-            //        name = mo.lstMidiOutInfo[mo.CurrentDev][Math.Max(Math.Min(trk.Value.OutDevice, mo.lstMidiOutInfo[mo.CurrentDev].Length - 1), 0)].name;
-
-            //    dgvTracks.Rows.Add(
-            //        trk.Value.Number + 1,
-            //        trk.Value.Name,
-            //        name,
-            //        trk.Value.OutChannel + 1,
-            //        MakePartDots(trk.Value)
-            //    );
-            //    dgvTracks.Rows[dgvTracks.Rows.Count - 1].Tag = trk;
-
-            //    trk = project.getNextTrackNode(trk);
-            //}
-
-            //tab.Controls.Add(dgvTracks);
-
             TrackEditorControl trackEditor = new TrackEditorControl();
 
             trackEditor.Dock = DockStyle.Fill;
@@ -574,7 +563,7 @@ namespace Remcoposer64.App
 
             trackEditor.TrackDoubleClicked +=
                 TrackEditor_TrackDoubleClicked;
-            
+
             trackEditor.SetHeaderLine(setting.common.TrackEditorRow);
 
             tab.Controls.Add(trackEditor);
@@ -585,6 +574,7 @@ namespace Remcoposer64.App
 
             // そのタブを選択
             tab.Activate();
+            trackEditor.StretchZoom();
         }
 
         private void TrackEditor_TrackDoubleClicked(object sender, TrackDoubleClickEventArgs e)
@@ -663,21 +653,20 @@ namespace Remcoposer64.App
             }
         }
 
-        public void CloseProject(MIDIProject project)
+        public void CloseProject()
         {
-            for (int i = 0; i < fProjects.Count; i++)
+            List<object> lst = new List<object>();
+            foreach (var ctrl in dockPanel1.Contents) lst.Add(ctrl);
+            for(int i=0;i<lst.Count;i++)
             {
-                if (project == fProjects[i].Tag)
-                {
-                    fProjects.RemoveAt(i);
-                    i--;
-                }
+                if (lst[i] is frmStepEditor) ((frmStepEditor)lst[i]).Close();
+                if (lst[i] is frmProject) ((frmProject)lst[i]).Close();
+                if (lst[i] is frmInformation) ((frmInformation)lst[i]).Close();
             }
 
-            if (currentProject == project)
-            {
-                currentProject = null;
-            }
+            fProjects.Clear();
+            projects.Clear();
+            currentProject = null;
         }
 
 
@@ -734,15 +723,15 @@ namespace Remcoposer64.App
                     stepeditor.Refresh();
                 }
 
-                foreach(var cnt in dockPanel1.Contents)
+                foreach (var cnt in dockPanel1.Contents)
                 {
-                    if (cnt is frmProject 
-                        && ((frmProject)cnt).Tag == currentProject 
+                    if (cnt is frmProject
+                        && ((frmProject)cnt).Tag == currentProject
                         && player.GetPlayingProject() == currentProject)
                     {
-                        foreach(var cnt2 in ((frmProject)cnt).Controls)
+                        foreach (var cnt2 in ((frmProject)cnt).Controls)
                         {
-                            if(cnt2 is TrackEditorControl)
+                            if (cnt2 is TrackEditorControl)
                             {
                                 ((TrackEditorControl)cnt2).ScrollPlayingMarker();
                             }
@@ -774,12 +763,14 @@ namespace Remcoposer64.App
             }
         }
 
-        private const int MAX_OPEN_FILES = 100;
+        private const int MAX_OPEN_FILES = 1;
 
         private void dockPanel1_DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
                 return;
+
+                CloseProject();
 
             string[] files =
                 (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -848,6 +839,8 @@ namespace Remcoposer64.App
         /// </summary>
         private void OpenFile(string filename)
         {
+                CloseProject();
+
             try
             {
                 string ext = Path.GetExtension(filename);
@@ -864,6 +857,8 @@ namespace Remcoposer64.App
                         ImportMidiFile(filename);
                         break;
                 }
+
+                UpdateTitle();
             }
             catch (Exception ex)
             {
@@ -876,5 +871,22 @@ namespace Remcoposer64.App
             return player.GetMusicState() != RmPlayer.PlayerState.Stopped;
         }
 
+        private void tsmiCloseSequenceFile_Click(object sender, EventArgs e)
+        {
+            CloseProject();
+        }
+
+        private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateTitle()
+        {
+            if (projects.Count < 1)
+                this.Text = "Remcoposer64";
+            else
+                this.Text = $"{projects[0].Information.Title} {projects[0].Information.UpdateFlag}";
+        }
     }
 }

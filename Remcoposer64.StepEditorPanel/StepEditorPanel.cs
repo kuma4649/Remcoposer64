@@ -77,13 +77,6 @@ namespace Remcoposer64.StepEditorPanelControl
 
         public EventManager eventManager = null;
 
-        public enum EditorFontSize
-        {
-            Small8 = 8,
-            Medium12 = 12,
-            Large16 = 16
-        }
-
         private EditorFontSize fontSize = EditorFontSize.Large16;
 
         [DefaultValueAttribute(EditorFontSize.Large16)]
@@ -122,6 +115,8 @@ namespace Remcoposer64.StepEditorPanelControl
 
             charWidth = size;
             lineHeight = size;
+
+            if (grp == null) return;
 
             // Graph のフォントサイズ変更
             grp.SetFontSize(size);

@@ -15,6 +15,7 @@ namespace Remcoposer64.TrackEditor
             splitContainer1 = new SplitContainer();
             hHeaderScrollBar = new HScrollBar();
             trackHeaderPanel = new Remcoposer64.TrackEditor.Internal.TrackHeaderPanel();
+            btnStretch = new Button();
             trackBar1 = new TrackBar();
             hScrollBar1 = new HScrollBar();
             trackCanvasPanel = new Remcoposer64.TrackEditor.Internal.TrackCanvasPanel();
@@ -41,6 +42,7 @@ namespace Remcoposer64.TrackEditor
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(btnStretch);
             splitContainer1.Panel2.Controls.Add(trackBar1);
             splitContainer1.Panel2.Controls.Add(hScrollBar1);
             splitContainer1.Panel2.Controls.Add(trackCanvasPanel);
@@ -67,6 +69,18 @@ namespace Remcoposer64.TrackEditor
             trackHeaderPanel.Size = new Size(121, 435);
             trackHeaderPanel.TabIndex = 0;
             // 
+            // btnStretch
+            // 
+            btnStretch.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnStretch.Location = new Point(269, 418);
+            btnStretch.Name = "btnStretch";
+            btnStretch.Size = new Size(17, 17);
+            btnStretch.TabIndex = 1;
+            btnStretch.Text = "-";
+            btnStretch.TextAlign = ContentAlignment.TopCenter;
+            btnStretch.UseVisualStyleBackColor = true;
+            btnStretch.Click += btnStretch_Click;
+            // 
             // trackBar1
             // 
             trackBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -84,7 +98,7 @@ namespace Remcoposer64.TrackEditor
             hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             hScrollBar1.Location = new Point(0, 418);
             hScrollBar1.Name = "hScrollBar1";
-            hScrollBar1.Size = new Size(288, 17);
+            hScrollBar1.Size = new Size(266, 17);
             hScrollBar1.TabIndex = 0;
             hScrollBar1.ValueChanged += hScrollBar1_ValueChanged;
             // 
@@ -130,5 +144,6 @@ namespace Remcoposer64.TrackEditor
         private HScrollBar hScrollBar1;
         private HScrollBar hHeaderScrollBar;
         private TrackBar trackBar1;
+        private Button btnStretch;
     }
 }

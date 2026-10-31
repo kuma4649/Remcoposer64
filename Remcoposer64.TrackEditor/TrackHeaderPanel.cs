@@ -169,7 +169,9 @@ namespace Remcoposer64.TrackEditor.Internal
                     if (midiOutDevices != null && midiOutDevices.Length > 0)
                     {
                         int dev = Math.Clamp(trk.Value.OutDevice, 0, midiOutDevices.Length - 1);
-                        name = midiOutDevices[dev]?.name ?? "";
+                        name = string.IsNullOrWhiteSpace(midiOutDevices[dev]?.alias)
+                            ? midiOutDevices[dev]?.name ?? ""
+                            : midiOutDevices[dev].alias;
                     }
                     pos.X = ColX(COL_MIDIOUT);
                     pos.Y = pxTrackMarginTop * 2 + trackPanelPosY + pxFontHeight;
@@ -200,7 +202,9 @@ namespace Remcoposer64.TrackEditor.Internal
                         && midiInDevices.Length > 0)
                     {
                         int dev = Math.Clamp(trk.Value.InDevice, 0, midiInDevices.Length - 1);
-                        name = midiInDevices[dev]?.name ?? "";
+                        name = string.IsNullOrWhiteSpace(midiInDevices[dev]?.alias)
+                            ? midiInDevices[dev]?.name ?? ""
+                            : midiInDevices[dev].alias;
                     }
                     pos.X = ColX(COL_MIDIIN);
                     pos.Y = pxTrackMarginTop * 3 + trackPanelPosY + pxFontHeight * 2;
@@ -243,6 +247,17 @@ namespace Remcoposer64.TrackEditor.Internal
 
             graph.FillRectangle(x, y, 1, h);
             graph.FillRectangle(x + w - 1, y, 1, h);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            int trackNo = (e.Y + TrackEditorControl.pxScrollY) / pxTrackHeight;
+
+            LinkedListNode<MIDITrack> trk = TrackEditorControl.GetTrackByIndex(trackNo);
+            if (trk == null) return;
+            TrackEditorControl.MoveCursorTrack(trk);
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)

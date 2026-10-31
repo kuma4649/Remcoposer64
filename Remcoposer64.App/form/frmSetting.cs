@@ -60,7 +60,9 @@ namespace Remcoposer64.App.form
                         continue;
                     for (int j = 0; j < setting.midiOut.lstMidiOutInfo[i].Length; j++)
                     {
+
                         Setting.midiOutInfo moi = setting.midiOut.lstMidiOutInfo[i][j];
+
                         int found = -999;
                         for (int k = 0; k < NAudio.Midi.MidiOut.NumberOfDevices; k++)
                         {
@@ -80,6 +82,7 @@ namespace Remcoposer64.App.form
                             , moi.isVST
                             , moi.fileName
                             , moi.name
+                            , moi.alias
                             , stype
                             , sbeforeSend
                             , moi.isVST ? moi.vendor : (moi.manufacturer != -1 ? ((NAudio.Manufacturers)moi.manufacturer).ToString() : "Unknown")
@@ -118,6 +121,7 @@ namespace Remcoposer64.App.form
                             , mii.isVST
                             , mii.fileName
                             , mii.name
+                            , mii.alias
                             , stype
                             , mii.isVST ? mii.vendor : (mii.manufacturer != -1 ? ((NAudio.Manufacturers)mii.manufacturer).ToString() : "Unknown")
                             );
@@ -144,7 +148,7 @@ namespace Remcoposer64.App.form
                     }
                 }
 
-                if (!found) dgv[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, "GM", "None", row.Cells[2].Value);
+                if (!found) dgv[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", "None", row.Cells[2].Value);
             }
         }
 
@@ -178,7 +182,7 @@ namespace Remcoposer64.App.form
                 if (row.Index < 1) continue;
 
                 int i = row.Index - 1;
-                dgv[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value);
+                dgv[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
                 dgv[p].Rows.Remove(row);
                 dgv[p].Rows[i].Selected = true;
             }
@@ -195,7 +199,7 @@ namespace Remcoposer64.App.form
                 if (row.Index > dgv[p].Rows.Count - 2) continue;
 
                 int i = row.Index + 1;
-                dgv[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value);
+                dgv[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
                 dgv[p].Rows.Remove(row);
                 dgv[p].Rows[i].Selected = true;
             }
@@ -220,7 +224,7 @@ namespace Remcoposer64.App.form
                     }
                 }
 
-                if (!found) dgvIn[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, "GM", row.Cells[2].Value);
+                if (!found) dgvIn[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", row.Cells[2].Value);
             }
 
         }
@@ -255,7 +259,7 @@ namespace Remcoposer64.App.form
                 if (row.Index < 1) continue;
 
                 int i = row.Index - 1;
-                dgvIn[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value);
+                dgvIn[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
                 dgvIn[p].Rows.Remove(row);
                 dgvIn[p].Rows[i].Selected = true;
             }
@@ -272,7 +276,7 @@ namespace Remcoposer64.App.form
                 if (row.Index > dgvIn[p].Rows.Count - 2) continue;
 
                 int i = row.Index + 1;
-                dgvIn[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value);
+                dgvIn[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
                 dgvIn[p].Rows.Remove(row);
                 dgvIn[p].Rows[i].Selected = true;
             }
@@ -331,7 +335,8 @@ namespace Remcoposer64.App.form
                     moi.isVST = (bool)d.Rows[i].Cells[1].Value;
                     moi.fileName = (string)d.Rows[i].Cells[2].Value;
                     moi.name = (string)d.Rows[i].Cells[3].Value;
-                    string stype = (string)d.Rows[i].Cells[4].Value;
+                    moi.alias = (string)d.Rows[i].Cells[4].Value;
+                    string stype = (string)d.Rows[i].Cells[5].Value;
                     //GM / XG / GS / LA / GS(SC - 55_1) / GS(SC - 55_2)
                     moi.type = 0;
                     if (stype == "XG") moi.type = 1;
@@ -339,14 +344,14 @@ namespace Remcoposer64.App.form
                     else if (stype == "LA") moi.type = 3;
                     else if (stype == "GS(SC - 55_1)") moi.type = 4;
                     else if (stype == "GS(SC - 55_2)") moi.type = 5;
-                    string sbeforeSend = (string)d.Rows[i].Cells[5].Value;
+                    string sbeforeSend = (string)d.Rows[i].Cells[6].Value;
                     moi.beforeSendType = 0;
                     if (sbeforeSend == "GM Reset") moi.beforeSendType = 1;
                     else if (sbeforeSend == "XG Reset") moi.beforeSendType = 2;
                     else if (sbeforeSend == "GS Reset") moi.beforeSendType = 3;
                     else if (sbeforeSend == "Custom") moi.beforeSendType = 4;
 
-                    string mn = (string)d.Rows[i].Cells[6].Value;
+                    string mn = (string)d.Rows[i].Cells[7].Value;
                     moi.vendor = mn;
                     moi.manufacturer = -1;
                     if (!moi.isVST)
@@ -380,7 +385,8 @@ namespace Remcoposer64.App.form
                     mii.isVST = (bool)d.Rows[i].Cells[1].Value;
                     mii.fileName = (string)d.Rows[i].Cells[2].Value;
                     mii.name = (string)d.Rows[i].Cells[3].Value;
-                    string stype = (string)d.Rows[i].Cells[4].Value;
+                    mii.alias = (string)d.Rows[i].Cells[4].Value;
+                    string stype = (string)d.Rows[i].Cells[5].Value;
                     //GM / XG / GS / LA / GS(SC - 55_1) / GS(SC - 55_2)
                     mii.type = 0;
                     if (stype == "XG") mii.type = 1;
@@ -388,7 +394,7 @@ namespace Remcoposer64.App.form
                     else if (stype == "LA") mii.type = 3;
                     else if (stype == "GS(SC - 55_1)") mii.type = 4;
                     else if (stype == "GS(SC - 55_2)") mii.type = 5;
-                    string mn = (string)d.Rows[i].Cells[5].Value;
+                    string mn = (string)d.Rows[i].Cells[6].Value;
                     mii.vendor = mn;
                     mii.manufacturer = -1;
                     if (!mii.isVST)

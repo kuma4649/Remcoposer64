@@ -879,13 +879,23 @@ namespace Remcoposer64.ProjectData
 
         public static MIDIProject Load(string fileName)
         {
-            XmlSerializer xs = new XmlSerializer(typeof(MIDIProjectDto));
-
-            using (var sr = new StreamReader(fileName))
+            try
             {
-                MIDIProjectDto dto = (MIDIProjectDto)xs.Deserialize(sr);
-                return ConvertDtoToProject(dto);
+                XmlSerializer xs = new XmlSerializer(typeof(MIDIProjectDto));
+
+                using (var sr = new StreamReader(fileName))
+                {
+                    MIDIProjectDto dto = (MIDIProjectDto)xs.Deserialize(sr);
+                    return ConvertDtoToProject(dto);
+                }
+
             }
+            catch(Exception e)
+            {
+                Log.ForcedWrite(e);
+            }
+
+            return null;
         }
 
         private static MIDIProject ConvertDtoToProject(MIDIProjectDto dto)

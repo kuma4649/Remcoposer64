@@ -36,6 +36,7 @@
             tsmiOpenSequenceFile = new ToolStripMenuItem();
             tsmiSaveSequenceFile = new ToolStripMenuItem();
             tsmiSaveAs = new ToolStripMenuItem();
+            tsmiCloseSequenceFile = new ToolStripMenuItem();
             tsmiRecentFiles = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             tsmiExport = new ToolStripMenuItem();
@@ -67,12 +68,17 @@
             vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
             visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(components);
             toolStripContainer1 = new ToolStripContainer();
-            timerScreen = new System.Windows.Forms.Timer(components);
             toolStrip2 = new ToolStrip();
             toolStripLabel2 = new ToolStripLabel();
             tsbTrackRow1 = new ToolStripButton();
             tsbTrackRow2 = new ToolStripButton();
             tsbTrackRow3 = new ToolStripButton();
+            toolStrip3 = new ToolStrip();
+            toolStripLabel3 = new ToolStripLabel();
+            tsbSEFont8 = new ToolStripButton();
+            tsbSEFont12 = new ToolStripButton();
+            tsbSEFont16 = new ToolStripButton();
+            timerScreen = new System.Windows.Forms.Timer(components);
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             toolStripContainer1.BottomToolStripPanel.SuspendLayout();
@@ -80,6 +86,7 @@
             toolStripContainer1.TopToolStripPanel.SuspendLayout();
             toolStripContainer1.SuspendLayout();
             toolStrip2.SuspendLayout();
+            toolStrip3.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -94,70 +101,78 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiNewSequence, tsmiOpenSequenceFile, tsmiSaveSequenceFile, tsmiSaveAs, tsmiRecentFiles, toolStripSeparator1, tsmiExport, tsmiImport, toolStripSeparator2, tsmiExit });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiNewSequence, tsmiOpenSequenceFile, tsmiSaveSequenceFile, tsmiSaveAs, tsmiCloseSequenceFile, tsmiRecentFiles, toolStripSeparator1, tsmiExport, tsmiImport, toolStripSeparator2, tsmiExit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "&File";
+            fileToolStripMenuItem.DropDownOpening += fileToolStripMenuItem_DropDownOpening;
             // 
             // tsmiNewSequence
             // 
             tsmiNewSequence.Name = "tsmiNewSequence";
-            tsmiNewSequence.Size = new Size(175, 22);
+            tsmiNewSequence.Size = new Size(180, 22);
             tsmiNewSequence.Text = "New Sequence file";
             // 
             // tsmiOpenSequenceFile
             // 
             tsmiOpenSequenceFile.Name = "tsmiOpenSequenceFile";
-            tsmiOpenSequenceFile.Size = new Size(175, 22);
+            tsmiOpenSequenceFile.Size = new Size(180, 22);
             tsmiOpenSequenceFile.Text = "Open Sequence file";
             tsmiOpenSequenceFile.Click += tsmiOpenSequenceFile_Click;
             // 
             // tsmiSaveSequenceFile
             // 
             tsmiSaveSequenceFile.Name = "tsmiSaveSequenceFile";
-            tsmiSaveSequenceFile.Size = new Size(175, 22);
+            tsmiSaveSequenceFile.Size = new Size(180, 22);
             tsmiSaveSequenceFile.Text = "Save Sequence file";
             tsmiSaveSequenceFile.Click += tsmiSaveSequenceFile_Click;
             // 
             // tsmiSaveAs
             // 
             tsmiSaveAs.Name = "tsmiSaveAs";
-            tsmiSaveAs.Size = new Size(175, 22);
+            tsmiSaveAs.Size = new Size(180, 22);
             tsmiSaveAs.Text = "Save As";
+            // 
+            // tsmiCloseSequenceFile
+            // 
+            tsmiCloseSequenceFile.Name = "tsmiCloseSequenceFile";
+            tsmiCloseSequenceFile.Size = new Size(180, 22);
+            tsmiCloseSequenceFile.Text = "Close Sequence file";
+            tsmiCloseSequenceFile.Click += tsmiCloseSequenceFile_Click;
             // 
             // tsmiRecentFiles
             // 
             tsmiRecentFiles.Name = "tsmiRecentFiles";
-            tsmiRecentFiles.Size = new Size(175, 22);
+            tsmiRecentFiles.Size = new Size(180, 22);
             tsmiRecentFiles.Text = "Recent files";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(172, 6);
+            toolStripSeparator1.Size = new Size(177, 6);
             // 
             // tsmiExport
             // 
             tsmiExport.Name = "tsmiExport";
-            tsmiExport.Size = new Size(175, 22);
+            tsmiExport.Size = new Size(180, 22);
             tsmiExport.Text = "Export";
             // 
             // tsmiImport
             // 
             tsmiImport.Name = "tsmiImport";
-            tsmiImport.Size = new Size(175, 22);
+            tsmiImport.Size = new Size(180, 22);
             tsmiImport.Text = "Import";
             tsmiImport.Click += tsmiImport_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(172, 6);
+            toolStripSeparator2.Size = new Size(177, 6);
             // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(175, 22);
+            tsmiExit.Size = new Size(180, 22);
             tsmiExit.Text = "&Exit";
             tsmiExit.Click += tsmiExit_Click;
             // 
@@ -379,20 +394,15 @@
             toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
             toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip1);
             toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip2);
-            // 
-            // timerScreen
-            // 
-            timerScreen.Enabled = true;
-            timerScreen.Interval = 20;
-            timerScreen.Tick += timerScreen_Tick;
+            toolStripContainer1.TopToolStripPanel.Controls.Add(toolStrip3);
             // 
             // toolStrip2
             // 
             toolStrip2.Dock = DockStyle.None;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel2, tsbTrackRow1, tsbTrackRow2, tsbTrackRow3 });
-            toolStrip2.Location = new Point(241, 24);
+            toolStrip2.Location = new Point(239, 24);
             toolStrip2.Name = "toolStrip2";
-            toolStrip2.Size = new Size(169, 25);
+            toolStrip2.Size = new Size(138, 25);
             toolStrip2.TabIndex = 2;
             // 
             // toolStripLabel2
@@ -431,6 +441,57 @@
             tsbTrackRow3.Text = "3";
             tsbTrackRow3.Click += tsbTrackRow3_Click;
             // 
+            // toolStrip3
+            // 
+            toolStrip3.Dock = DockStyle.None;
+            toolStrip3.Items.AddRange(new ToolStripItem[] { toolStripLabel3, tsbSEFont8, tsbSEFont12, tsbSEFont16 });
+            toolStrip3.Location = new Point(383, 24);
+            toolStrip3.Name = "toolStrip3";
+            toolStrip3.Size = new Size(220, 25);
+            toolStrip3.TabIndex = 3;
+            // 
+            // toolStripLabel3
+            // 
+            toolStripLabel3.Name = "toolStripLabel3";
+            toolStripLabel3.Size = new Size(108, 22);
+            toolStripLabel3.Text = "StepEditor FontSize";
+            // 
+            // tsbSEFont8
+            // 
+            tsbSEFont8.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbSEFont8.Image = (Image)resources.GetObject("tsbSEFont8.Image");
+            tsbSEFont8.ImageTransparentColor = Color.Magenta;
+            tsbSEFont8.Name = "tsbSEFont8";
+            tsbSEFont8.Size = new Size(23, 22);
+            tsbSEFont8.Text = "8";
+            tsbSEFont8.Click += tsbSEFont8_Click;
+            // 
+            // tsbSEFont12
+            // 
+            tsbSEFont12.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbSEFont12.Image = (Image)resources.GetObject("tsbSEFont12.Image");
+            tsbSEFont12.ImageTransparentColor = Color.Magenta;
+            tsbSEFont12.Name = "tsbSEFont12";
+            tsbSEFont12.Size = new Size(23, 22);
+            tsbSEFont12.Text = "12";
+            tsbSEFont12.Click += tsbSEFont12_Click;
+            // 
+            // tsbSEFont16
+            // 
+            tsbSEFont16.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbSEFont16.Image = (Image)resources.GetObject("tsbSEFont16.Image");
+            tsbSEFont16.ImageTransparentColor = Color.Magenta;
+            tsbSEFont16.Name = "tsbSEFont16";
+            tsbSEFont16.Size = new Size(23, 22);
+            tsbSEFont16.Text = "16";
+            tsbSEFont16.Click += tsbSEFont16_Click;
+            // 
+            // timerScreen
+            // 
+            timerScreen.Enabled = true;
+            timerScreen.Interval = 20;
+            timerScreen.Tick += timerScreen_Tick;
+            // 
             // frmMain
             // 
             AllowDrop = true;
@@ -456,6 +517,8 @@
             toolStripContainer1.PerformLayout();
             toolStrip2.ResumeLayout(false);
             toolStrip2.PerformLayout();
+            toolStrip3.ResumeLayout(false);
+            toolStrip3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -505,5 +568,11 @@
         private ToolStripButton tsbTrackRow1;
         private ToolStripButton tsbTrackRow2;
         private ToolStripButton tsbTrackRow3;
+        private ToolStrip toolStrip3;
+        private ToolStripLabel toolStripLabel3;
+        private ToolStripButton tsbSEFont8;
+        private ToolStripButton tsbSEFont12;
+        private ToolStripButton tsbSEFont16;
+        private ToolStripMenuItem tsmiCloseSequenceFile;
     }
 }

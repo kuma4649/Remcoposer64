@@ -1,4 +1,5 @@
-﻿using Remcoposer64.ProjectData;
+﻿using Remcoposer64.Common;
+using Remcoposer64.ProjectData;
 using Remcoposer64.StepEditorPanelControl;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.SysExEditorPanel;
@@ -99,6 +100,7 @@ namespace Remcoposer64.App.form
 
         private void frmStepEditor_Shown(object sender, EventArgs e)
         {
+            stepEditorPanel1.FontSize = parent.setting.common.StepEditorFontSize;  //EditorFontSize.Medium12;
             stepEditorPanel1.RefreshScrollBar();
         }
 
@@ -111,6 +113,12 @@ namespace Remcoposer64.App.form
             //this.Text = $"Step Editor - ( {trkNm} : {prtNm} ){upd}";
 
             tsslIsOverwrite.Text = stepEditorPanel1.OverwriteMode ? "OVR" : "INS";
+        }
+
+        internal void UpdateFontSize()
+        {
+            //stepEditorPanel1.FontSize = parent.setting.common.StepEditorFontSize;  //EditorFontSize.Medium12;
+            stepEditorPanel1.SetFontSize(parent.setting.common.StepEditorFontSize);
         }
     }
 }
