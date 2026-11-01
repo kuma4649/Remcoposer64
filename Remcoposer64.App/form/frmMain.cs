@@ -888,5 +888,12 @@ namespace Remcoposer64.App
             else
                 this.Text = $"{projects[0].Information.Title} {projects[0].Information.UpdateFlag}";
         }
+
+        internal void SetFirstFrame()
+        {
+            player.StopPlayback();
+            player.SetFirstFrame();
+            fProjects[0].Refresh();
+        }
     }
 }

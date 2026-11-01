@@ -1,9 +1,16 @@
 ﻿using Remcoposer64.Common;
+using Remcoposer64.Common.Render;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
+using static Remcoposer64.Common.WinApi;
 
 namespace Remcoposer64.TrackEditor
 {
@@ -19,6 +26,7 @@ namespace Remcoposer64.TrackEditor
         internal int pxScrollY = 0;
         internal int pxScrollX = 0;
         internal int pxHeaderScrollX = 0;
+
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
@@ -149,29 +157,7 @@ namespace Remcoposer64.TrackEditor
 
             if (Project == null) return;
 
-            int maxTick = 0;
-
-            LinkedListNode<MIDITrack> trk =
-                Project.Track.First;
-
-            while (trk != null)
-            {
-                LinkedListNode<MIDIPart> part =
-                    trk.Value.getStartPartNode();
-
-                while (part != null)
-                {
-                    maxTick = Math.Max(
-                        maxTick,
-                        part.Value.StartTick
-                        + part.Value.LengthTick);
-
-                    part = part.Next;
-                }
-
-                trk = trk.Next;
-            }
-
+            int maxTick = GetMaxTick();
             int maxScroll =
                 Math.Max(
                     0,
@@ -262,6 +248,8 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Invalidate();
         }
 
+
+
         private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
         {
             UpdateScrollRange();
@@ -283,24 +271,46 @@ namespace Remcoposer64.TrackEditor
 
         public void ScrollPlayingMarker()
         {
-            if (Project == Player.GetPlayingProject())
+            if (Project != Player.GetPlayingProject()) return;
+
+            int maxTick = GetMaxTick();
+            if (trackCanvasPanel.TickToWidth(maxTick) <= trackCanvasPanel.ClientSize.Width)
             {
-                int playX = trackCanvasPanel.TickToXAbsolute((int)Player.GetFrameCounter());
-                playX = Math.Max(playX - 50, 0);
-                if (hScrollBar1.Value == playX)
-                {
-                    trackCanvasPanel.Refresh();
-                }
-                else if (playX <= hScrollBar1.Maximum)
-                {
-                    hScrollBar1.Value = playX;
-                }
-                else
-                {
-                    trackCanvasPanel.Refresh();
-                }
+                trackCanvasPanel.Refresh();
+                return;
             }
 
+            int playX = trackCanvasPanel.TickToXAbsolute((int)Player.GetFrameCounter());
+            playX = Math.Max(playX - 50, 0);
+            if (hScrollBar1.Value == playX) trackCanvasPanel.Refresh();
+            else if (playX <= hScrollBar1.Maximum) hScrollBar1.Value = playX;
+            else trackCanvasPanel.Refresh();
+        }
+
+        private int GetMaxTick()
+        {
+            int maxTick = 0;
+            LinkedListNode<MIDITrack> trk =
+                Project.Track.First;
+
+            while (trk != null)
+            {
+                LinkedListNode<MIDIPart> part =
+                    trk.Value.getStartPartNode();
+
+                while (part != null)
+                {
+                    maxTick = Math.Max(
+                        maxTick,
+                        part.Value.StartTick
+                        + part.Value.LengthTick);
+
+                    part = part.Next;
+                }
+
+                trk = trk.Next;
+            }
+            return maxTick;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -341,8 +351,15 @@ namespace Remcoposer64.TrackEditor
 
         public void MoveCursorTrack(LinkedListNode<MIDITrack> trk)
         {
+            MoveCursorTrack(trk, TrackCursor.HeaderColumn);
+        }
+
+        public void MoveCursorTrack(LinkedListNode<MIDITrack> trk, TrackHeaderColumn column)
+        {
             TrackCursor.Track = trk;
             TrackCursor.Part = trk.Value.Part?.First;
+            TrackCursor.HeaderColumn = column;
+
             EnsureCursorVisible();
             RefreshCursor();
         }
@@ -430,5 +447,7 @@ namespace Remcoposer64.TrackEditor
             double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.002;
             trackBar1.Value = Math.Max((int)zm, 1);
         }
+
+
     }
 }

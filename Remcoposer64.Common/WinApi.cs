@@ -313,6 +313,7 @@ namespace Remcoposer64.Common
         public const int WM_IME_ENDCOMPOSITION = 0x010E;
         public const int WM_IME_COMPOSITION = 0x010F;
         public const int WM_IME_SETCONTEXT = 0x0281;
+        public const uint WM_CHAR = 0x0102;
         public const int GCS_COMPSTR = 0x0008;   // 変換中文字（composition string）
         public const int GCS_RESULTSTR = 0x0800;   // 確定文字列（result string）
         public const int GCS_CURSORPOS = 0x0080;

@@ -6,6 +6,8 @@ namespace Remcoposer64.TrackEditor
 {
     public enum TrackHeaderColumn
     {
+        None,
+
         TrackNo,
         Mute,
         Solo,

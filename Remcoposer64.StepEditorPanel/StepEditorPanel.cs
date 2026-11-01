@@ -627,13 +627,6 @@ namespace Remcoposer64.StepEditorPanelControl
         {
             if (IsInDesignMode) return WinApi.CallWindowProc(oldWndProc, hWnd, msg, wParam, lParam);
 
-            //if (msg == WinApi.WM_IME_SETCONTEXT)
-            //{
-            //    //Imeを関連付ける
-            //    IntPtr himc = ImmCreateContext();
-            //    ImmAssociateContextEx(this.Handle, himc, ImmAssociateContextExFlags.IACE_DEFAULT);
-            //}
-
             MIDIMemoEvent me = null;
             MdlMemoEvent mme = null;
 

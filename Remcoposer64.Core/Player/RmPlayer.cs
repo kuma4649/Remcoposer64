@@ -296,5 +296,10 @@ namespace Remcoposer64.Core.Player
         {
             return musicPlayer.GetPlayingProject();
         }
+
+        public void SetFirstFrame()
+        {
+            musicPlayer.SetFirstFrame();
+        }
     }
 }

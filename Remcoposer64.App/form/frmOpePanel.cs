@@ -26,7 +26,7 @@ namespace Remcoposer64.App.form
 
         private void btRewind_Click(object sender, EventArgs e)
         {
-            //TBD
+            main.SetFirstFrame();
         }
 
         private void btPlay_Click(object sender, EventArgs e)

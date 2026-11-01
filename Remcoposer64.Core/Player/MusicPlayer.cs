@@ -824,6 +824,16 @@ namespace Remcoposer64.Core.Player
         {
             return _project;
         }
+
+        internal void SetFirstFrame()
+        {
+            frameCounter = 0;
+            timerCounter = 0;
+            _meas = 0;
+            _step = 0;
+            _tick = 0;
+            ClearPlayedFlag();
+        }
     }
 
 }

@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            btRewind = new Button();
+            btFirst = new Button();
             btPlay = new Button();
             btStop = new Button();
             btFF = new Button();
@@ -58,15 +58,15 @@
             groupBox5.SuspendLayout();
             SuspendLayout();
             // 
-            // btRewind
+            // btFirst
             // 
-            btRewind.Location = new Point(6, 4);
-            btRewind.Name = "btRewind";
-            btRewind.Size = new Size(36, 32);
-            btRewind.TabIndex = 0;
-            btRewind.Text = "<<";
-            btRewind.UseVisualStyleBackColor = true;
-            btRewind.Click += btRewind_Click;
+            btFirst.Location = new Point(6, 4);
+            btFirst.Name = "btFirst";
+            btFirst.Size = new Size(36, 32);
+            btFirst.TabIndex = 0;
+            btFirst.Text = "|<";
+            btFirst.UseVisualStyleBackColor = true;
+            btFirst.Click += btRewind_Click;
             // 
             // btPlay
             // 
@@ -298,7 +298,7 @@
             Controls.Add(btFF);
             Controls.Add(btStop);
             Controls.Add(btPlay);
-            Controls.Add(btRewind);
+            Controls.Add(btFirst);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "frmOpePanel";
             StartPosition = FormStartPosition.Manual;
@@ -318,7 +318,7 @@
 
         #endregion
 
-        private Button btRewind;
+        private Button btFirst;
         private Button btPlay;
         private Button btStop;
         private Button btFF;

@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Remcoposer64.Common.Render;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Text;
+using static Remcoposer64.Common.WinApi;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Remcoposer64.Common
