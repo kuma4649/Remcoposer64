@@ -340,6 +340,22 @@ namespace Remcoposer64.TrackEditor
                     RefreshCursor();
                     return true;
 
+                case Keys.Left:
+                    MoveCursorColumn(
+                        trackHeaderPanel.PrevColumn(
+                            TrackCursor.HeaderColumn));
+                    return true;
+
+                case Keys.Right:
+                    MoveCursorColumn(
+                        trackHeaderPanel.NextColumn(
+                            TrackCursor.HeaderColumn));
+                    return true;
+
+                case Keys.Space:
+                    ExecuteCurrentColumnAction();
+                    return true;
+
                 case Keys.Enter:
                     RaiseTrackDoubleClicked(TrackCursor.Track);
                     return true;
@@ -359,6 +375,14 @@ namespace Remcoposer64.TrackEditor
         {
             TrackCursor.Track = trk;
             TrackCursor.Part = trk.Value.Part?.First;
+            TrackCursor.HeaderColumn = column;
+
+            EnsureCursorVisible();
+            RefreshCursor();
+        }
+
+        public void MoveCursorColumn(    TrackHeaderColumn column)
+        {
             TrackCursor.HeaderColumn = column;
 
             EnsureCursorVisible();
@@ -447,13 +471,53 @@ namespace Remcoposer64.TrackEditor
 
             double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.0002;
             //trackBar1.Value = Math.Max((int)Math.Round(zm, MidpointRounding.AwayFromZero), 1);
-            trackBar1.Value = Math.Max((int)zm, 1);
+            trackBar1.Value = Math.Min(Math.Max((int)zm, 1), trackBar1.Maximum);
         }
 
         public void SetCanvasScrollX(int v)
         {
             pxScrollX = v;
             hScrollBar1.Value = v;
+        }
+
+        private void ExecuteCurrentColumnAction()
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            switch (TrackCursor.HeaderColumn)
+            {
+                case TrackHeaderColumn.Mute:
+                    TrackCursor.Track.Value.Mute =
+                        !TrackCursor.Track.Value.Mute;
+                    break;
+
+                case TrackHeaderColumn.Solo:
+                    TrackCursor.Track.Value.Solo =
+                        !TrackCursor.Track.Value.Solo;
+                    break;
+
+                case TrackHeaderColumn.OutDevice:
+                    NextOutDevice();
+                    break;
+            }
+
+            RefreshCursor();
+        }
+
+        private void NextOutDevice()
+        {
+            int count =
+                Setting.midiOut.lstMidiOutInfo[
+                    Setting.midiOut.CurrentDev
+                ].Length;
+
+            TrackCursor.Track.Value.OutDevice++;
+
+            if (TrackCursor.Track.Value.OutDevice >= count)
+                TrackCursor.Track.Value.OutDevice = 0;
+
+            RefreshCursor();
         }
     }
 }

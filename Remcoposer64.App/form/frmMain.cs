@@ -511,7 +511,11 @@ namespace Remcoposer64.App
                 // SMF → RMC 変換器を作成
                 ImportStandardMIDI importer = new ImportStandardMIDI(fileName, setting);
                 // プロジェクトをロード
-                project = importer.Load();
+                try
+                {
+                    project = importer.Load();
+                }
+                catch { }
             }
             else if (ext == ".rcp" || ext == ".g36")
             {

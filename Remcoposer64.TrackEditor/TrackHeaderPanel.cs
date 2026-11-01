@@ -656,10 +656,13 @@ namespace Remcoposer64.TrackEditor.Internal
                 + line * LineHeight;
         }
 
-        private TrackHeaderColumn NextColumn(TrackHeaderColumn col)
+        public TrackHeaderColumn NextColumn(TrackHeaderColumn col)
         {
             switch (col)
             {
+                case TrackHeaderColumn.None:
+                    return TrackHeaderColumn.TrackNo;
+
                 case TrackHeaderColumn.TrackNo:
                     return TrackHeaderColumn.Mute;
 
@@ -700,10 +703,13 @@ namespace Remcoposer64.TrackEditor.Internal
             }
         }
 
-        private TrackHeaderColumn PrevColumn(TrackHeaderColumn col)
+        public TrackHeaderColumn PrevColumn(TrackHeaderColumn col)
         {
             switch (col)
             {
+                case TrackHeaderColumn.None:
+                    return TrackHeaderColumn.TrackNo;
+
                 case TrackHeaderColumn.TrackNo:
                     if (TrackEditorControl.HeaderLine > 2)
                         return TrackHeaderColumn.InDevice;
