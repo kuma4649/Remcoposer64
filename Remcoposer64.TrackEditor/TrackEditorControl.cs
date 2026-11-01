@@ -276,6 +276,7 @@ namespace Remcoposer64.TrackEditor
             int maxTick = GetMaxTick();
             if (trackCanvasPanel.TickToWidth(maxTick) <= trackCanvasPanel.ClientSize.Width)
             {
+                pxScrollX = 0;
                 trackCanvasPanel.Refresh();
                 return;
             }
