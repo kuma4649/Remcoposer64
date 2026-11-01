@@ -156,6 +156,8 @@ namespace Remcoposer64.Core.Player
 
         private void ClearPlayedFlag()
         {
+            if(_project == null || _project.Information == null) return;
+
             _project.Information.Played = false;
             LinkedListNode<MIDITrack> nTrk = _project.Track.First;
             while (nTrk != null)
