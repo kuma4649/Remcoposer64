@@ -1,4 +1,5 @@
 ﻿using Remcoposer64.ProjectData;
+using Remcoposer64.TrackEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +25,17 @@ namespace Remcoposer64.App.form
             InitializeComponent();
             this.parent = parent;
             this.project = project;
+        }
+
+        internal void SetCanvasScrollX(int v)
+        {
+            foreach(var cnt in this.Controls)
+            {
+                if(cnt is TrackEditorControl)
+                {
+                    ((TrackEditorControl)cnt).pxScrollX = v;
+                }
+            }
         }
 
         private void frmProject_FormClosed(object sender, FormClosedEventArgs e)

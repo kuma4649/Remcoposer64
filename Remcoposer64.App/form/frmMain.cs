@@ -893,6 +893,7 @@ namespace Remcoposer64.App
         {
             player.StopPlayback();
             player.SetFirstFrame();
+            fProjects[0].SetCanvasScrollX(0);
             fProjects[0].Refresh();
         }
     }

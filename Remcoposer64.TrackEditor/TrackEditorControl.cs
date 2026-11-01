@@ -23,9 +23,9 @@ namespace Remcoposer64.TrackEditor
         public TrackEditorCursor TrackCursor = new();
         public TrackEditorSelection TrackSelection = new();
 
-        internal int pxScrollY = 0;
-        internal int pxScrollX = 0;
-        internal int pxHeaderScrollX = 0;
+        public int pxScrollY = 0;
+        public int pxScrollX = 0;
+        public int pxHeaderScrollX = 0;
 
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
