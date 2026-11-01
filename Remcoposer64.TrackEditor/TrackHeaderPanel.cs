@@ -572,42 +572,42 @@ namespace Remcoposer64.TrackEditor.Internal
                 case TrackHeaderColumn.TrackNo:
                     return new Rectangle(
                         ColX(COL_TRACKNO),
-                        LineY(trackY, 0),
+                        LineY(trackY, 0) - 1,
                         ColX(COL_MUTE) - ColX(COL_TRACKNO),
                         LineHeight);
 
                 case TrackHeaderColumn.Mute:
                     return new Rectangle(
                         ColX(COL_MUTE),
-                        LineY(trackY, 0),
+                        LineY(trackY, 0) - 1,
                         ColX(COL_SOLO) - ColX(COL_MUTE),
                         LineHeight);
 
                 case TrackHeaderColumn.Solo:
                     return new Rectangle(
                         ColX(COL_SOLO),
-                        LineY(trackY, 0),
-                        ColX(COL_ST) - ColX(COL_SOLO),
+                        LineY(trackY, 0) - 1,
+                        ColX(COL_ST - 1) - ColX(COL_SOLO),
                         LineHeight);
 
                 case TrackHeaderColumn.ST:
                     return new Rectangle(
                         ColX(COL_ST),
-                        LineY(trackY, 0),
+                        LineY(trackY, 0) - 1,
                         ColX(COL_KEY) - ColX(COL_ST),
                         LineHeight);
 
                 case TrackHeaderColumn.KEY:
                     return new Rectangle(
                         ColX(COL_KEY),
-                        LineY(trackY, 0),
+                        LineY(trackY, 0) - 1,
                         ColX(COL_TRACKNAME) - ColX(COL_KEY),
                         LineHeight);
 
                 case TrackHeaderColumn.Name:
                     return new Rectangle(
                         ColX(COL_TRACKNAME),
-                        LineY(trackY, 0),
+                        LineY(trackY, 0) - 1,
                          GetMaxWidth() - ColAbs(COL_TRACKNAME),
                         LineHeight);
 
@@ -616,14 +616,14 @@ namespace Remcoposer64.TrackEditor.Internal
                 case TrackHeaderColumn.OutChannel:
                     return new Rectangle(
                         ColX(COL_MIDIOUTCH),
-                        LineY(trackY, 1),
-                        ColX(COL_MIDIOUT) - ColX(COL_MIDIOUTCH),
+                        LineY(trackY, 1) - 1,
+                        ColX(COL_MIDIOUT - 1) - ColX(COL_MIDIOUTCH),
                         LineHeight);
 
                 case TrackHeaderColumn.OutDevice:
                     return new Rectangle(
                         ColX(COL_MIDIOUT),
-                        LineY(trackY, 1),
+                        LineY(trackY, 1) - 1,
                         GetMaxWidth() - ColAbs(COL_MIDIOUT),
                         LineHeight);
 
@@ -632,14 +632,14 @@ namespace Remcoposer64.TrackEditor.Internal
                 case TrackHeaderColumn.InChannel:
                     return new Rectangle(
                         ColX(COL_MIDIINCH),
-                       LineY(trackY, 2),
-                        ColX(COL_MIDIIN) - ColX(COL_MIDIINCH),
+                        LineY(trackY, 2) - 1,
+                        ColX(COL_MIDIIN - 1) - ColX(COL_MIDIINCH),
                         LineHeight);
 
                 case TrackHeaderColumn.InDevice:
                     return new Rectangle(
                         ColX(COL_MIDIIN),
-                        LineY(trackY, 2),
+                        LineY(trackY, 2) - 1,
                         GetMaxWidth() - ColAbs(COL_MIDIIN),
                         LineHeight);
             }
@@ -655,5 +655,92 @@ namespace Remcoposer64.TrackEditor.Internal
                 + pxTrackMarginTop
                 + line * LineHeight;
         }
+
+        private TrackHeaderColumn NextColumn(TrackHeaderColumn col)
+        {
+            switch (col)
+            {
+                case TrackHeaderColumn.TrackNo:
+                    return TrackHeaderColumn.Mute;
+
+                case TrackHeaderColumn.Mute:
+                    return TrackHeaderColumn.Solo;
+
+                case TrackHeaderColumn.Solo:
+                    return TrackHeaderColumn.ST;
+
+                case TrackHeaderColumn.ST:
+                    return TrackHeaderColumn.KEY;
+
+                case TrackHeaderColumn.KEY:
+                    return TrackHeaderColumn.Name;
+
+                case TrackHeaderColumn.Name:
+                    if(TrackEditorControl.HeaderLine > 1)
+                        return TrackHeaderColumn.OutChannel;
+                    else
+                        return TrackHeaderColumn.TrackNo;
+
+                case TrackHeaderColumn.OutChannel:
+                    return TrackHeaderColumn.OutDevice;
+
+                case TrackHeaderColumn.OutDevice:
+                    if(TrackEditorControl.HeaderLine > 2)
+                        return TrackHeaderColumn.InChannel;
+                    else
+                        return TrackHeaderColumn.TrackNo;
+
+                case TrackHeaderColumn.InChannel:
+                    return TrackHeaderColumn.InDevice;
+
+                case TrackHeaderColumn.InDevice:
+                        return TrackHeaderColumn.TrackNo;
+                default:
+                    return col;
+            }
+        }
+
+        private TrackHeaderColumn PrevColumn(TrackHeaderColumn col)
+        {
+            switch (col)
+            {
+                case TrackHeaderColumn.TrackNo:
+                    if (TrackEditorControl.HeaderLine > 2)
+                        return TrackHeaderColumn.InDevice;
+                    if (TrackEditorControl.HeaderLine > 1)
+                        return TrackHeaderColumn.OutDevice;
+                    return TrackHeaderColumn.Name;
+
+                case TrackHeaderColumn.Mute:
+                    return TrackHeaderColumn.TrackNo;
+
+                case TrackHeaderColumn.Solo:
+                    return TrackHeaderColumn.Mute;
+
+                case TrackHeaderColumn.ST:
+                    return TrackHeaderColumn.Solo;
+
+                case TrackHeaderColumn.KEY:
+                    return TrackHeaderColumn.ST;
+
+                case TrackHeaderColumn.Name:
+                    return TrackHeaderColumn.KEY;
+
+                case TrackHeaderColumn.OutChannel:
+                    return TrackHeaderColumn.Name;
+
+                case TrackHeaderColumn.OutDevice:
+                    return TrackHeaderColumn.OutChannel;
+
+                case TrackHeaderColumn.InChannel:
+                    return TrackHeaderColumn.OutDevice;
+
+                case TrackHeaderColumn.InDevice:
+                    return TrackHeaderColumn.InChannel;
+            }
+
+            return col;
+        }
+
     }
 }

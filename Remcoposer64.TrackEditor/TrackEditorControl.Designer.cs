@@ -68,6 +68,7 @@ namespace Remcoposer64.TrackEditor
             trackHeaderPanel.Name = "trackHeaderPanel";
             trackHeaderPanel.Size = new Size(121, 435);
             trackHeaderPanel.TabIndex = 0;
+            trackHeaderPanel.TabStop = true;
             // 
             // btnStretch
             // 
@@ -85,12 +86,13 @@ namespace Remcoposer64.TrackEditor
             // 
             trackBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             trackBar1.Location = new Point(291, 415);
-            trackBar1.Maximum = 100;
+            trackBar1.Maximum = 1000;
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(71, 45);
+            trackBar1.SmallChange = 10;
             trackBar1.TabIndex = 0;
-            trackBar1.TickFrequency = 10;
-            trackBar1.Value = 50;
+            trackBar1.TickFrequency = 100;
+            trackBar1.Value = 500;
             trackBar1.ValueChanged += trackBar1_ValueChanged;
             // 
             // hScrollBar1

@@ -263,7 +263,7 @@ namespace Remcoposer64.TrackEditor
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-            trackCanvasPanel.tickZoom = ((TrackBar)sender).Value * 0.002;
+            trackCanvasPanel.tickZoom = ((TrackBar)sender).Value * 0.0002;
             UpdateScrollRange();
             trackCanvasPanel.Invalidate();
 
@@ -445,10 +445,15 @@ namespace Remcoposer64.TrackEditor
                 nTrk = nTrk.Next;
             }
 
-            double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.002;
+            double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.0002;
+            //trackBar1.Value = Math.Max((int)Math.Round(zm, MidpointRounding.AwayFromZero), 1);
             trackBar1.Value = Math.Max((int)zm, 1);
         }
 
-
+        public void SetCanvasScrollX(int v)
+        {
+            pxScrollX = v;
+            hScrollBar1.Value = v;
+        }
     }
 }

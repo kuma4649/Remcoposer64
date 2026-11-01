@@ -33,7 +33,7 @@ namespace Remcoposer64.App.form
             {
                 if(cnt is TrackEditorControl)
                 {
-                    ((TrackEditorControl)cnt).pxScrollX = v;
+                    ((TrackEditorControl)cnt).SetCanvasScrollX(v);
                 }
             }
         }
