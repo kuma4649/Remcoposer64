@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using static Remcoposer64.Common.WinApi;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.StepEditorPanelControl
 {
@@ -23,8 +22,8 @@ namespace Remcoposer64.StepEditorPanelControl
 
         public Keyboard keyb;
         private ContextMenuStrip eventMenu;
-        public ControlChangeCandidateForm CCcandidateForm;
-        public ProgramChangeCandidateForm PCcandidateForm;
+        public SimpleCandidateForm CCcandidateForm;
+        public SimpleCandidateForm PCcandidateForm;
 
         // イベントの宣言
         public event EventHandler<ModeChangedEventArgs> InputModeChanged;
@@ -151,9 +150,63 @@ namespace Remcoposer64.StepEditorPanelControl
 
             keyb = new Keyboard(this);
             eventManager = new EventManager(this);
-            CCcandidateForm = new ControlChangeCandidateForm(this, UIControlChangeEvent.CCNames);
+            
+            List<SimpleCandidateForm.CandidateItem> ccItems = new();
+
+            for (int i = 0; i < 128; i++)
+            {
+                string name =
+                    UIControlChangeEvent.CCNames.TryGetValue(i, out var n)
+                    ? n
+                    : "Control";
+
+                ccItems.Add(
+                    new SimpleCandidateForm.CandidateItem()
+                    {
+                        Value = i,
+                        Text = $"{i:D3}:{name}"
+                    });
+            }
+
+            CCcandidateForm =
+                new SimpleCandidateForm(
+                    ccItems,
+                    0,
+                    SimpleCandidateForm.CandidateFilterMode.Number,
+                    16); // itemsPerColumn
+            CCcandidateForm.CandidateSelected += item =>
+            {
+                SetControlChange(item.Value);
+            }; 
             CCcandidateForm.FillCandidates("");
-            PCcandidateForm = new ProgramChangeCandidateForm(this, UIProgramChangeEvent.GMNames);
+
+
+            List<SimpleCandidateForm.CandidateItem> pcItems = new();
+
+            for (int i = 0; i < 128; i++)
+            {
+                string name =
+                    UIProgramChangeEvent.GMNames.TryGetValue(i, out var n)
+                    ? n
+                    : "";
+
+                pcItems.Add(
+                    new SimpleCandidateForm.CandidateItem()
+                    {
+                        Value = i,
+                        Text = $"{i:D3}:{name}"
+                    });
+            }
+            PCcandidateForm = 
+                new SimpleCandidateForm(
+                    pcItems,
+                    0,
+                    SimpleCandidateForm.CandidateFilterMode.Number,
+                    16);
+            PCcandidateForm.CandidateSelected += item =>
+            {
+                SetProgramChange(item.Value);
+            };
             PCcandidateForm.FillCandidates("");
 
             autoScrollTimer = new System.Windows.Forms.Timer();

@@ -144,7 +144,7 @@ namespace Remcoposer64.App
                 {
                     MIDIProject project = (MIDIProject)tab.Tag;
                     TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
-                    tec.SetContext(project, setting, player);
+                    tec.SetContext(project, setting, player, undoMng);
                     tec.Refresh();
                 }
                 catch (Exception e)
@@ -240,6 +240,7 @@ namespace Remcoposer64.App
         {
             MIDIProject prj = currentProject;
             string fn = prj.Information.FileFullName;
+            fn = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
 
             var sfd = new SaveFileDialog();
             sfd.FileName = fn;
@@ -247,15 +248,17 @@ namespace Remcoposer64.App
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
 
-            prj.Save(sfd.FileName);
-
             prj.Information.FileFullName = sfd.FileName;
             prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
+
+            prj.Save(sfd.FileName);
+
             ((frmProject)currentProject.parentForm).Text = prj.Information.FileName;
         }
 
         private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
         {
+
             var ofd = new OpenFileDialog();
             ofd.Filter = "RMC Files (*.rmc)|*.rmc";
 
@@ -270,6 +273,8 @@ namespace Remcoposer64.App
                                 "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            CloseProject();
 
             // タブを作成
             TabPage tab = new TabPage();
@@ -309,6 +314,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_A_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_A);
             setting.midiOut.CurrentDev = 0;
             SetDevice();
@@ -316,6 +322,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_B_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_B);
             setting.midiOut.CurrentDev = 1;
             SetDevice();
@@ -323,6 +330,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_C_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_C);
             setting.midiOut.CurrentDev = 2;
             SetDevice();
@@ -330,6 +338,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_D_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_D);
             setting.midiOut.CurrentDev = 3;
             SetDevice();
@@ -337,6 +346,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_E_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_E);
             setting.midiOut.CurrentDev = 4;
             SetDevice();
@@ -344,6 +354,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_F_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_F);
             setting.midiOut.CurrentDev = 5;
             SetDevice();
@@ -351,6 +362,7 @@ namespace Remcoposer64.App
 
         private void tsbMIDIOut_G_Click(object sender, EventArgs e)
         {
+            ClearInputMode();
             SelectPresetButton(toolStrip1.Items, tsbMIDIOut_G);
             setting.midiOut.CurrentDev = 6;
             SetDevice();
@@ -362,6 +374,26 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip2.Items, tsbTrackRow1);
             setting.common.TrackEditorRow = 1;
             SetTrackEditorRow();
+            ClearInputMode();
+        }
+
+        private void ClearInputMode()
+        {
+            foreach (var cnt in dockPanel1.Contents)
+            {
+                if (cnt is frmProject
+                    && ((frmProject)cnt).Tag == currentProject
+                    )
+                {
+                    foreach (var cnt2 in ((frmProject)cnt).Controls)
+                    {
+                        if (cnt2 is TrackEditorControl)
+                        {
+                            ((TrackEditorControl)cnt2).ClearInputMode();
+                        }
+                    }
+                }
+            }
         }
 
         private void tsbTrackRow2_Click(object sender, EventArgs e)
@@ -369,6 +401,7 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip2.Items, tsbTrackRow2);
             setting.common.TrackEditorRow = 2;
             SetTrackEditorRow();
+            ClearInputMode();
 
         }
 
@@ -377,6 +410,7 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip2.Items, tsbTrackRow3);
             setting.common.TrackEditorRow = 3;
             SetTrackEditorRow();
+            ClearInputMode();
 
         }
 
@@ -386,6 +420,7 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip3.Items, tsbSEFont8);
             setting.common.StepEditorFontSize = EditorFontSize.Small8;
             SetStepEditor();
+            ClearInputMode();
         }
 
         private void tsbSEFont12_Click(object sender, EventArgs e)
@@ -393,6 +428,7 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip3.Items, tsbSEFont12);
             setting.common.StepEditorFontSize = EditorFontSize.Medium12;
             SetStepEditor();
+            ClearInputMode();
 
         }
 
@@ -401,6 +437,7 @@ namespace Remcoposer64.App
             SelectPresetButton(toolStrip3.Items, tsbSEFont16);
             setting.common.StepEditorFontSize = EditorFontSize.Large16;
             SetStepEditor();
+            ClearInputMode();
 
         }
 
@@ -563,7 +600,8 @@ namespace Remcoposer64.App
             trackEditor.SetContext(
                 project,
                 setting,
-                player);
+                player,
+                undoMng);
 
             trackEditor.TrackDoubleClicked +=
                 TrackEditor_TrackDoubleClicked;

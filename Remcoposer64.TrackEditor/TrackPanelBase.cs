@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Remcoposer64.TrackEditor
 {
-    internal abstract class TrackPanelBase : Panel
+    public abstract class TrackPanelBase : Panel
     {
         protected IGraph graph;
         protected int pxFontHeight { get; private set; }

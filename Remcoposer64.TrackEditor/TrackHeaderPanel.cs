@@ -1,23 +1,17 @@
 ﻿using Remcoposer64.Common;
-using Remcoposer64.Common.Render;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
 using static Remcoposer64.Common.WinApi;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.TrackEditor.Internal
 {
     [ToolboxItem(false)]
-    internal class TrackHeaderPanel : TrackPanelBase
+    public class TrackHeaderPanel : TrackPanelBase
     {
 
         //public int pxTrackHeight => TrackEditorControl.HeaderLine * (pxFontHeight + pxTrackMarginTop + pxTrackMarginBottom);
@@ -171,6 +165,14 @@ namespace Remcoposer64.TrackEditor.Internal
                     pos.X = ColX(COL_MIDIOUTCH);
                     pos.Y = LineY(trackPanelPosY, 1);
                     string num = trk.Value.OutChannel == null ? "Off" : $"{trk.Value.OutChannel + 1:D2}";
+                    
+                    if (TrackEditorControl.TrackCursor.Track == trk
+                        && TrackEditorControl.TrackCursor.HeaderColumn == TrackHeaderColumn.OutChannel
+                        && TrackEditorControl.editingOutChannel)
+                    {
+                        num = TrackEditorControl.outChannelInput + "_";
+                    }
+
                     graph.DrawString(
                         num,
                         ref pos,
@@ -203,6 +205,14 @@ namespace Remcoposer64.TrackEditor.Internal
                     pos.X = ColX(COL_MIDIINCH);
                     pos.Y = LineY(trackPanelPosY, 2);
                     string num = trk.Value.InChannel == null ? "Off" : $"{trk.Value.InChannel + 1:D2}";
+
+                    if (TrackEditorControl.TrackCursor.Track == trk
+                        && TrackEditorControl.TrackCursor.HeaderColumn == TrackHeaderColumn.InChannel
+                        && TrackEditorControl.editingInChannel)
+                    {
+                        num = TrackEditorControl.inChannelInput + "_";
+                    }
+
                     graph.DrawString(
                         num,
                         ref pos,
@@ -277,17 +287,34 @@ namespace Remcoposer64.TrackEditor.Internal
             base.OnMouseDown(e);
 
             int trackNo = (e.Y + TrackEditorControl.pxScrollY) / pxTrackHeight;
+            
+            TrackEditorControl.HideCandidateForm();
 
             LinkedListNode<MIDITrack> trk = TrackEditorControl.GetTrackByIndex(trackNo);
-            if (trk == null) return;
-            TrackEditorControl.MoveCursorTrack(trk, HitTestColumn(e.X, e.Y));
 
-            Debug.WriteLine(TrackEditorControl.TrackCursor.HeaderColumn);
+            if (trk == null) return;
+
+            TrackHeaderColumn col = HitTestColumn(e.X, e.Y);
+
+            TrackEditorControl.MoveCursorTrack(trk, col);
+
+            if (IsPopupColumn(col))
+            {
+                TrackEditorControl.ExecuteCurrentColumnAction();
+            }
+        }
+
+        private bool IsPopupColumn(TrackHeaderColumn col)
+        {
+            return col == TrackHeaderColumn.OutDevice
+                || col == TrackHeaderColumn.InDevice;
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
             base.OnMouseDoubleClick(e);
+
+            TrackEditorControl.HideCandidateForm();
 
             int trackNo =
                 (e.Y + TrackEditorControl.pxScrollY)
@@ -563,7 +590,7 @@ namespace Remcoposer64.TrackEditor.Internal
             return TrackHeaderColumn.None;
         }
 
-        private Rectangle GetColumnRect(int trackY, TrackHeaderColumn column)
+        public Rectangle GetColumnRect(int trackY, TrackHeaderColumn column)
         {
             //int lineHeight = pxFontHeight + pxTrackMarginTop;
 

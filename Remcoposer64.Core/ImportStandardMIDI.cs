@@ -81,7 +81,7 @@ namespace Remcoposer64.Core
 
             #region プロジェクトの初期設定
 
-            prj.Information.FileFullName = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
+            prj.Information.FileFullName = fn;// Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
             prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
             prj.Information.Title = Common.Common.cntNoTitle;
             prj.Information.Tempo = 120;

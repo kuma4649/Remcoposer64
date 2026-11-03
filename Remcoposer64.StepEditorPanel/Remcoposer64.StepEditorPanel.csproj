@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Remcoposer64.Common\Remcoposer64.Common.csproj" />
     <ProjectReference Include="..\Remcoposer64.ProjectData\Remcoposer64.ProjectData.csproj" />
     <ProjectReference Include="..\Remcoposer64.SysExEditorPanel\Remcoposer64.SysExEditorPanel.csproj" />
     <ProjectReference Include="..\Remcoposer64.UndoRedoManager\Remcoposer64.UndoRedoManager.csproj" />

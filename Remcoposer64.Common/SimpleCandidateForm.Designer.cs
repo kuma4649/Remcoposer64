@@ -1,6 +1,6 @@
-﻿namespace Remcoposer64.StepEditorPanelControl
+﻿namespace Remcoposer64.Common
 {
-    partial class ControlChangeCandidateForm
+    partial class SimpleCandidateForm
     {
         /// <summary>
         /// Required designer variable.
@@ -48,16 +48,16 @@
             ClientSize = new Size(640, 480);
             Controls.Add(flowLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "ControlChangeCandidateForm";
+            Name = "SimpleCandidateForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.Manual;
-            Text = "ControlChangeCandidateForm";
+            this.Text = "SimpleCandidateForm";
             TopMost = false;
             ResumeLayout(false);
+
         }
 
         #endregion
-
         private FlowLayoutPanel flowLayoutPanel1;
     }
 }

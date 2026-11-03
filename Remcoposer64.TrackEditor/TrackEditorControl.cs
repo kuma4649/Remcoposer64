@@ -1,16 +1,9 @@
 ﻿using Remcoposer64.Common;
-using Remcoposer64.Common.Render;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
-using System.ComponentModel;
-using System.Configuration;
+using Remcoposer64.TrackEditor.Command;
 using System.Diagnostics;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using static Remcoposer64.Common.WinApi;
+using static Remcoposer64.Common.SimpleCandidateForm;
 
 namespace Remcoposer64.TrackEditor
 {
@@ -19,6 +12,9 @@ namespace Remcoposer64.TrackEditor
         public MIDIProject Project { get; private set; } = null;
         public Setting Setting { get; private set; } = null;
         public RmPlayer Player { get; private set; } = null;
+
+        public UndoRedoManager.UndoRedoManager UndoRedoManager { get; private set; } = null;
+
         public int HeaderLine { get; private set; } = 2;
         public TrackEditorCursor TrackCursor = new();
         public TrackEditorSelection TrackSelection = new();
@@ -26,6 +22,16 @@ namespace Remcoposer64.TrackEditor
         public int pxScrollY = 0;
         public int pxScrollX = 0;
         public int pxHeaderScrollX = 0;
+
+
+        // 編集向け
+
+        private SimpleCandidateForm? candidateForm;
+        public bool editingOutChannel;
+        public string outChannelInput = "";
+        public bool editingInChannel;
+        public string inChannelInput = "";
+
 
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
@@ -61,11 +67,12 @@ namespace Remcoposer64.TrackEditor
             TrackSelection.Clear();
         }
 
-        public void SetContext(MIDIProject project, Setting setting, RmPlayer player)
+        public void SetContext(MIDIProject project, Setting setting, RmPlayer player, UndoRedoManager.UndoRedoManager undoRedoManager)
         {
             this.Project = project;
             this.Setting = setting;
             this.Player = player;
+            this.UndoRedoManager = undoRedoManager;
 
             trackHeaderPanel.SetContext(this, project, setting, player);
             trackCanvasPanel.SetContext(this, project, setting, player);
@@ -316,6 +323,157 @@ namespace Remcoposer64.TrackEditor
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+
+            Debug.WriteLine(keyData);
+            // ★モディファイア除去
+            Keys key = (keyData & Keys.KeyCode);
+            // モディファイアキーの状態を取得
+            bool ctrl = (keyData & Keys.Control) == Keys.Control;
+            bool shift = (keyData & Keys.Shift) == Keys.Shift;
+            bool alt = (keyData & Keys.Alt) == Keys.Alt;
+
+#if DEBUG
+            Debug.WriteLine(
+                $"KeyDown: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
+#endif
+
+            if (ctrl && !shift && key == Keys.Z)
+            {
+                Debug.WriteLine("UNDO");
+                UndoRedoManager?.Undo();
+                RefreshCursor();
+                return true;
+            }
+
+            if ((ctrl && !shift && key == Keys.Y)  || (ctrl && shift && key == Keys.Z))
+            {
+                Debug.WriteLine("REDO");
+                UndoRedoManager?.Redo();
+                RefreshCursor();
+                return true;
+            }
+
+
+            if (editingOutChannel)
+            {
+                switch (key)
+                {
+                    case Keys.Enter:
+                        CommitOutChannel(outChannelInput);
+                        editingOutChannel = false;
+                        outChannelInput = "";
+                        RefreshCursor();
+                        return true;
+
+                    case Keys.Escape:
+                        editingOutChannel = false;
+                        outChannelInput = "";
+                        RefreshCursor();
+                        return true;
+                }
+
+                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    if (key >= Keys.D0 && key <= Keys.D9) outChannelInput += (char)('0' + (key - Keys.D0));
+                    else outChannelInput += (char)('0' + (key - Keys.NumPad0));
+
+                    if (outChannelInput.Length >= 2)
+                    {
+                        CommitOutChannel(outChannelInput);
+
+                        editingOutChannel = false;
+                        outChannelInput = "";
+
+                        RefreshCursor();
+                    }
+                    else
+                    {
+                        RefreshCursor();
+                    }
+
+                    return true;
+                }
+            }
+
+            if (TrackCursor.HeaderColumn == TrackHeaderColumn.OutChannel)
+            {
+                if ((key >= Keys.D0 && key <= Keys.D9)||(key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    BeginOutChannelEdit(key);
+                    return true;
+                }
+            }
+
+            if (editingInChannel)
+            {
+                switch (key)
+                {
+                    case Keys.Enter:
+                        CommitInChannel(inChannelInput);
+                        editingInChannel = false;
+                        inChannelInput = "";
+                        RefreshCursor();
+                        return true;
+
+                    case Keys.Escape:
+                        editingInChannel = false;
+                        inChannelInput = "";
+                        RefreshCursor();
+                        return true;
+                }
+
+                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    if (key >= Keys.D0 && key <= Keys.D9) inChannelInput += (char)('0' + (key - Keys.D0));
+                    else inChannelInput += (char)('0' + (key - Keys.NumPad0));
+
+                    if (inChannelInput.Length >= 2)
+                    {
+                        CommitInChannel(inChannelInput);
+
+                        editingInChannel = false;
+                        inChannelInput = "";
+
+                        RefreshCursor();
+                    }
+                    else
+                    {
+                        RefreshCursor();
+                    }
+
+                    return true;
+                }
+            }
+
+            if (TrackCursor.HeaderColumn == TrackHeaderColumn.InChannel)
+            {
+                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    BeginInChannelEdit(key);
+                    return true;
+                }
+            }
+
+
+            if (candidateForm != null && candidateForm.Visible)
+            {
+                switch (keyData)
+                {
+                    case Keys.Up:
+                    case Keys.Down:
+                    case Keys.Left:
+                    case Keys.Right:
+                    case Keys.Enter:
+                    case Keys.Space:
+                        candidateForm.MoveSelection(keyData);
+                        return true;
+
+                    case Keys.Escape:
+                        candidateForm.Hide();
+                        return true;
+                }
+            }
+
             switch (keyData)
             {
                 case Keys.Home:
@@ -366,6 +524,15 @@ namespace Remcoposer64.TrackEditor
                 keyData);
         }
 
+        public void ClearInputMode()
+        {
+            candidateForm?.Hide();
+            editingOutChannel = false;
+            outChannelInput = "";
+            editingInChannel = false;
+            inChannelInput = "";
+        }
+
         public void MoveCursorTrack(LinkedListNode<MIDITrack> trk)
         {
             MoveCursorTrack(trk, TrackCursor.HeaderColumn);
@@ -373,6 +540,11 @@ namespace Remcoposer64.TrackEditor
 
         public void MoveCursorTrack(LinkedListNode<MIDITrack> trk, TrackHeaderColumn column)
         {
+            editingOutChannel = false;
+            outChannelInput = "";
+            editingInChannel = false;
+            inChannelInput = "";
+
             TrackCursor.Track = trk;
             TrackCursor.Part = trk.Value.Part?.First;
             TrackCursor.HeaderColumn = column;
@@ -381,8 +553,13 @@ namespace Remcoposer64.TrackEditor
             RefreshCursor();
         }
 
-        public void MoveCursorColumn(    TrackHeaderColumn column)
+        public void MoveCursorColumn(TrackHeaderColumn column)
         {
+            editingOutChannel = false;
+            outChannelInput = "";
+            editingInChannel = false;
+            inChannelInput = "";
+
             TrackCursor.HeaderColumn = column;
 
             EnsureCursorVisible();
@@ -449,7 +626,7 @@ namespace Remcoposer64.TrackEditor
         }
 
         public void StretchZoom()
-        { 
+        {
             if (Project == null || Project.Track.Count < 1) return;
 
             int maxAbsTick = 0;
@@ -469,7 +646,7 @@ namespace Remcoposer64.TrackEditor
                 nTrk = nTrk.Next;
             }
 
-            double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick/0.0002;
+            double zm = (double)trackCanvasPanel.Width / (double)maxAbsTick / 0.0002;
             //trackBar1.Value = Math.Max((int)Math.Round(zm, MidpointRounding.AwayFromZero), 1);
             trackBar1.Value = Math.Min(Math.Max((int)zm, 1), trackBar1.Maximum);
         }
@@ -480,7 +657,7 @@ namespace Remcoposer64.TrackEditor
             hScrollBar1.Value = v;
         }
 
-        private void ExecuteCurrentColumnAction()
+        public void ExecuteCurrentColumnAction()
         {
             if (TrackCursor.Track == null)
                 return;
@@ -498,24 +675,227 @@ namespace Remcoposer64.TrackEditor
                     break;
 
                 case TrackHeaderColumn.OutDevice:
-                    NextOutDevice();
+                    ShowOutDeviceCandidates();
+                    break;
+
+                case TrackHeaderColumn.InDevice:
+                    ShowInDeviceCandidates();
                     break;
             }
 
             RefreshCursor();
         }
 
-        private void NextOutDevice()
+        private void ShowOutDeviceCandidates()
         {
-            int count =
+            if (TrackCursor.Track == null)
+                return;
+
+            List<SimpleCandidateForm.CandidateItem> items = new();
+
+            var devs =
                 Setting.midiOut.lstMidiOutInfo[
-                    Setting.midiOut.CurrentDev
-                ].Length;
+                    Setting.midiOut.CurrentDev];
+            if (devs == null) return;
 
-            TrackCursor.Track.Value.OutDevice++;
+            for (int i = 0; i < devs.Length; i++)
+            {
+                items.Add(
+                    new SimpleCandidateForm.CandidateItem()
+                    {
+                        Value = i,
+                        Text = devs[i].alias
+                    });
+            }
 
-            if (TrackCursor.Track.Value.OutDevice >= count)
-                TrackCursor.Track.Value.OutDevice = 0;
+            candidateForm?.Dispose();
+            candidateForm = null;
+
+            candidateForm =
+                new SimpleCandidateForm(
+                    items,
+                    TrackCursor.Track.Value.OutDevice,
+                    SimpleCandidateForm.CandidateFilterMode.Text,
+                    1,
+                    CandidateLayoutMode.VerticalList);
+
+            candidateForm.CandidateSelected += item =>
+            {
+                MIDITrack track =
+                    TrackCursor.Track.Value;
+
+                if (track.OutDevice == item.Value)
+                    return;
+
+                UndoRedoManager.Execute(
+                    new ChangeTrackOutDeviceCommand(
+                        track,
+                        track.OutDevice,
+                        item.Value));
+                Debug.WriteLine(UndoRedoManager.GetDebugInfo());
+
+                RefreshCursor();
+            };
+
+
+            int trackY = TrackCursor.Track.Value.Number * trackHeaderPanel.pxTrackHeight - pxScrollY;
+            Rectangle rc = trackHeaderPanel.GetColumnRect(trackY, TrackCursor.HeaderColumn);
+            Point pt = trackHeaderPanel.PointToScreen(new Point(
+                        rc.Left,
+                        rc.Bottom));
+            candidateForm.StartPosition = FormStartPosition.Manual;
+
+            candidateForm.Location = pt;
+            candidateForm.Hide();
+            candidateForm.Show(this);
+            //candidateForm.Refresh();
+        }
+
+        private void ShowInDeviceCandidates()
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            List<SimpleCandidateForm.CandidateItem> items = new();
+
+            var devs =
+                Setting.midiIn.lstMidiInInfo[
+                    Setting.midiIn.CurrentDev];
+            if (devs == null) return;
+
+            for (int i = 0; i < devs.Length; i++)
+            {
+                items.Add(
+                    new SimpleCandidateForm.CandidateItem()
+                    {
+                        Value = i,
+                        Text = devs[i].alias
+                    });
+            }
+
+            candidateForm?.Dispose();
+            candidateForm = null;
+
+            candidateForm =
+                new SimpleCandidateForm(
+                    items,
+                    TrackCursor.Track.Value.InDevice,
+                    SimpleCandidateForm.CandidateFilterMode.Text,
+                    1,
+                    CandidateLayoutMode.VerticalList);
+
+            candidateForm.CandidateSelected += item =>
+            {
+                MIDITrack track =
+                    TrackCursor.Track.Value;
+
+                if (track.InDevice == item.Value)
+                    return;
+
+                UndoRedoManager.Execute(
+                    new ChangeTrackInDeviceCommand(
+                        track,
+                        track.InDevice,
+                        item.Value));
+                Debug.WriteLine(UndoRedoManager.GetDebugInfo());
+
+                RefreshCursor();
+            };
+
+
+            int trackY = TrackCursor.Track.Value.Number * trackHeaderPanel.pxTrackHeight - pxScrollY;
+            Rectangle rc = trackHeaderPanel.GetColumnRect(trackY, TrackCursor.HeaderColumn);
+            Point pt = trackHeaderPanel.PointToScreen(new Point(
+                        rc.Left,
+                        rc.Bottom));
+            candidateForm.StartPosition = FormStartPosition.Manual;
+
+            candidateForm.Location = pt;
+            candidateForm.Hide();
+            candidateForm.Show(this);
+            //candidateForm.Refresh();
+        }
+
+        public void HideCandidateForm()
+        {
+            if (candidateForm != null)
+                candidateForm.Hide();
+        }
+
+
+
+        private void BeginOutChannelEdit(Keys key)
+        {
+            editingOutChannel = true;
+
+
+            if (key >= Keys.D0 && key <= Keys.D9) outChannelInput = ((int)(key - Keys.D0)).ToString();
+            else outChannelInput = ((int)(key - Keys.NumPad0)).ToString();
+
+            RefreshCursor();
+        }
+
+        private void CommitOutChannel(string text)
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            int? value = null;
+
+            if (int.TryParse(text, out int ch))
+            {
+                if (ch >= 1 && ch <= 16)
+                {
+                    value = ch - 1;
+                }
+            }
+
+            if (TrackCursor.Track.Value.OutChannel == value)
+                return;
+
+            UndoRedoManager.Execute(
+                new ChangeTrackOutChannelCommand(
+                    TrackCursor.Track.Value,
+                    TrackCursor.Track.Value.OutChannel,
+                    value));
+
+            RefreshCursor();
+        }
+
+        private void BeginInChannelEdit(Keys key)
+        {
+            editingInChannel = true;
+
+
+            if (key >= Keys.D0 && key <= Keys.D9) inChannelInput = ((int)(key - Keys.D0)).ToString();
+            else inChannelInput = ((int)(key - Keys.NumPad0)).ToString();
+
+            RefreshCursor();
+        }
+
+        private void CommitInChannel(string text)
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            int? value = null;
+
+            if (int.TryParse(text, out int ch))
+            {
+                if (ch >= 1 && ch <= 16)
+                {
+                    value = ch - 1;
+                }
+            }
+
+            if (TrackCursor.Track.Value.InChannel == value)
+                return;
+
+            UndoRedoManager.Execute(
+                new ChangeTrackInChannelCommand(
+                    TrackCursor.Track.Value,
+                    TrackCursor.Track.Value.InChannel,
+                    value));
 
             RefreshCursor();
         }

@@ -27,7 +27,7 @@ namespace Remcoposer64.Test
             ImportRcp iRcp = new ImportRcp("E:\\FM音源\\data\\MIDI\\人様のＭＩＤＩ\\ANIME\\NADOP88G.RCP", setting);
             MIDIProject project = iRcp.Load();
 
-            trackEditorControl1.SetContext(project, setting);
+            trackEditorControl1.SetContext(project, setting, null, null);
             trackEditorControl1.SetHeaderLine(hl);
             trackEditorControl1.Invalidate();
         }

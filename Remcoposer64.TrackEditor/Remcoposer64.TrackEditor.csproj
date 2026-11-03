@@ -4,12 +4,17 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Remcoposer64.Common\Remcoposer64.Common.csproj" />
     <ProjectReference Include="..\Remcoposer64.Core\Remcoposer64.Core.csproj" />
     <ProjectReference Include="..\Remcoposer64.ProjectData\Remcoposer64.ProjectData.csproj" />
+    <ProjectReference Include="..\Remcoposer64.UndoRedoManager\Remcoposer64.UndoRedoManager.csproj" />
   </ItemGroup>
 
 </Project>

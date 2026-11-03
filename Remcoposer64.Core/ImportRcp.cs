@@ -56,7 +56,7 @@ namespace Remcoposer64.Core
             
             prj = new MIDIProject(setting);
             bs = null;
-            prj.Information.FileFullName = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
+            prj.Information.FileFullName = fn;// Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
             prj.Information.FileName = Path.GetFileNameWithoutExtension(fn);
             prj.Information.MaxLengthMIDIOut = 0;
 
