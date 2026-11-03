@@ -26,7 +26,7 @@ namespace Remcoposer64.TrackEditor
 
         // 編集向け
 
-        private SimpleCandidateForm? candidateForm;
+        private SimpleCandidateForm candidateForm;
         public bool editingOutChannel;
         public string outChannelInput = "";
         public bool editingInChannel;
@@ -594,7 +594,7 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Refresh();
         }
 
-        public LinkedListNode<MIDITrack>? GetTrackByIndex(int trackNo)
+        public LinkedListNode<MIDITrack> GetTrackByIndex(int trackNo)
         {
             if (trackNo < 0 || trackNo >= Project.Track.Count)
                 return null;

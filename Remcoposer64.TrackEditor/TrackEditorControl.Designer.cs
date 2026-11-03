@@ -8,7 +8,6 @@ namespace Remcoposer64.TrackEditor
 {
     partial class TrackEditorControl
     {
-        private System.ComponentModel.IContainer components = null;
 
         private void InitializeComponent()
         {

@@ -12,7 +12,6 @@ namespace Remcoposer64.StepEditorPanelControl.Render
         public string[] headers;
         public int iconMergin;
         private string oldMeas = "";
-        private int oldST = -1;
 
 
         public DrawUtil(IGraph grp, int charWidth, int lineHeight, int[] columnWidths, string[] headers)

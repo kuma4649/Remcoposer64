@@ -16,16 +16,16 @@ namespace Remcoposer64.ProjectData
         private string _Name = "";
         private string _Memo = "";
         private string _Comment = "";
-        private int? _OutDeviceNumber = 0;
-        private string _OutDeviceName = "";
-        private int? _OutUserDeviceNumber = 0;
-        private string _OutUserDeviceName = "";
-        private int? _OutChannel = 0;
-        private int? _InDeviceNumber = 0;
-        private string _InDeviceName = "";
-        private int? _InUserDeviceNumber = 0;
-        private string _InUserDeviceName = "";
-        private int? _InChannel = 0;
+        //private int? _OutDeviceNumber = 0;
+        //private string _OutDeviceName = "";
+        //private int? _OutUserDeviceNumber = 0;
+        //private string _OutUserDeviceName = "";
+        //private int? _OutChannel = 0;
+        //private int? _InDeviceNumber = 0;
+        //private string _InDeviceName = "";
+        //private int? _InUserDeviceNumber = 0;
+        //private string _InUserDeviceName = "";
+        //private int? _InChannel = 0;
         private bool _Solo = false;
         private bool _Mute = false;
         private Color _Color = Color.Black;
@@ -261,7 +261,7 @@ namespace Remcoposer64.ProjectData
                 return _TrackNumber;
             }
         }
-        private int mCounter = 0;
+        //private int mCounter = 0;
 
         /// <summary>
         /// 演奏時専用なのでそれ以外の用途で使用不可

@@ -95,7 +95,7 @@ namespace Remcoposer64.App.form
             // 設定ファイルに保存されているMIDI入力設定をDataGridViewに列挙する
             if (setting.midiIn.lstMidiInInfo != null && setting.midiIn.lstMidiInInfo.Count > 0)
             {
-                for (int i = 0; i < setting.midiOut.lstMidiOutInfo.Count; i++)
+                for (int i = 0; i < setting.midiIn.lstMidiInInfo.Count; i++)
                 {
                     dgvIn[i].Rows.Clear();
                     HashSet<int> midiinNotFound = new HashSet<int>();
@@ -128,6 +128,9 @@ namespace Remcoposer64.App.form
                     }
                 }
             }
+
+            // Playerのオプション
+            cbRCPMuteMode.Checked = setting.player.RCPMuteMode;
         }
 
         private void btnAddMIDIout_Click(object sender, EventArgs e)
@@ -410,6 +413,7 @@ namespace Remcoposer64.App.form
                 setting.midiIn.lstMidiInInfo.Add(lstMii.ToArray());
             }
 
+            setting.player.RCPMuteMode = cbRCPMuteMode.Checked;
 
             this.DialogResult = DialogResult.OK;
             this.Close();

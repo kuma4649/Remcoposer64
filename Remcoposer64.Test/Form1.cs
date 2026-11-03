@@ -66,7 +66,7 @@ namespace Remcoposer64.Test
 
         }
 
-        private void FormTimer_Tick(object? sender, EventArgs e)
+        private void FormTimer_Tick(object sender, EventArgs e)
         {
             if (timer == null) return;
 

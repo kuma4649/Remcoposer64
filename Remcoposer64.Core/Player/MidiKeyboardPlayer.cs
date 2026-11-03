@@ -11,7 +11,7 @@ namespace Remcoposer64.Core.Player
         public int FireFrameProcess { get; set; } = 0;
         public bool IsFinished { get; set; } = true;
 
-        public void Initialize(Setting.midiOutInfo[] midiOutInfo, NAudio.Midi.MidiOut[] midiOut, Setting.midiInInfo[] midiInInfo, NAudio.Midi.MidiIn[] midiIn)
+        public void Initialize(Setting setting, Setting.midiOutInfo[] midiOutInfo, NAudio.Midi.MidiOut[] midiOut, Setting.midiInInfo[] midiInInfo, NAudio.Midi.MidiIn[] midiIn)
         {
             _queue.Clear();
             FireFrameProcess = 0;

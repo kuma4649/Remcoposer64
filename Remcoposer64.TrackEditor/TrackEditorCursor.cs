@@ -4,8 +4,8 @@ namespace Remcoposer64.TrackEditor
 {
     public class TrackEditorCursor
     {
-        public LinkedListNode<MIDITrack>? Track;
-        public LinkedListNode<MIDIPart>? Part;
+        public LinkedListNode<MIDITrack> Track;
+        public LinkedListNode<MIDIPart> Part;
 
         public TrackEditorFocusArea Area;
         public TrackHeaderColumn HeaderColumn;

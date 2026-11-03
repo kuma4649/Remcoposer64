@@ -11,6 +11,7 @@ namespace Remcoposer64.Common
         //public List<MIDIDeviceList> MIDIInDeviceList { get; set; } = new();
 
         public Log log = new Log();
+        public Player player = new Player();
         public MidiOut midiOut { get; set; } = new();
         public MidiIn midiIn { get; set; } = new();
         public UI ui = new();
@@ -34,6 +35,7 @@ namespace Remcoposer64.Common
         {
             Setting setting = new Setting();
             setting.log = this.log.Copy();
+            setting.player = this.player.Copy();
             setting.midiOut = this.midiOut.Copy();
             setting.midiIn = this.midiIn.Copy();
             setting.ui = this.ui.Copy();
@@ -100,6 +102,18 @@ namespace Remcoposer64.Common
         }
 
         [Serializable]
+        public class Player
+        {
+            public bool RCPMuteMode { get; set; } = true;
+            public Player Copy()
+            {
+                Player player = new Player();
+                player.RCPMuteMode = this.RCPMuteMode;
+                return player;
+            }
+        }
+
+        [Serializable]
         public class MidiOut
         {
             public string GMReset { get; set; } = "30:F0,7E,7F,09,01,F7";
@@ -108,7 +122,7 @@ namespace Remcoposer64.Common
             public string Custom { get; set; } = "";
             public int CurrentDev { get; set; } = 0;
 
-            public List<midiOutInfo[]>? lstMidiOutInfo { get; set; } = null;
+            public List<midiOutInfo[]> lstMidiOutInfo { get; set; } = null;
 
             public MidiOut Copy()
             {
@@ -175,7 +189,7 @@ namespace Remcoposer64.Common
         [Serializable]
         public class MidiIn
         {
-            public List<midiInInfo[]>? lstMidiInInfo { get; set; } = null;
+            public List<midiInInfo[]> lstMidiInInfo { get; set; } = null;
             public int CurrentDev { get; set; } = 0;
 
             public MidiIn Copy()

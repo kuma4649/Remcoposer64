@@ -23,6 +23,7 @@ namespace Remcoposer64.Core.Player
             midiKeyboardPlayer
         };
 
+        private Setting setting;
         private Setting.MidiOut _midiOut;
         private Setting.midiOutInfo[] currentMidiOut;
         private Setting.MidiIn _midiIn;
@@ -41,6 +42,7 @@ namespace Remcoposer64.Core.Player
 
         public RmPlayer(Setting setting)
         {
+            this.setting = setting;
             _deviceManager = new MidiDeviceManager();
 
             if (setting.midiOut == null) 
@@ -128,7 +130,7 @@ namespace Remcoposer64.Core.Player
         public void InitialPlay()
         {
             foreach (var channel in _channels)
-                channel.Initialize(currentMidiOut, midiOutDev, currentMidiIn, midiInDev);
+                channel.Initialize(setting, currentMidiOut, midiOutDev, currentMidiIn, midiInDev);
 
             State = PlayerState.Processing;
             _timer.RequestStart();

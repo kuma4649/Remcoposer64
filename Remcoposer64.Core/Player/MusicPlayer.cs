@@ -44,10 +44,11 @@ namespace Remcoposer64.Core.Player
         private byte[] RolEx = new byte[11];
 
         private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
+        private Setting _setting;
 
-
-        public void Initialize(Setting.midiOutInfo[] midiOut, MidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
+        public void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, MidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
         {
+            _setting = setting;
             _midiOutInfo = midiOut;
             _midiInInfo = midiIn;
 
@@ -57,19 +58,6 @@ namespace Remcoposer64.Core.Player
             IsFinished = true;
 
             RelativeTempoChangeSW = false;
-
-            //if (_midiOutInfo != null)
-            //{
-            //    dicNoteOnTable = new Dictionary<int, long>[_midiOutInfo.Length][];
-            //    for (int i = 0; i < _midiOutInfo.Length; i++)
-            //    {
-            //        dicNoteOnTable[i] = new Dictionary<int, long>[16];
-            //        for (int j = 0; j < 16; j++)
-            //        {
-            //            dicNoteOnTable[i][j] = new Dictionary<int, long>();
-            //        }
-            //    }
-            //}
 
             this.midiOutDevice = midiOutDevice;
             this.midiInDevice = midiInDevice;
@@ -315,6 +303,12 @@ namespace Remcoposer64.Core.Player
                 midiOut = midiOutDevice[trk.OutDevice];
             int? channel = trk.OutChannel;
             int transpose = trk.Key ?? 0;
+            bool send1 = hasSolo ? trk.Solo : !trk.Mute;
+            bool send2 = true;
+            if (_setting.player.RCPMuteMode == true)
+            {
+                send2 = hasSolo ? trk.Solo : !trk.Mute;
+            }
 
             if (evt.Type == MIDIEventType.NoteON)
             {
@@ -331,7 +325,7 @@ namespace Remcoposer64.Core.Player
 
                     if (dicNoteOnTable.Length > trk.OutDevice
                         && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(key)
-                        && (hasSolo ? trk.Solo : !trk.Mute)
+                        && send1
                         && nevt.GT > 0)
                         midiOut?.Send(msg);
 
@@ -353,7 +347,7 @@ namespace Remcoposer64.Core.Player
                               + (key << 8)
                               + (nevt.Vel << 16);
 
-                    midiOut?.Send(msg);
+                    if(send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.MetaTempo)
@@ -394,7 +388,7 @@ namespace Remcoposer64.Core.Player
                               + (cevt.ControllerNumber << 8)
                               + (cevt.ControllerValue << 16);
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.ProgramChange)
@@ -408,7 +402,7 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.ProgramNumber << 8);
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.PitchBend)
@@ -428,7 +422,7 @@ namespace Remcoposer64.Core.Player
                               + (lsb << 8)
                               + (msb << 16);
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.KeyAfterTouch)
@@ -443,7 +437,7 @@ namespace Remcoposer64.Core.Player
                               + (aevt.KeyNumber << 8)
                               + (aevt.PressureValue << 16);
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.ChannelAfterTouch)
@@ -457,13 +451,13 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.PressureValue << 8); // data2 は使わないので 0
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
                 }
             }
             else if (evt.Type == MIDIEventType.SysExF0)
             {
                 MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
+                if(send2)SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
             }
             else if (evt.Type == MIDIEventType.RolandDevice)
             {
@@ -497,7 +491,7 @@ namespace Remcoposer64.Core.Player
                 RolEx[8] = trk.RolandPara_vel;
                 RolEx[9] = (byte)((128 - ((trk.RolandBase_gt + trk.RolandBase_vel + trk.RolandPara_gt + trk.RolandPara_vel) % 128)) & 0x7f);
                 RolEx[10] = 0xF7;
-                midiOut?.SendBuffer(RolEx);
+                if(send2) midiOut?.SendBuffer(RolEx);
 
             }
             else if (evt.Type == MIDIEventType.SameMeas)
@@ -607,12 +601,12 @@ namespace Remcoposer64.Core.Player
                               + (0 << 8)
                               + (bevt.ControlChange << 16);
 
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
 
                     status = 0xC0 | ch; // ProgramChange
                     msg = status
                               + (bevt.ProgramNumber << 8);
-                    midiOut?.Send(msg);
+                    if (send2) midiOut?.Send(msg);
 
                 }
             }
@@ -624,7 +618,7 @@ namespace Remcoposer64.Core.Player
             {
                 MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
                 byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
-                SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
+                if (send2) SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
 
             }
             else if (evt.Type == MIDIEventType.MetaPortPrefix)
