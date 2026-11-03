@@ -41,7 +41,12 @@ namespace Remcoposer64.App.form
 
         private void btFF_Click(object sender, EventArgs e)
         {
-            //TBD
+
+        }
+
+        private void cbFF_CheckedChanged(object sender, EventArgs e)
+        {
+            main.setting.player.playSpeed = cbFF.Checked ? 10.0 : 1.0;
         }
 
         private void bt1_Click(object sender, EventArgs e)
@@ -97,5 +102,6 @@ namespace Remcoposer64.App.form
             e.Cancel = true; // Close をキャンセル
             this.Hide();     // 非表示にするだけ
         }
+
     }
 }

@@ -105,10 +105,13 @@ namespace Remcoposer64.Common
         public class Player
         {
             public bool RCPMuteMode { get; set; } = true;
+            public double playSpeed { get; set; } = 1.0;
+
             public Player Copy()
             {
                 Player player = new Player();
                 player.RCPMuteMode = this.RCPMuteMode;
+                player.playSpeed = this.playSpeed;
                 return player;
             }
         }

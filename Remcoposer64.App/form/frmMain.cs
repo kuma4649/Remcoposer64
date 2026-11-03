@@ -14,6 +14,7 @@ namespace Remcoposer64.App
         private frmConsole console;
         private frmOpePanel opePanel;
         private UndoRedoManager.UndoRedoManager undoMng;
+        private frmInformation info;
 
         private List<MIDIProject> projects = new List<MIDIProject>();
         private MIDIProject currentProject = null;
@@ -281,8 +282,10 @@ namespace Remcoposer64.App
             tab.Tag = prj;
             tab.Text = prj.Information.FileName;
 
-            // プロジェクトの UI を構築（あなたの既存関数）
+            // プロジェクトの UI を構築
             AddProjectTab(prj);
+            UpdateTitle();
+            UpdateInformation(prj);
 
             // ファイル名を更新
             prj.Information.FileFullName = ofd.FileName;
@@ -291,13 +294,14 @@ namespace Remcoposer64.App
 
         private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
         {
-            opePanel.Show();
-            opePanel.BringToFront();
+            opePanel.Show(dockPanel1, new Rectangle(0, 0, 372, 121));
+            //opePanel.Show();
+            //opePanel.BringToFront();
         }
 
         private void tsmiOpenInformation_Click(object sender, EventArgs e)
         {
-            var info = new frmInformation(currentProject);
+            if (info == null) info = new frmInformation(currentProject);
             info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
             info.Size = new Size(640, 480);
         }
@@ -579,7 +583,7 @@ namespace Remcoposer64.App
 
             AddProjectTab(project);
             UpdateTitle();
-            //UpdateInformation(project);
+            UpdateInformation(project);
         }
 
         private void AddProjectTab(MIDIProject project)
@@ -617,6 +621,8 @@ namespace Remcoposer64.App
             // そのタブを選択
             tab.Activate();
             trackEditor.StretchZoom();
+            projects.Add(project);
+            currentProject = project;
         }
 
         private void TrackEditor_TrackDoubleClicked(object sender, TrackDoubleClickEventArgs e)
@@ -647,9 +653,9 @@ namespace Remcoposer64.App
 
         private void UpdateInformation(MIDIProject project)
         {
-            frmInformation info = new frmInformation(project);
-            info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
-            info.Size = new Size(640, 480);
+            //frmInformation info = new frmInformation(project);
+            //info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
+            //info.Size = new Size(640, 480);
         }
 
         private string MakePartDots(MIDITrack trk)

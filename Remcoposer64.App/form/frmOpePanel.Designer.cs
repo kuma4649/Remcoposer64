@@ -51,6 +51,7 @@
             bt2 = new Button();
             bt1 = new Button();
             timerUpdate = new System.Windows.Forms.Timer(components);
+            cbFF = new CheckBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -80,7 +81,7 @@
             // 
             // btStop
             // 
-            btStop.Location = new Point(96, 4);
+            btStop.Location = new Point(134, 4);
             btStop.Name = "btStop";
             btStop.Size = new Size(37, 32);
             btStop.TabIndex = 2;
@@ -90,12 +91,13 @@
             // 
             // btFF
             // 
-            btFF.Location = new Point(134, 4);
+            btFF.Location = new Point(331, 3);
             btFF.Name = "btFF";
             btFF.Size = new Size(36, 32);
             btFF.TabIndex = 3;
             btFF.Text = ">>";
             btFF.UseVisualStyleBackColor = true;
+            btFF.Visible = false;
             btFF.Click += btFF_Click;
             // 
             // groupBox1
@@ -285,11 +287,24 @@
             timerUpdate.Interval = 10;
             timerUpdate.Tick += timerUpdate_Tick;
             // 
+            // cbFF
+            // 
+            cbFF.Appearance = Appearance.Button;
+            cbFF.Location = new Point(96, 4);
+            cbFF.Name = "cbFF";
+            cbFF.Size = new Size(37, 32);
+            cbFF.TabIndex = 5;
+            cbFF.Text = ">>";
+            cbFF.TextAlign = ContentAlignment.MiddleCenter;
+            cbFF.UseVisualStyleBackColor = true;
+            cbFF.CheckedChanged += cbFF_CheckedChanged;
+            // 
             // frmOpePanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(356, 82);
+            Controls.Add(cbFF);
             Controls.Add(groupBox4);
             Controls.Add(groupBox2);
             Controls.Add(groupBox5);
@@ -340,5 +355,6 @@
         private Button bt4;
         private Button bt3;
         private System.Windows.Forms.Timer timerUpdate;
+        private CheckBox cbFF;
     }
 }

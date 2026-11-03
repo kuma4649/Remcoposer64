@@ -77,7 +77,7 @@ namespace Remcoposer64.TrackEditor
             trackHeaderPanel.SetContext(this, project, setting, player);
             trackCanvasPanel.SetContext(this, project, setting, player);
 
-            splitContainer1.SplitterDistance = this.ClientSize.Width / 2;
+            splitContainer1.SplitterDistance = ClientSize.Width <= 800 ? (ClientSize.Width / 2) : 400;
 
             TrackCursor.Clear();
             TrackSelection.Clear();
@@ -265,7 +265,7 @@ namespace Remcoposer64.TrackEditor
 
         public void SetInitialSplitDistance()
         {
-            splitContainer1.SplitterDistance = ClientSize.Width / 3;
+            splitContainer1.SplitterDistance = ClientSize.Width <= 800 ? (ClientSize.Width / 2) : 400;
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)

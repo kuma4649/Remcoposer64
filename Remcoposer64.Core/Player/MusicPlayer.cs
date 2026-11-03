@@ -176,7 +176,7 @@ namespace Remcoposer64.Core.Player
         {
             timerCounter++;
             // 1frameあたりのppq進行量
-            double ppqPerFrame = (_bpm * _ppq) / 60.0 / Common.Common.DATA_SEQUENCE_FREQUENCE;
+            double ppqPerFrame = (_bpm * _ppq) / 60.0 / Common.Common.DATA_SEQUENCE_FREQUENCE * _setting.player.playSpeed;
             // 現在ppqを進める
             _currentPpq += ppqPerFrame;
 
