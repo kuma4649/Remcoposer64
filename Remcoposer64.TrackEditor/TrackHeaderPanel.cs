@@ -51,6 +51,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
         protected override void Render()
         {
+            bool hasSolo = Project.Track.Any(t => t.Solo);
 
             LinkedListNode<MIDITrack> trk = Project.Track.First;
             for (int i = 0; i < TrackEditorControl.FirstVisibleTrack; i++)
@@ -112,21 +113,24 @@ namespace Remcoposer64.TrackEditor.Internal
                     backColor);
 
                 // Mute Button
+                bool muteLamp = hasSolo ? !trk.Value.Solo : trk.Value.Mute;
+                Color col = muteLamp ? Color.LightPink : Color.DarkMagenta;
                 pos.X = ColX(COL_MUTE);
                 pos.Y = LineY(trackPanelPosY, 0);
                 graph.DrawString(
                     "M",
                     ref pos,
-                    Color.DarkMagenta,
+                    col,
                     backColor);
 
                 // Solo Button
+                col = trk.Value.Solo ? Color.LightBlue : Color.Blue;
                 pos.X = ColX(COL_SOLO);
                 pos.Y = LineY(trackPanelPosY, 0);
                 graph.DrawString(
                     "S",
                     ref pos,
-                    Color.Blue,
+                    col,
                     backColor);
 
                 // ST+
@@ -298,7 +302,9 @@ namespace Remcoposer64.TrackEditor.Internal
 
             TrackEditorControl.MoveCursorTrack(trk, col);
 
-            if (IsPopupColumn(col))
+            if (IsPopupColumn(col)
+                || col == TrackHeaderColumn.Mute
+                || col == TrackHeaderColumn.Solo)
             {
                 TrackEditorControl.ExecuteCurrentColumnAction();
             }
@@ -548,7 +554,8 @@ namespace Remcoposer64.TrackEditor.Internal
             if (line == 0)
             {
                 if (x < ColAbs(COL_MUTE))
-                    return TrackHeaderColumn.TrackNo;
+                    //return TrackHeaderColumn.TrackNo;
+                    return TrackHeaderColumn.Mute;
 
                 if (x < ColAbs(COL_SOLO))
                     return TrackHeaderColumn.Mute;
@@ -688,7 +695,7 @@ namespace Remcoposer64.TrackEditor.Internal
             switch (col)
             {
                 case TrackHeaderColumn.None:
-                    return TrackHeaderColumn.TrackNo;
+                    return TrackHeaderColumn.Mute;
 
                 case TrackHeaderColumn.TrackNo:
                     return TrackHeaderColumn.Mute;
@@ -709,7 +716,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     if(TrackEditorControl.HeaderLine > 1)
                         return TrackHeaderColumn.OutChannel;
                     else
-                        return TrackHeaderColumn.TrackNo;
+                        return TrackHeaderColumn.Mute;
 
                 case TrackHeaderColumn.OutChannel:
                     return TrackHeaderColumn.OutDevice;
@@ -718,13 +725,13 @@ namespace Remcoposer64.TrackEditor.Internal
                     if(TrackEditorControl.HeaderLine > 2)
                         return TrackHeaderColumn.InChannel;
                     else
-                        return TrackHeaderColumn.TrackNo;
+                        return TrackHeaderColumn.Mute;
 
                 case TrackHeaderColumn.InChannel:
                     return TrackHeaderColumn.InDevice;
 
                 case TrackHeaderColumn.InDevice:
-                        return TrackHeaderColumn.TrackNo;
+                        return TrackHeaderColumn.Mute;
                 default:
                     return col;
             }
@@ -735,7 +742,7 @@ namespace Remcoposer64.TrackEditor.Internal
             switch (col)
             {
                 case TrackHeaderColumn.None:
-                    return TrackHeaderColumn.TrackNo;
+                    return TrackHeaderColumn.Mute;
 
                 case TrackHeaderColumn.TrackNo:
                     if (TrackEditorControl.HeaderLine > 2)
@@ -745,7 +752,11 @@ namespace Remcoposer64.TrackEditor.Internal
                     return TrackHeaderColumn.Name;
 
                 case TrackHeaderColumn.Mute:
-                    return TrackHeaderColumn.TrackNo;
+                    if (TrackEditorControl.HeaderLine > 2)
+                        return TrackHeaderColumn.InDevice;
+                    if (TrackEditorControl.HeaderLine > 1)
+                        return TrackHeaderColumn.OutDevice;
+                    return TrackHeaderColumn.Name;
 
                 case TrackHeaderColumn.Solo:
                     return TrackHeaderColumn.Mute;

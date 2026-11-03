@@ -540,10 +540,7 @@ namespace Remcoposer64.TrackEditor
 
         public void MoveCursorTrack(LinkedListNode<MIDITrack> trk, TrackHeaderColumn column)
         {
-            editingOutChannel = false;
-            outChannelInput = "";
-            editingInChannel = false;
-            inChannelInput = "";
+            ClearInputMode();
 
             TrackCursor.Track = trk;
             TrackCursor.Part = trk.Value.Part?.First;
@@ -555,10 +552,7 @@ namespace Remcoposer64.TrackEditor
 
         public void MoveCursorColumn(TrackHeaderColumn column)
         {
-            editingOutChannel = false;
-            outChannelInput = "";
-            editingInChannel = false;
-            inChannelInput = "";
+            ClearInputMode();
 
             TrackCursor.HeaderColumn = column;
 
@@ -665,13 +659,32 @@ namespace Remcoposer64.TrackEditor
             switch (TrackCursor.HeaderColumn)
             {
                 case TrackHeaderColumn.Mute:
-                    TrackCursor.Track.Value.Mute =
-                        !TrackCursor.Track.Value.Mute;
+
+                    if (Project.Track.Any(t => t.Solo))
+                    {
+                        UndoRedoManager.Execute(
+                            new ChangeTrackMuteWithClearSoloCommand(
+                                Project,
+                                TrackCursor.Track.Value,
+                                TrackCursor.Track.Value.Mute,
+                                !TrackCursor.Track.Value.Mute));
+                    }
+                    else
+                    {
+                        UndoRedoManager.Execute(
+                            new ChangeTrackMuteCommand(
+                                TrackCursor.Track.Value,
+                                TrackCursor.Track.Value.Mute,
+                                !TrackCursor.Track.Value.Mute));
+                    }
                     break;
 
                 case TrackHeaderColumn.Solo:
-                    TrackCursor.Track.Value.Solo =
-                        !TrackCursor.Track.Value.Solo;
+                    UndoRedoManager.Execute(
+                        new ChangeTrackSoloCommand(
+                            TrackCursor.Track.Value,
+                            TrackCursor.Track.Value.Solo,
+                            !TrackCursor.Track.Value.Solo));
                     break;
 
                 case TrackHeaderColumn.OutDevice:
@@ -818,8 +831,7 @@ namespace Remcoposer64.TrackEditor
 
         public void HideCandidateForm()
         {
-            if (candidateForm != null)
-                candidateForm.Hide();
+            ClearInputMode();
         }
 
 

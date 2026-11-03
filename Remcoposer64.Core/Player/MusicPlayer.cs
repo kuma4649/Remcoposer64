@@ -39,6 +39,7 @@ namespace Remcoposer64.Core.Player
         private Dictionary<int, long>[][] dicNoteOnTable = null;
         private NAudio.Midi.MidiOut[] midiOutDevice;
         private NAudio.Midi.MidiIn[] midiInDevice;
+        
 
         private byte[] RolEx = new byte[11];
 
@@ -199,9 +200,11 @@ namespace Remcoposer64.Core.Player
                 _currentPpq -= 1.0;   // 1ppq消費
             }
         }
+        private bool hasSolo = false;
 
         public void ProcessFrame(long seqCounter)
         {
+            hasSolo = _project.Track.Any(t => t.Solo);
 
             if (RelativeTempoChangeSW)
             {
@@ -328,7 +331,7 @@ namespace Remcoposer64.Core.Player
 
                     if (dicNoteOnTable.Length > trk.OutDevice
                         && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(key)
-                        && !trk.Mute
+                        && (hasSolo ? trk.Solo : !trk.Mute)
                         && nevt.GT > 0)
                         midiOut?.Send(msg);
 
