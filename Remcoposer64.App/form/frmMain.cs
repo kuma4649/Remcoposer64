@@ -4,6 +4,7 @@ using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.TrackEditor;
+using System.Text;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App
@@ -764,31 +765,47 @@ namespace Remcoposer64.App
         private void timerScreen_Tick(object sender, EventArgs e)
         {
 
-            if (player != null && player.GetMusicState() == RmPlayer.PlayerState.Processing)
-            {
-                foreach (var stepeditor in stepEditors)
-                {
-                    stepeditor.Refresh();
-                }
+            if (player == null || player.GetMusicState() != RmPlayer.PlayerState.Processing) return;
 
-                foreach (var cnt in dockPanel1.Contents)
+            // Update StepEditor 
+            foreach (var stepeditor in stepEditors)
+            {
+                stepeditor.Refresh();
+            }
+
+            // Update TrackEditor
+            foreach (var cnt in dockPanel1.Contents)
+            {
+                if (cnt is frmProject
+                    && ((frmProject)cnt).Tag == currentProject
+                    && player.GetPlayingProject() == currentProject)
                 {
-                    if (cnt is frmProject
-                        && ((frmProject)cnt).Tag == currentProject
-                        && player.GetPlayingProject() == currentProject)
+                    foreach (var cnt2 in ((frmProject)cnt).Controls)
                     {
-                        foreach (var cnt2 in ((frmProject)cnt).Controls)
+                        if (cnt2 is TrackEditorControl)
                         {
-                            if (cnt2 is TrackEditorControl)
-                            {
-                                ((TrackEditorControl)cnt2).ScrollPlayingMarker();
-                            }
+                            ((TrackEditorControl)cnt2).ScrollPlayingMarker();
                         }
                     }
                 }
             }
 
+            List<MIDIParam> prms = player.GetMIDIParam();
+            if (prms != null)
+            {
+                Encoding enc = Encoding.ASCII;
+                letter = enc.GetString(prms[0].LCDDisplayLetter).Trim();
+                if (letter != oldletter)
+                {
+                    oldletter = letter;
+                    Log.Write(LogLevel.Information, letter);
+                }
+            }
+
         }
+
+        private string letter;
+        private string oldletter;
 
         private static readonly HashSet<string> SupportedExtensions =
     new(StringComparer.OrdinalIgnoreCase)

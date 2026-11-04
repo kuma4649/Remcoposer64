@@ -42,6 +42,8 @@
             groupBox4 = new GroupBox();
             lblBeat = new Label();
             groupBox5 = new GroupBox();
+            bt10 = new Button();
+            bt9 = new Button();
             bt8 = new Button();
             bt7 = new Button();
             bt6 = new Button();
@@ -52,6 +54,7 @@
             bt1 = new Button();
             timerUpdate = new System.Windows.Forms.Timer(components);
             cbFF = new CheckBox();
+            cbSlow = new CheckBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -71,7 +74,7 @@
             // 
             // btPlay
             // 
-            btPlay.Location = new Point(43, 4);
+            btPlay.Location = new Point(82, 4);
             btPlay.Name = "btPlay";
             btPlay.Size = new Size(52, 32);
             btPlay.TabIndex = 1;
@@ -81,7 +84,7 @@
             // 
             // btStop
             // 
-            btStop.Location = new Point(134, 4);
+            btStop.Location = new Point(173, 4);
             btStop.Name = "btStop";
             btStop.Size = new Size(37, 32);
             btStop.TabIndex = 2;
@@ -91,7 +94,7 @@
             // 
             // btFF
             // 
-            btFF.Location = new Point(331, 3);
+            btFF.Location = new Point(413, 4);
             btFF.Name = "btFF";
             btFF.Size = new Size(36, 32);
             btFF.TabIndex = 3;
@@ -103,7 +106,7 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(lblLocation);
-            groupBox1.Location = new Point(178, 5);
+            groupBox1.Location = new Point(216, 4);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(101, 34);
             groupBox1.TabIndex = 4;
@@ -122,7 +125,7 @@
             // groupBox2
             // 
             groupBox2.Controls.Add(lblTempo);
-            groupBox2.Location = new Point(283, 5);
+            groupBox2.Location = new Point(321, 4);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(64, 34);
             groupBox2.TabIndex = 4;
@@ -141,7 +144,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(lblTime);
-            groupBox3.Location = new Point(178, 41);
+            groupBox3.Location = new Point(216, 40);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(101, 34);
             groupBox3.TabIndex = 4;
@@ -160,7 +163,7 @@
             // groupBox4
             // 
             groupBox4.Controls.Add(lblBeat);
-            groupBox4.Location = new Point(283, 41);
+            groupBox4.Location = new Point(321, 40);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(64, 34);
             groupBox4.TabIndex = 4;
@@ -178,6 +181,8 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(bt10);
+            groupBox5.Controls.Add(bt9);
             groupBox5.Controls.Add(bt8);
             groupBox5.Controls.Add(bt7);
             groupBox5.Controls.Add(bt6);
@@ -188,10 +193,30 @@
             groupBox5.Controls.Add(bt1);
             groupBox5.Location = new Point(5, 41);
             groupBox5.Name = "groupBox5";
-            groupBox5.Size = new Size(167, 34);
+            groupBox5.Size = new Size(205, 34);
             groupBox5.TabIndex = 4;
             groupBox5.TabStop = false;
             groupBox5.Text = "Maker";
+            // 
+            // bt10
+            // 
+            bt10.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
+            bt10.Location = new Point(182, 12);
+            bt10.Name = "bt10";
+            bt10.Size = new Size(20, 20);
+            bt10.TabIndex = 8;
+            bt10.Text = "A";
+            bt10.UseVisualStyleBackColor = true;
+            // 
+            // bt9
+            // 
+            bt9.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
+            bt9.Location = new Point(163, 12);
+            bt9.Name = "bt9";
+            bt9.Size = new Size(20, 20);
+            bt9.TabIndex = 7;
+            bt9.Text = "9";
+            bt9.UseVisualStyleBackColor = true;
             // 
             // bt8
             // 
@@ -290,7 +315,7 @@
             // cbFF
             // 
             cbFF.Appearance = Appearance.Button;
-            cbFF.Location = new Point(96, 4);
+            cbFF.Location = new Point(135, 4);
             cbFF.Name = "cbFF";
             cbFF.Size = new Size(37, 32);
             cbFF.TabIndex = 5;
@@ -299,11 +324,24 @@
             cbFF.UseVisualStyleBackColor = true;
             cbFF.CheckedChanged += cbFF_CheckedChanged;
             // 
+            // cbSlow
+            // 
+            cbSlow.Appearance = Appearance.Button;
+            cbSlow.Location = new Point(44, 4);
+            cbSlow.Name = "cbSlow";
+            cbSlow.Size = new Size(37, 32);
+            cbSlow.TabIndex = 6;
+            cbSlow.Text = "Slow";
+            cbSlow.TextAlign = ContentAlignment.MiddleCenter;
+            cbSlow.UseVisualStyleBackColor = true;
+            cbSlow.CheckedChanged += cbSlow_CheckedChanged;
+            // 
             // frmOpePanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(356, 82);
+            ClientSize = new Size(394, 82);
+            Controls.Add(cbSlow);
             Controls.Add(cbFF);
             Controls.Add(groupBox4);
             Controls.Add(groupBox2);
@@ -356,5 +394,8 @@
         private Button bt3;
         private System.Windows.Forms.Timer timerUpdate;
         private CheckBox cbFF;
+        private Button bt10;
+        private Button bt9;
+        private CheckBox cbSlow;
     }
 }

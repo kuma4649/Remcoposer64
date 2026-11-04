@@ -47,6 +47,14 @@ namespace Remcoposer64.App.form
         private void cbFF_CheckedChanged(object sender, EventArgs e)
         {
             main.setting.player.playSpeed = cbFF.Checked ? 10.0 : 1.0;
+            cbSlow.Checked = false; 
+        }
+
+        private void cbSlow_CheckedChanged(object sender, EventArgs e)
+        {
+            main.setting.player.playSpeed = cbSlow.Checked ? 0.1 : 1.0;
+            cbFF.Checked = false;
+
         }
 
         private void bt1_Click(object sender, EventArgs e)

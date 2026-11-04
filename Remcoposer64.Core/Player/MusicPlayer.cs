@@ -40,6 +40,7 @@ namespace Remcoposer64.Core.Player
         private NAudio.Midi.MidiOut[] midiOutDevice;
         private NAudio.Midi.MidiIn[] midiInDevice;
         
+        public List<MIDIParam> midiParamList = new List<MIDIParam>();
 
         private byte[] RolEx = new byte[11];
 
@@ -60,6 +61,9 @@ namespace Remcoposer64.Core.Player
             RelativeTempoChangeSW = false;
 
             this.midiOutDevice = midiOutDevice;
+            midiParamList = new List<MIDIParam>();
+            for (int i = 0; i < midiOutDevice.Length; i++) midiParamList.Add(new MIDIParam());
+
             this.midiInDevice = midiInDevice;
         }
         
@@ -297,10 +301,14 @@ namespace Remcoposer64.Core.Player
             MIDIEvent evt = nEvt.Value;
 
             NAudio.Midi.MidiOut midiOut = null;
+            MIDIParam midiParam = null;
             if (midiOutDevice == null) return nEvt.Next;
 
             if (trk.OutDevice < midiOutDevice.Length)
+            {
                 midiOut = midiOutDevice[trk.OutDevice];
+                midiParam = midiParamList[trk.OutDevice];
+            }
             int? channel = trk.OutChannel;
             int transpose = trk.Key ?? 0;
             bool send1 = hasSolo ? trk.Solo : !trk.Mute;
@@ -327,7 +335,10 @@ namespace Remcoposer64.Core.Player
                         && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(key)
                         && send1
                         && nevt.GT > 0)
+                    {
                         midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
 
                     // Gate（持続時間）を NoteOff のために記録
                     if (nevt.GT != 0 && nevt.Vel != 0)
@@ -347,7 +358,11 @@ namespace Remcoposer64.Core.Player
                               + (key << 8)
                               + (nevt.Vel << 16);
 
-                    if(send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.MetaTempo)
@@ -388,7 +403,11 @@ namespace Remcoposer64.Core.Player
                               + (cevt.ControllerNumber << 8)
                               + (cevt.ControllerValue << 16);
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.ProgramChange)
@@ -402,7 +421,11 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.ProgramNumber << 8);
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.PitchBend)
@@ -422,7 +445,11 @@ namespace Remcoposer64.Core.Player
                               + (lsb << 8)
                               + (msb << 16);
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.KeyAfterTouch)
@@ -437,7 +464,11 @@ namespace Remcoposer64.Core.Player
                               + (aevt.KeyNumber << 8)
                               + (aevt.PressureValue << 16);
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.ChannelAfterTouch)
@@ -451,13 +482,17 @@ namespace Remcoposer64.Core.Player
                     int msg = status
                               + (cevt.PressureValue << 8); // data2 は使わないので 0
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
                 }
             }
             else if (evt.Type == MIDIEventType.SysExF0)
             {
                 MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                if(send2)SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
+                if (send2) SendSysEx(midiOut, midiParam, sevt.Data, sevt.GT, sevt.VEL, channel);
             }
             else if (evt.Type == MIDIEventType.RolandDevice)
             {
@@ -491,7 +526,11 @@ namespace Remcoposer64.Core.Player
                 RolEx[8] = trk.RolandPara_vel;
                 RolEx[9] = (byte)((128 - ((trk.RolandBase_gt + trk.RolandBase_vel + trk.RolandPara_gt + trk.RolandPara_vel) % 128)) & 0x7f);
                 RolEx[10] = 0xF7;
-                if(send2) midiOut?.SendBuffer(RolEx);
+                if (send2)
+                {
+                    midiOut?.SendBuffer(RolEx);
+                    midiParam?.SendBuffer(RolEx);
+                }
 
             }
             else if (evt.Type == MIDIEventType.SameMeas)
@@ -601,12 +640,20 @@ namespace Remcoposer64.Core.Player
                               + (0 << 8)
                               + (bevt.ControlChange << 16);
 
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
 
                     status = 0xC0 | ch; // ProgramChange
                     msg = status
                               + (bevt.ProgramNumber << 8);
-                    if (send2) midiOut?.Send(msg);
+                    if (send2)
+                    {
+                        midiOut?.Send(msg);
+                        midiParam?.Send(msg);
+                    }
 
                 }
             }
@@ -618,7 +665,7 @@ namespace Remcoposer64.Core.Player
             {
                 MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
                 byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
-                if (send2) SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
+                if (send2) SendSysEx(midiOut, midiParam, dat, sevt.GT, sevt.VEL, channel);
 
             }
             else if (evt.Type == MIDIEventType.MetaPortPrefix)
@@ -635,7 +682,7 @@ namespace Remcoposer64.Core.Player
             return nEvt.Next;
         }
 
-        private void SendSysEx(NAudio.Midi.MidiOut midiOut, byte[] dat,byte GT,byte Vel,int? trkOutChannel)
+        private void SendSysEx(NAudio.Midi.MidiOut midiOut,MIDIParam midiParam, byte[] dat,byte GT,byte Vel,int? trkOutChannel)
         {
             List<byte> buf = new List<byte>();
 
@@ -685,7 +732,12 @@ namespace Remcoposer64.Core.Player
 
 
             // SysEx はそのまま送る
-            if (!err) midiOut?.SendBuffer(buf.ToArray());
+            if (!err)
+            {
+                byte[] ary = buf.ToArray();
+                midiOut?.SendBuffer(ary);
+                midiParam?.SendBuffer(ary);
+            }
 
         }
 
@@ -737,10 +789,12 @@ namespace Remcoposer64.Core.Player
                             if (midiOutDevice.Length > device)
                             {
                                 MidiOut midiOut = midiOutDevice[device];
+                                MIDIParam midiParam = midiParamList[device];
                                 int status = 0x80 | ch;
                                 int msg = status + (key << 8);
 
                                 midiOut?.Send(msg);
+                                midiParam?.Send(msg);
                             }
 
                             keysToRemove.Add(key);
