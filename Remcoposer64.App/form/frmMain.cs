@@ -131,6 +131,7 @@ namespace Remcoposer64.App
             setting.Save();
 
             SetDevice();
+            undoMng.Clear();
         }
 
         private void SetDevice()
@@ -198,6 +199,7 @@ namespace Remcoposer64.App
         private void tsmiImport_Click(object sender, EventArgs e)
         {
             ImportMidiFile();
+            undoMng.Clear();
         }
 
         private void tsmiShowConsole_Click(object sender, EventArgs e)
@@ -256,6 +258,7 @@ namespace Remcoposer64.App
             prj.Save(sfd.FileName);
 
             ((frmProject)currentProject.parentForm).Text = prj.Information.FileName;
+            undoMng.Clear();
         }
 
         private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
@@ -277,6 +280,7 @@ namespace Remcoposer64.App
             }
 
             CloseProject();
+            undoMng.Clear();
 
             // タブを作成
             TabPage tab = new TabPage();
@@ -463,6 +467,10 @@ namespace Remcoposer64.App
 
 
             undoMng = new UndoRedoManager.UndoRedoManager();
+            undoMng.UpdateUndoRedo = () =>
+            {
+                UpdateTitle();
+            };
             player = new RmPlayer(setting);
 
             switch (setting.midiOut.CurrentDev)
@@ -539,11 +547,13 @@ namespace Remcoposer64.App
 
             //if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
             ImportMidiFile(ofd.FileName);
+            undoMng.Clear();
         }
 
         private void ImportMidiFile(string fileName)
         {
             CloseProject();
+            undoMng.Clear();
 
             MIDIProject project = null;
 
@@ -624,6 +634,7 @@ namespace Remcoposer64.App
             trackEditor.StretchZoom();
             projects.Add(project);
             currentProject = project;
+            undoMng.Clear();
         }
 
         private void TrackEditor_TrackDoubleClicked(object sender, TrackDoubleClickEventArgs e)
@@ -646,8 +657,8 @@ namespace Remcoposer64.App
             stepEditors.Add(frm);
 
             frm.Show(
-                dockPanel1,
-                new Rectangle(0, 0, 816, 480));
+                dockPanel1, DockState.Float);
+                //new Rectangle(0, 0, 816, 480));
 
             frm.Size = new Size(816, 480);
         }
@@ -716,6 +727,8 @@ namespace Remcoposer64.App
             fProjects.Clear();
             projects.Clear();
             currentProject = null;
+            undoMng.Clear();
+
         }
 
 
@@ -835,7 +848,8 @@ namespace Remcoposer64.App
             if (!e.Data.GetDataPresent(DataFormats.FileDrop))
                 return;
 
-                CloseProject();
+            CloseProject();
+            undoMng.Clear();
 
             string[] files =
                 (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -904,7 +918,8 @@ namespace Remcoposer64.App
         /// </summary>
         private void OpenFile(string filename)
         {
-                CloseProject();
+            CloseProject();
+            undoMng.Clear();
 
             try
             {
@@ -939,6 +954,7 @@ namespace Remcoposer64.App
         private void tsmiCloseSequenceFile_Click(object sender, EventArgs e)
         {
             CloseProject();
+            undoMng.Clear();
         }
 
         private void fileToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -946,8 +962,16 @@ namespace Remcoposer64.App
 
         }
 
-        private void UpdateTitle()
+        public void UpdateTitle()
         {
+            if (projects == null || projects.Count == 0)
+            {
+                this.Text = "Remcoposer64";
+                return;
+            }
+
+            projects[0].Information.UpdateFlag = undoMng.GetUndoCount() ? "*" : "";
+
             if (projects.Count < 1)
                 this.Text = "Remcoposer64";
             else

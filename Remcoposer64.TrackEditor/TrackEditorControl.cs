@@ -31,8 +31,10 @@ namespace Remcoposer64.TrackEditor
         public string outChannelInput = "";
         public bool editingInChannel;
         public string inChannelInput = "";
-
-
+        public bool editingST;
+        public string stInput = "";
+        public bool editingKEY;
+        public string keyInput = "";
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
@@ -454,6 +456,191 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
+            if(editingST)
+            {
+                switch (key)
+                {
+                    case Keys.Enter:
+                        CommitST(stInput);
+                        editingST = false;
+                        stInput = "";
+                        RefreshCursor();
+                        return true;
+                    case Keys.Escape:
+                        editingST = false;
+                        stInput = "";
+                        RefreshCursor();
+                        return true;
+                }
+                if (key == Keys.Oemplus || key == Keys.Add)
+                {
+                    if (stInput.Length == 0)
+                        stInput = "+";
+
+                    RefreshCursor();
+                    return true;
+                }
+                if (key == Keys.OemMinus || key == Keys.Subtract)
+                {
+                    if (stInput.Length == 0)
+                        stInput = "-";
+
+                    RefreshCursor();
+                    return true;
+                }
+                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    if (key >= Keys.D0 && key <= Keys.D9) stInput += (char)('0' + (key - Keys.D0));
+                    else stInput += (char)('0' + (key - Keys.NumPad0));
+                    if (stInput.Length >= 3)
+                    {
+                        bool signed =
+                            stInput.StartsWith("+")
+                            || stInput.StartsWith("-");
+
+                        if (!signed)
+                        {
+                            CommitST(stInput);
+                            editingST = false;
+                            stInput = "";
+                            RefreshCursor();
+                        }
+                        else if (stInput.Length >= 4)
+                        {
+                            CommitST(stInput);
+                            editingST = false;
+                            stInput = "";
+                            RefreshCursor();
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+                    }
+                    else
+                    {
+                        RefreshCursor();
+                    }
+                    return true;
+                }
+                if(key == Keys.Back)
+                {
+                    if (stInput.Length > 0)
+                    {
+                        stInput = stInput.Substring(0, stInput.Length - 1);
+                        RefreshCursor();
+                    }
+                    return true;
+                }
+            }
+
+            if (TrackCursor.HeaderColumn == TrackHeaderColumn.ST)
+            {
+                if (key == Keys.Oemplus || key == Keys.Add 
+                    || key == Keys.OemMinus || key == Keys.Subtract
+                    || (key >= Keys.D0 && key <= Keys.D9) 
+                    || (key >= Keys.NumPad0 && key <= Keys.NumPad9)
+                    || (key == Keys.Back)
+                    )
+                {
+                    BeginSTEdit(key);
+                    return true;
+                }
+            }
+
+            if (editingKEY)
+            {
+                switch (key)
+                {
+                    case Keys.Enter:
+                        CommitKEY(keyInput);
+                        editingKEY = false;
+                        keyInput = "";
+                        RefreshCursor();
+                        return true;
+                    case Keys.Escape:
+                        editingKEY = false;
+                        keyInput = "";
+                        RefreshCursor();
+                        return true;
+                }
+                if (key == Keys.Oemplus || key == Keys.Add)
+                {
+                    if (keyInput.Length == 0)
+                        keyInput = "+";
+
+                    RefreshCursor();
+                    return true;
+                }
+                if (key == Keys.OemMinus || key == Keys.Subtract)
+                {
+                    if (keyInput.Length == 0)
+                        keyInput = "-";
+
+                    RefreshCursor();
+                    return true;
+                }
+                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                {
+                    if (key >= Keys.D0 && key <= Keys.D9) keyInput += (char)('0' + (key - Keys.D0));
+                    else keyInput += (char)('0' + (key - Keys.NumPad0));
+                    if (keyInput.Length >= 3)
+                    {
+                        bool signed =
+                            keyInput.StartsWith("+")
+                            || keyInput.StartsWith("-");
+
+                        if (!signed)
+                        {
+                            CommitKEY(keyInput);
+                            editingKEY = false;
+                            keyInput = "";
+                            RefreshCursor();
+                        }
+                        else if (keyInput.Length >= 4)
+                        {
+                            CommitKEY(keyInput);
+                            editingKEY = false;
+                            keyInput = "";
+                            RefreshCursor();
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+                    }
+                    else
+                    {
+                        RefreshCursor();
+                    }
+                    return true;
+                }
+                if (key == Keys.Back)
+                {
+                    if (keyInput.Length > 0)
+                    {
+                        keyInput = keyInput.Substring(0, keyInput.Length - 1);
+                        RefreshCursor();
+                    }
+                    return true;
+                }
+            }
+
+            if (TrackCursor.HeaderColumn == TrackHeaderColumn.KEY)
+            {
+                if (key == Keys.Oemplus || key == Keys.Add
+                    || key == Keys.OemMinus || key == Keys.Subtract
+                    || (key >= Keys.D0 && key <= Keys.D9)
+                    || (key >= Keys.NumPad0 && key <= Keys.NumPad9)
+                    || (key == Keys.Back)
+                    )
+                {
+                    BeginKEYEdit(key);
+                    return true;
+                }
+            }
+
+
 
             if (candidateForm != null && candidateForm.Visible)
             {
@@ -527,8 +714,16 @@ namespace Remcoposer64.TrackEditor
         public void ClearInputMode()
         {
             candidateForm?.Hide();
+
+            editingST = false;
+            stInput = "";
+
+            editingKEY = false;
+            keyInput = "";
+
             editingOutChannel = false;
             outChannelInput = "";
+
             editingInChannel = false;
             inChannelInput = "";
         }
@@ -911,5 +1106,80 @@ namespace Remcoposer64.TrackEditor
 
             RefreshCursor();
         }
+
+        private void CommitST(string text)
+        {
+            if (!int.TryParse(text, out int value))
+                return;
+
+            value = Math.Clamp(value, -999, 999);
+
+            if (TrackCursor.Track.Value.St == value)
+                return;
+
+            UndoRedoManager.Execute(
+                new ChangeTrackSTCommand(
+                    TrackCursor.Track.Value,
+                    TrackCursor.Track.Value.St,
+                    value));
+
+            RefreshCursor();
+        }
+
+        private void BeginSTEdit(Keys key)
+        {
+            editingST = true;
+
+
+            if (key >= Keys.D0 && key <= Keys.D9) stInput = ((int)(key - Keys.D0)).ToString();
+            else if (key >= Keys.NumPad0 && key <= Keys.NumPad9) stInput = ((int)(key - Keys.NumPad0)).ToString();
+            else if (key == Keys.Oemplus || key == Keys.Add) stInput = "+";
+            else if (key == Keys.OemMinus || key == Keys.Subtract) stInput = "-";
+            else if (key == Keys.Back) stInput = "";
+
+            RefreshCursor();
+        }
+
+        private void CommitKEY(string text)
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            int? value = null;
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                if (!int.TryParse(text, out int v))
+                    return;
+
+                value = Math.Clamp(v, -999, 999);
+            }
+
+            if (TrackCursor.Track.Value.Key == value)
+                return;
+
+            UndoRedoManager.Execute(
+                new ChangeTrackKEYCommand(
+                    TrackCursor.Track.Value,
+                    TrackCursor.Track.Value.Key,
+                    value));
+
+            RefreshCursor();
+        }
+
+        private void BeginKEYEdit(Keys key)
+        {
+            editingKEY = true;
+
+
+            if (key >= Keys.D0 && key <= Keys.D9) keyInput = ((int)(key - Keys.D0)).ToString();
+            else if (key >= Keys.NumPad0 && key <= Keys.NumPad9) keyInput = ((int)(key - Keys.NumPad0)).ToString();
+            else if (key == Keys.Oemplus || key == Keys.Add) keyInput = "+";
+            else if (key == Keys.OemMinus || key == Keys.Subtract) keyInput = "-";
+            else if (key == Keys.Back) keyInput = "";
+
+            RefreshCursor();
+        }
+
     }
 }

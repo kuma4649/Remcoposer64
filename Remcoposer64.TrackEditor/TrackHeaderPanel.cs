@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Remcoposer64.Common.WinApi;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.TrackEditor.Internal
@@ -136,8 +137,19 @@ namespace Remcoposer64.TrackEditor.Internal
                 // ST+
                 pos.X = ColX(COL_ST);
                 pos.Y = LineY(trackPanelPosY, 0);
+                string text;
+                if (TrackEditorControl.TrackCursor.Track == trk
+                    && TrackEditorControl.TrackCursor.HeaderColumn == TrackHeaderColumn.ST
+                    && TrackEditorControl.editingST)
+                {
+                    text = TrackEditorControl.stInput + "_";
+                }
+                else
+                {
+                    text = $"{trk.Value.St:+000;-000; 000}";
+                }
                 graph.DrawString(
-                    $"{trk.Value.St:+000;-000; 000}",
+                    text,
                     ref pos,
                     mojiColor,
                     backColor);
@@ -145,8 +157,20 @@ namespace Remcoposer64.TrackEditor.Internal
                 // KEY+
                 pos.X = ColX(COL_KEY);
                 pos.Y = LineY(trackPanelPosY, 0);
+                if (TrackEditorControl.TrackCursor.Track == trk
+                    && TrackEditorControl.TrackCursor.HeaderColumn == TrackHeaderColumn.KEY
+                    && TrackEditorControl.editingKEY)
+                {
+                    text = TrackEditorControl.keyInput + "_";
+                }
+                else
+                {
+                    text = trk.Value.Key == null
+                        ? "Off"
+                        : $"{trk.Value.Key:+000;-000; 000}";
+                }
                 graph.DrawString(
-                    $"{trk.Value.Key:+000;-000; 000}",
+                    text,
                     ref pos,
                     mojiColor,
                     backColor);

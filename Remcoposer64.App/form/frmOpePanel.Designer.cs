@@ -331,7 +331,7 @@
             cbSlow.Name = "cbSlow";
             cbSlow.Size = new Size(37, 32);
             cbSlow.TabIndex = 6;
-            cbSlow.Text = "Slow";
+            cbSlow.Text = "|>";
             cbSlow.TextAlign = ContentAlignment.MiddleCenter;
             cbSlow.UseVisualStyleBackColor = true;
             cbSlow.CheckedChanged += cbSlow_CheckedChanged;

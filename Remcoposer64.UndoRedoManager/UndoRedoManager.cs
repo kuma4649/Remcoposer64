@@ -13,12 +13,14 @@ namespace Remcoposer64.UndoRedoManager
         public bool CanUndo => undoStack.Count > 0;
         public bool CanRedo => redoStack.Count > 0;
 
+        public Action? UpdateUndoRedo;
 
         public void Execute(ICommand cmd)
         {
             cmd.Execute();
             undoStack.Push(cmd);
             redoStack.Clear();
+            UpdateUndoRedo?.Invoke();
         }
 
         public void Undo()
@@ -27,6 +29,7 @@ namespace Remcoposer64.UndoRedoManager
             var cmd = undoStack.Pop();
             cmd.Unexecute();
             redoStack.Push(cmd);
+            UpdateUndoRedo?.Invoke();
         }
 
         public void Redo()
@@ -35,6 +38,7 @@ namespace Remcoposer64.UndoRedoManager
             var cmd = redoStack.Pop();
             cmd.Execute();
             undoStack.Push(cmd);
+            UpdateUndoRedo?.Invoke();
         }
 
         public string GetDebugInfo()
@@ -56,5 +60,16 @@ namespace Remcoposer64.UndoRedoManager
             return sb.ToString();
         }
 
+        public void Clear()
+        {
+            undoStack.Clear();
+            redoStack.Clear();
+            UpdateUndoRedo?.Invoke();
+        }
+
+        public bool GetUndoCount()
+        {
+            return undoStack.Count > 0;
+        }
     }
 }
