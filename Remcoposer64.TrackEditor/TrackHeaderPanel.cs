@@ -47,6 +47,8 @@ namespace Remcoposer64.TrackEditor.Internal
         private WinApi.WndProcDelegate newWndProc;
         private bool IsInDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         internal bool imeComposing = false;
+        private string imeComposition = "";
+        private Point imePos = Point.Empty;
 
         private int LineHeight => pxFontHeight + pxTrackMarginTop;
 
@@ -91,6 +93,8 @@ namespace Remcoposer64.TrackEditor.Internal
                     break;
 
                 int trackPanelPosY = i * pxTrackHeight - TrackEditorControl.pxScrollY;
+                string text;
+                string name;
 
                 // Back 
                 pos.X = 0;
@@ -137,7 +141,6 @@ namespace Remcoposer64.TrackEditor.Internal
                 // ST+
                 pos.X = ColX(COL_ST);
                 pos.Y = LineY(trackPanelPosY, 0);
-                string text;
                 if (TrackEditorControl.TrackCursor.Track == trk
                     && TrackEditorControl.TrackCursor.HeaderColumn == TrackHeaderColumn.ST
                     && TrackEditorControl.editingST)
@@ -178,13 +181,35 @@ namespace Remcoposer64.TrackEditor.Internal
                 // Track Name
                 pos.X = ColX(COL_TRACKNAME);
                 pos.Y = LineY(trackPanelPosY, 0);
-                graph.DrawStringOSFont(
-                    trk.Value.Name,
-                    ref pos,
-                    mojiColor,
-                    Color.Black
-                    );
-
+                if (TrackEditorControl.editingTrackName && TrackEditorControl.TrackCursor.Track == trk)
+                {
+                    name = TrackEditorControl.trackNameInput;
+                    graph.DrawStringOSFont(
+                        name,
+                        ref pos,
+                        mojiColor,
+                        Color.Black
+                        );
+                    name = imeComposition + "_";
+                    graph.DrawStringOSFont(
+                        name,
+                        ref pos,
+                        Color.Yellow,
+                        Color.Black
+                        );
+                    imePos.X = pos.X;
+                    imePos.Y = pos.Y;
+                }
+                else
+                {
+                    name = trk.Value.Name;
+                    graph.DrawStringOSFont(
+                        name,
+                        ref pos,
+                        mojiColor,
+                        Color.Black
+                        );
+                }
 
 
                 if (TrackEditorControl.HeaderLine > 1)
@@ -208,7 +233,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         backColor);
 
                     // MIDI Out
-                    string name = "";
+                    name = "";
                     if (midiOutDevices != null && midiOutDevices.Length > 0)
                     {
                         int dev = Math.Clamp(trk.Value.OutDevice, 0, midiOutDevices.Length - 1);
@@ -248,7 +273,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         backColor);
 
                     // MIDI In
-                    string name = "";
+                    name = "";
                     if (midiInDevices != null
                         && midiInDevices.Length > 0)
                     {
@@ -406,17 +431,8 @@ namespace Remcoposer64.TrackEditor.Internal
                 IntPtr hIMC = WinApi.ImmGetContext(hWnd);
 
                 // ★ DirectX描画座標 → Win32クライアント座標に変換
-                int caretDxX = 0;
-                int caretDxY = 0;
-                //if (me != null)
-                //{
-                //    caretDxX = mme.memoBoxDrawX + (
-                //        string.IsNullOrEmpty(mme.memoBoxText) 
-                //        ? 0 
-                //        : ((GraphVortice)grp).MeasureStringOSFont(mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex))
-                //        );
-                //    caretDxY = mme.memoBoxDrawY;
-                //}
+                int caretDxX = imePos.X;
+                int caretDxY = imePos.Y;
 
                 // DirectX → Client → Screen
                 Point caretClient = this.PointToClient(new Point(caretDxX, caretDxY));
@@ -458,6 +474,7 @@ namespace Remcoposer64.TrackEditor.Internal
                 IntPtr hIMC = WinApi.ImmGetContext(hWnd);
 
                 // ★ composition string（変換中文字）
+                imeComposition = "";
                 int size = WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_COMPSTR, null, 0);
                 if (size > 0)
                 {
@@ -470,7 +487,8 @@ namespace Remcoposer64.TrackEditor.Internal
                     byte[] buffer = new byte[size];
                     WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_COMPSTR, buffer, size);
 
-                    Debug.WriteLine(Encoding.Unicode.GetString(buffer));
+                    //Debug.WriteLine(Encoding.Unicode.GetString(buffer));
+                    imeComposition = Encoding.Unicode.GetString(buffer);
                 }
                 int IMECursorPos = WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_CURSORPOS, null, 0);
                 Debug.WriteLine("cursorPos:{0}", IMECursorPos);
@@ -485,7 +503,11 @@ namespace Remcoposer64.TrackEditor.Internal
                     string result = Encoding.Unicode.GetString(buffer);
 
                     Debug.WriteLine($"Result:{result}");
-
+                    if (TrackEditorControl.editingTrackName)
+                    {
+                        TrackEditorControl.trackNameInput += result;
+                        imeComposition = "";
+                    }
                 }
 
                 WinApi.ImmReleaseContext(hWnd, hIMC);
@@ -509,6 +531,15 @@ namespace Remcoposer64.TrackEditor.Internal
             {
                 Debug.WriteLine(
                     $"WM_CHAR {(char)wParam} {(int)wParam}");
+
+                if (!imeComposing)
+                {
+
+                    if (TrackEditorControl.editingTrackName)
+                    {
+                        EditTrackName(wParam);
+                    }
+                }
             }
             //else Debug.WriteLine($"{msg}");
 
@@ -516,6 +547,24 @@ namespace Remcoposer64.TrackEditor.Internal
             return WinApi.CallWindowProc(oldWndProc, hWnd, msg, wParam, lParam);
         }
 
+        private void EditTrackName(nint wParam)
+        {
+            char ch = (char)wParam;
+            if (ch == '\b')
+            {
+                if (TrackEditorControl.trackNameInput.Length > 0)
+                {
+                    TrackEditorControl.trackNameInput =
+                        TrackEditorControl.trackNameInput[..^1];
+                }
+            }
+            else if (!char.IsControl(ch))
+            {
+                TrackEditorControl.trackNameInput += ch;
+            }
+
+            this.Refresh();
+        }
 
         private int ColX(int col)
         {

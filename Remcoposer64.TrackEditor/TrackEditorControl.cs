@@ -35,6 +35,9 @@ namespace Remcoposer64.TrackEditor
         public string stInput = "";
         public bool editingKEY;
         public string keyInput = "";
+        public bool editingTrackName;
+        public string trackNameInput = "";
+
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
@@ -640,6 +643,43 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
+            if (editingTrackName)
+            {
+                switch (key)
+                {
+                    case Keys.Enter:
+                        CommitTrackName(trackNameInput);
+                        editingTrackName = false;
+                        trackNameInput = "";
+                        RefreshCursor();
+                        return true;
+
+                    case Keys.Escape:
+                        editingTrackName = false;
+                        trackNameInput = "";
+                        RefreshCursor();
+                        return true;
+                }
+            }
+
+            if (!editingTrackName
+                && TrackCursor.HeaderColumn == TrackHeaderColumn.Name)
+            {
+                if (key != Keys.Up
+                    && key != Keys.Down
+                    && key != Keys.Left
+                    && key != Keys.Right
+                    && key != Keys.Home
+                    && key != Keys.End
+                    && key != Keys.Enter
+                    && key != Keys.Escape
+                    && key != Keys.ControlKey
+                    && key != Keys.ShiftKey
+                    && key != Keys.Menu)
+                {
+                    BeginTrackNameEdit();
+                }
+            }
 
 
             if (candidateForm != null && candidateForm.Visible)
@@ -711,6 +751,29 @@ namespace Remcoposer64.TrackEditor
                 keyData);
         }
 
+        //protected override void OnKeyPress(KeyPressEventArgs e)
+        //{
+        //    base.OnKeyPress(e);
+
+        //    if (!editingTrackName)
+        //        return;
+
+        //    if (e.KeyChar == '\b')
+        //    {
+        //        if (trackNameInput.Length > 0)
+        //            trackNameInput =
+        //                trackNameInput[..^1];
+        //    }
+        //    else if (!char.IsControl(e.KeyChar))
+        //    {
+        //        trackNameInput += e.KeyChar;
+        //    }
+
+        //    RefreshCursor();
+        //    e.Handled = true;
+
+        //}
+
         public void ClearInputMode()
         {
             candidateForm?.Hide();
@@ -726,6 +789,9 @@ namespace Remcoposer64.TrackEditor
 
             editingInChannel = false;
             inChannelInput = "";
+
+            editingTrackName = false;
+            trackNameInput = "";
         }
 
         public void MoveCursorTrack(LinkedListNode<MIDITrack> trk)
@@ -1181,5 +1247,32 @@ namespace Remcoposer64.TrackEditor
             RefreshCursor();
         }
 
+        private void BeginTrackNameEdit(bool clear = false)
+        {
+            editingTrackName = true;
+
+            trackNameInput = clear
+                ? ""
+                : (TrackCursor.Track?.Value?.Name ?? "");
+
+            RefreshCursor();
+        }
+
+        private void CommitTrackName(string text)
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            if (TrackCursor.Track.Value.Name == text)
+                return;
+
+            UndoRedoManager.Execute(
+                new ChangeTrackNameCommand(
+                    TrackCursor.Track.Value,
+                    TrackCursor.Track.Value.Name,
+                    text));
+
+            RefreshCursor();
+        }
     }
 }
