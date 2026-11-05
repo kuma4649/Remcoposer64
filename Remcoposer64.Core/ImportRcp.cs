@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.Common.Render;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using System.Diagnostics;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -622,6 +623,24 @@ namespace Remcoposer64.Core
                 if (mEvt != null) sevt.RepeatMeas = Mea;
                 nevt = nevt.Next;
             }
+
+#if DEBUG
+            Debug.WriteLine($"Part Name: {part.Value.Name} ");
+            nevt = part.Value.Event.First;
+            while(nevt != null)
+            {
+                MIDIEvent evt = nevt.Value;
+                // SameMeasure 判定
+                if (evt.Type != MIDIEventType.SameMeas)
+                {
+                    nevt = nevt.Next;
+                    continue;
+                }
+                MIDISameMeasEvent sevt = (MIDISameMeasEvent)evt;
+                Debug.WriteLine($"SameMeasure: {sevt.ST} / RepeatMeas: {sevt.RepeatMeas}");
+                nevt = nevt.Next;
+            }
+#endif
         }
 
         private void onpu(MIDITrack trkn, int[] pk, LinkedListNode<MIDIEvent> pEvt)
@@ -1093,7 +1112,11 @@ namespace Remcoposer64.Core
                         var key = (0, 0, target);
 
                         if (!measureStartNode.TryGetValue(key, out var jumpNode))
-                            break;
+                        {
+                            Log.Write(LogLevel.Error, $"same measureEvent: The link cannot be found : Part Name:{nPrt.Value.Name}");
+                            goto jumpLabel;
+                            //break;
+                        }
 
                         if (jumpNode.Value.Type == MIDIEventType.BarLine)
                         {
@@ -1101,6 +1124,13 @@ namespace Remcoposer64.Core
                             {
                                 if (first) SameMeasStack.Push(nEvt.Next);
                                 first = false;
+
+                                if (nEvt == jumpNode.Next)
+                                {
+                                    Log.Write(LogLevel.Error, $"same measureEvent: Self-reference Case 1 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                                    nEvt = nEvt.Next;
+                                    break;
+                                }
 
                                 nEvt = jumpNode.Next;
                                 continue;
@@ -1116,6 +1146,13 @@ namespace Remcoposer64.Core
                         {
                             if (first) SameMeasStack.Push(nEvt.Next);
                             first = false;
+
+                            if (nEvt == jumpNode)
+                            {
+                                Log.Write(LogLevel.Error, $"same measureEvent: Self-reference Case 2 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                                nEvt = nEvt.Next;
+                                break;
+                            }
 
                             nEvt = jumpNode;
                             continue;
@@ -1140,6 +1177,7 @@ namespace Remcoposer64.Core
                     break;
             }
 
+        jumpLabel:
             nPrt.Value.LengthTick += nEvt.Value.ST;
             nEvt = nEvt.Next;
         }

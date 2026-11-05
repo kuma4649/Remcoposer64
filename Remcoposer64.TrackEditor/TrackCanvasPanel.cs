@@ -244,7 +244,11 @@ namespace Remcoposer64.TrackEditor.Internal
                             var key = (0, 0, target);
 
                             if (!measureStartNode.TryGetValue(key, out var jumpNode))
-                                break;
+                            {
+                                Log.Write(LogLevel.Error, $"same measureEvent: The link cannot be found : Part Name:{part.Name}");
+                                goto jumpLabel;
+                                //break;
+                            }
 
                             if (jumpNode.Value.Type == MIDIEventType.BarLine)
                             {
@@ -252,6 +256,12 @@ namespace Remcoposer64.TrackEditor.Internal
                                 {
                                     if (first) SameMeasStack.Push(nEvt.Next);
                                     first = false;
+
+                                    if (nEvt == jumpNode.Next)
+                                    {
+                                        nEvt = nEvt.Next;
+                                        break;
+                                    }
 
                                     nEvt = jumpNode.Next;
                                     continue;
@@ -267,6 +277,12 @@ namespace Remcoposer64.TrackEditor.Internal
                             {
                                 if (first) SameMeasStack.Push(nEvt.Next);
                                 first = false;
+
+                                if (nEvt == jumpNode)
+                                {
+                                    nEvt = nEvt.Next;
+                                    break;
+                                }
 
                                 nEvt = jumpNode;
                                 continue;
@@ -290,7 +306,7 @@ namespace Remcoposer64.TrackEditor.Internal
                         }
                         break;
                 }
-
+            jumpLabel:
                 tick += nEvt.Value.ST;
                 nEvt = nEvt.Next;
                 continue;

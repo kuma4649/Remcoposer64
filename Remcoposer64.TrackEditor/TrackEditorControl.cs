@@ -751,29 +751,6 @@ namespace Remcoposer64.TrackEditor
                 keyData);
         }
 
-        //protected override void OnKeyPress(KeyPressEventArgs e)
-        //{
-        //    base.OnKeyPress(e);
-
-        //    if (!editingTrackName)
-        //        return;
-
-        //    if (e.KeyChar == '\b')
-        //    {
-        //        if (trackNameInput.Length > 0)
-        //            trackNameInput =
-        //                trackNameInput[..^1];
-        //    }
-        //    else if (!char.IsControl(e.KeyChar))
-        //    {
-        //        trackNameInput += e.KeyChar;
-        //    }
-
-        //    RefreshCursor();
-        //    e.Handled = true;
-
-        //}
-
         public void ClearInputMode()
         {
             candidateForm?.Hide();

@@ -558,6 +558,12 @@ namespace Remcoposer64.Core.Player
                             if (first) trk.SameMeasStack.Push(nEvt.Next);
                             first = false;
 
+                            if(nEvt == jumpNode.Next)
+                            {
+                                Log.Write(LogLevel.Error, $"MusicPlayer.cs: same measureEvent: Self-reference Case 3 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                                break;
+                            }
+
                             nEvt = jumpNode.Next;
                             evt = jumpNode.Next.Value;
                             continue;
@@ -571,6 +577,12 @@ namespace Remcoposer64.Core.Player
 
                     if (jumpNode.Value.Type == MIDIEventType.SameMeas)
                     {
+                        if (nEvt == jumpNode)
+                        {
+                            Log.Write(LogLevel.Error, $"MusicPlayer.cs: same measureEvent: Self-reference Case 4 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                            break;
+                        }
+
                         if (first) trk.SameMeasStack.Push(nEvt.Next);
                         first = false;
 

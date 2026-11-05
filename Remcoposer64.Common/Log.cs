@@ -41,7 +41,9 @@ namespace Remcoposer64.Common
             lock (logLock)
             {
                 string timefmt = DateTime.Now.ToString(Common.cntTimeFormat).Trim();
-                string mmsg = string.Format(msg, prm);
+                string mmsg;
+                if (prm != null && prm.Length > 0) mmsg = string.Format(msg, prm);
+                else mmsg = msg;
                 string tmsg = string.Format("[{0}][{1}]{2}", timefmt, logLvl, mmsg);
                 logger?.Invoke(tmsg);
                 if (consoleEchoBack) Console.WriteLine(tmsg);
