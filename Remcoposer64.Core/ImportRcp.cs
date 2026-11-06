@@ -1143,26 +1143,28 @@ namespace Remcoposer64.Core
 
                         if (jumpNode.Value.Type == MIDIEventType.BarLine)
                         {
-                            if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
-                            {
-                                if (first) SameMeasStack.Push(nEvt.Next);
-                                first = false;
+                            nEvt = nEvt.Next;
+                            return;
+                            //if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
+                            //{
+                            //    if (first) SameMeasStack.Push(nEvt.Next);
+                            //    first = false;
 
-                                if (nEvt == jumpNode.Next)
-                                {
-                                    Log.Write(LogLevel.Error, $"ImportRcp.cs: same measureEvent: Self-reference Case 1 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
-                                    nEvt = nEvt.Next;
-                                    break;
-                                }
+                            //    if (nEvt == jumpNode.Next)
+                            //    {
+                            //        Log.Write(LogLevel.Error, $"ImportRcp.cs: same measureEvent: Self-reference Case 1 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                            //        nEvt = nEvt.Next;
+                            //        break;
+                            //    }
 
-                                nEvt = jumpNode.Next;
-                                continue;
-                            }
+                            //    nEvt = jumpNode.Next;
+                            //    continue;
+                            //}
 
-                            // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-                            if (first) SameMeasStack.Push(nEvt.Next);
-                            nEvt = jumpNode.Next;
-                            break;
+                            //// ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                            //if (first) SameMeasStack.Push(nEvt.Next);
+                            //nEvt = jumpNode.Next;
+                            //break;
                         }
 
                         if (jumpNode.Value.Type == MIDIEventType.SameMeas)
