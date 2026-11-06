@@ -723,6 +723,10 @@ namespace Remcoposer64.App
                 if (lst[i] is frmProject) ((frmProject)lst[i]).Close();
                 if (lst[i] is frmInformation) ((frmInformation)lst[i]).Close();
             }
+            
+            // frmProjectを閉じるとメインフォームがバグる現象を回避する
+            this.Size = new Size(this.Width - 1, this.Height - 1);
+            this.Size = new Size(this.Width + 1, this.Height + 1);
 
             fProjects.Clear();
             projects.Clear();

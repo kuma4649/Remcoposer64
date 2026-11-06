@@ -1043,6 +1043,29 @@ namespace Remcoposer64.Core
                     measureStartNode.Clear();
                     BuildMeasureStartNode(measureStartNode, nPrt.Value, 0, 0);
 
+#if DEBUG
+                    Debug.WriteLine($"{nPrt.Value.Name} -----------------------------------");
+                    foreach (var kvp in measureStartNode)
+                    {
+                        if (kvp.Value.Value.Type == MIDIEventType.SameMeas)
+                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}, bytes:{string.Join(',', kvp.Value.Value.MIDIMessage)}");
+                        else
+                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}");
+                    }
+                    foreach (var nevt in nPrt.Value.Event)
+                    {
+                        if (nevt.Type == MIDIEventType.SameMeas)
+                        {
+                            MIDISameMeasEvent sevt = (MIDISameMeasEvent)nevt;
+                            Debug.WriteLine($"SameMeasure Event: ST: {sevt.ST}, RepeatMeas: {sevt.RepeatMeas}, bytes:{string.Join(',', sevt.MIDIMessage)}");
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"Event Type: {nevt.Type}, ST: {nevt.ST}");
+                        }
+                    }
+#endif
+
                     LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
                     while(nEvt!=null)
                     {
@@ -1113,7 +1136,7 @@ namespace Remcoposer64.Core
 
                         if (!measureStartNode.TryGetValue(key, out var jumpNode))
                         {
-                            Log.Write(LogLevel.Error, $"same measureEvent: The link cannot be found : Part Name:{nPrt.Value.Name}");
+                            Log.Write(LogLevel.Error, $"ImportRcp.cs: same measureEvent: The link cannot be found : Part Name:{nPrt.Value.Name}");
                             goto jumpLabel;
                             //break;
                         }
@@ -1127,7 +1150,7 @@ namespace Remcoposer64.Core
 
                                 if (nEvt == jumpNode.Next)
                                 {
-                                    Log.Write(LogLevel.Error, $"same measureEvent: Self-reference Case 1 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                                    Log.Write(LogLevel.Error, $"ImportRcp.cs: same measureEvent: Self-reference Case 1 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
                                     nEvt = nEvt.Next;
                                     break;
                                 }
@@ -1149,7 +1172,7 @@ namespace Remcoposer64.Core
 
                             if (nEvt == jumpNode)
                             {
-                                Log.Write(LogLevel.Error, $"same measureEvent: Self-reference Case 2 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                                Log.Write(LogLevel.Error, $"ImportRcp.cs: same measureEvent: Self-reference Case 2 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
                                 nEvt = nEvt.Next;
                                 break;
                             }
@@ -1182,10 +1205,49 @@ namespace Remcoposer64.Core
             nEvt = nEvt.Next;
         }
 
+    //    public static void BuildMeasureStartNode(
+    //Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
+    //, MIDIPart prt,int t,int p)
+    //    {
+    //        var node = prt.Event.First;
+    //        int meas = 0;
+
+    //        measureStartNode[(t, p, meas)] = node;
+
+    //        while (node != null)
+    //        {
+    //            var evt = node.Value;
+
+    //            if (evt.Type == MIDIEventType.BarLine)
+    //            {
+    //                meas++;
+    //                measureStartNode[(t, p, meas)] = node;
+    //            }
+    //            else if (evt.Type == MIDIEventType.SameMeas)
+    //            {
+    //                if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+    //                {
+    //                    meas++;
+    //                    measureStartNode[(t, p, meas)] = node;
+    //                }
+    //            }
+    //            else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
+    //            {
+    //                meas++;
+    //                measureStartNode[(t, p, meas)] = node;
+    //            }
+
+    //            node = node.Next;
+    //        }
+
+
+    //    }
+
         public static void BuildMeasureStartNode(
-    Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
-    , MIDIPart prt,int t,int p)
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
+            , MIDIPart prt, int t, int p)
         {
+
             var node = prt.Event.First;
             int meas = 0;
 
@@ -1197,8 +1259,14 @@ namespace Remcoposer64.Core
 
                 if (evt.Type == MIDIEventType.BarLine)
                 {
+                    if (node.Previous == null || node.Previous.Value.Type == MIDIEventType.SameMeas)
+                    {
+                        meas++;
+                        measureStartNode[(t, p, meas)] = node;
+                    }
+
                     meas++;
-                    measureStartNode[(t, p, meas)] = node;
+                    measureStartNode[(t, p, meas)] = node.Next;
                 }
                 else if (evt.Type == MIDIEventType.SameMeas)
                 {

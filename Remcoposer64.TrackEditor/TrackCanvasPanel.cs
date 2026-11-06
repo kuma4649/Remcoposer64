@@ -245,7 +245,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
                             if (!measureStartNode.TryGetValue(key, out var jumpNode))
                             {
-                                Log.Write(LogLevel.Error, $"same measureEvent: The link cannot be found : Part Name:{part.Name}");
+                                Log.Write(LogLevel.Error, $"TrackCanvasPanel.cs: same measureEvent: The link cannot be found : Part Name:{part.Name}");
                                 goto jumpLabel;
                                 //break;
                             }
@@ -259,6 +259,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
                                     if (nEvt == jumpNode.Next)
                                     {
+                                        Log.Write(LogLevel.Error, $"TrackCanvasPanel.cs: same measureEvent: Self-reference Case 1 : Part Name:{part.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
                                         nEvt = nEvt.Next;
                                         break;
                                     }
@@ -280,6 +281,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
                                 if (nEvt == jumpNode)
                                 {
+                                    Log.Write(LogLevel.Error, $"TrackCanvasPanel.cs: same measureEvent: Self-reference Case 2 : Part Name:{part.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
                                     nEvt = nEvt.Next;
                                     break;
                                 }
