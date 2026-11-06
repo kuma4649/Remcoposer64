@@ -553,25 +553,26 @@ namespace Remcoposer64.Core.Player
 
                     if (jumpNode.Value.Type == MIDIEventType.BarLine)
                     {
-                        if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
-                        {
-                            if (first) trk.SameMeasStack.Push(nEvt.Next);
-                            first = false;
+                        return nEvt.Next;
+                        //if (jumpNode.Next.Value.Type == MIDIEventType.SameMeas)
+                        //{
+                        //    if (first) trk.SameMeasStack.Push(nEvt.Next);
+                        //    first = false;
 
-                            if(nEvt == jumpNode.Next)
-                            {
-                                Log.Write(LogLevel.Error, $"MusicPlayer.cs: same measureEvent: Self-reference Case 3 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
-                                break;
-                            }
+                        //    if(nEvt == jumpNode.Next)
+                        //    {
+                        //        Log.Write(LogLevel.Error, $"MusicPlayer.cs: same measureEvent: Self-reference Case 3 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                        //        break;
+                        //    }
 
-                            nEvt = jumpNode.Next;
-                            evt = jumpNode.Next.Value;
-                            continue;
-                        }
+                        //    nEvt = jumpNode.Next;
+                        //    evt = jumpNode.Next.Value;
+                        //    continue;
+                        //}
 
-                        // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-                        if (first) trk.SameMeasStack.Push(nEvt.Next);
-                        return jumpNode.Next;
+                        //// ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                        //if (first) trk.SameMeasStack.Push(nEvt.Next);
+                        //return jumpNode.Next;
 
                     }
 
