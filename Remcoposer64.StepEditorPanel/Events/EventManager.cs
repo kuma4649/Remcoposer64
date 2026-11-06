@@ -505,20 +505,40 @@ namespace Remcoposer64.StepEditorPanelControl
                 {
                     ((MIDIBarLineEvent)ev).MeasureTotalST = sum;
                     ev.STsum = 0;
+
+                    if (node.Previous == null || node.Previous.Value.Type == MIDIEventType.SameMeas)
+                    {
+                        //meas++;
+                    }
+
                     meas++;
                     step = 0;
                     sum = 0;
                 }
                 else if (ev.Type == MIDIEventType.SameMeas)
                 {
-                    if (node.Previous.Value.Type != MIDIEventType.BarLine && node.Previous.Value.Type != MIDIEventType.SameMeas)
-                        ev.Meas++;
-                    ev.Step = 0;
-                    meas++;
-                    if (node.Previous.Value.Type != MIDIEventType.BarLine && node.Previous.Value.Type != MIDIEventType.SameMeas)
+                    //if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+                    {
                         meas++;
-                    step = 0;
+                        step = 0;
+                        sum = 0;
+                    }
                 }
+                else if (node.Next != null && node.Next.Value.Type == MIDIEventType.SameMeas)
+                {
+                    meas++;
+                    step = 0;
+                    sum = 0;
+                }
+
+                //if (node.Previous.Value.Type != MIDIEventType.BarLine && node.Previous.Value.Type != MIDIEventType.SameMeas)
+                //        ev.Meas++;
+                //    ev.Step = 0;
+                //    meas++;
+                //    if (node.Previous.Value.Type != MIDIEventType.BarLine && node.Previous.Value.Type != MIDIEventType.SameMeas)
+                //        meas++;
+                //    step = 0;
+                //}
 
                 node = node.Next;
             }
@@ -543,9 +563,28 @@ namespace Remcoposer64.StepEditorPanelControl
                 return;
             }
 
-            foreach (var bl in barLineList)
+            for (int index=0;index<barLineList.Count;index++)
             {
-                if (bl.Node.Value.Meas != repeatMeas - 1) continue;
+                var bl = barLineList[index];
+                if (bl.Node.Value.Meas < repeatMeas)
+                {
+                    if(index<barLineList.Count-1 && barLineList[index+1].Node.Value.Meas > repeatMeas)
+                    {
+                        LinkedListNode<MIDIEvent> trg = bl.Node;
+                        while (barLineList[index + 1].Node != trg)
+                        {
+                            if (trg.Value.Meas == repeatMeas)
+                            {
+                                se.RepeatMeasBeforeNode = trg;
+                                break;
+                            }
+
+                            trg = trg.Next;
+                        }
+                        break;
+                    }
+                    continue;
+                }
                 se.RepeatMeasBeforeNode = bl.Node;
                 break;
             }
