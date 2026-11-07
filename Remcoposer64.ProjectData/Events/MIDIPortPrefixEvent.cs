@@ -18,16 +18,26 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIPortPrefixEvent()
-            {
-                Type = MIDIEventType.MetaMarker,
+            var e =
+                new MIDIPortPrefixEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                PortNumber = this.PortNumber
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIPortPrefixEvent)other;
+
+            PortNumber =
+                e.PortNumber;
+
+            backupPortNumber =
+                e.backupPortNumber;
         }
 
     }

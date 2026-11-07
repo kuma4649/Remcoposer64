@@ -46,20 +46,12 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDINoteEvent()
-            {
-                Type = MIDIEventType.NoteON,
+            MIDINoteEvent e =
+                new MIDINoteEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                KeyNumber = this.KeyNumber,
-                NoteName = this.NoteName,
-                GT = this.GT,
-                Vel = this.Vel,
-                Tie = this.Tie,
-            };
+            return e;
         }
 
         private static readonly string[] NoteNames =
@@ -146,14 +138,17 @@ namespace Remcoposer64.ProjectData.Events
 
             var n = (MIDINoteEvent)other;
 
-            // NoteEvent 固有フィールド
-            this.KeyNumber = n.KeyNumber;
-            this.NoteName = n.NoteName;
-            this.GT = n.GT;
-            this.Vel = n.Vel;
-            this.Tie = n.Tie;
+            KeyNumber = n.KeyNumber;
+            NoteName = n.NoteName;
 
+            GT = n.GT;
+            Vel = n.Vel;
+            Tie = n.Tie;
+
+            backupKeyNumber = n.backupKeyNumber;
+            backupGT = n.backupGT;
+            backupVel = n.backupVel;
+            backupTie = n.backupTie;
         }
-
     }
 }

@@ -42,5 +42,16 @@ namespace Remcoposer64.ProjectData
                 return _Gt;
             }
         }
+
+        public MIDIRythm Clone()
+        {
+            MIDIRythm r = new MIDIRythm();
+
+            r.Name = Name;
+            r.Key = Key;
+            r.Gt = Gt;
+
+            return r;
+        }
     }
 }

@@ -20,18 +20,32 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIRolandBaseEvent()
-            {
-                Type = MIDIEventType.RolandBase,
+            var e =
+                new MIDIRolandBaseEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                RolandBase_gt = this.RolandBase_gt,
-                RolandBase_vel = this.RolandBase_vel,
-            };
+            return e;
+        }
 
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIRolandBaseEvent)other;
+
+            RolandBase_gt =
+                e.RolandBase_gt;
+
+            RolandBase_vel =
+                e.RolandBase_vel;
+
+            backupRolandBase_gt =
+                e.backupRolandBase_gt;
+
+            backupRolandBase_vel =
+                e.backupRolandBase_vel;
         }
     }
 }

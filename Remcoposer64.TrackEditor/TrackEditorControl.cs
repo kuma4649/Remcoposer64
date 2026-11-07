@@ -37,7 +37,7 @@ namespace Remcoposer64.TrackEditor
         public string keyInput = "";
         public bool editingTrackName;
         public string trackNameInput = "";
-
+        private MIDITrack clipboardTrack;
 
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
@@ -337,10 +337,10 @@ namespace Remcoposer64.TrackEditor
             bool shift = (keyData & Keys.Shift) == Keys.Shift;
             bool alt = (keyData & Keys.Alt) == Keys.Alt;
 
-#if DEBUG
-            Debug.WriteLine(
-                $"KeyDown: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
-#endif
+            //#if DEBUG
+            //            Debug.WriteLine(
+            //                $"KeyDown: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
+            //#endif
 
             if (ctrl && !shift && key == Keys.Z)
             {
@@ -350,7 +350,7 @@ namespace Remcoposer64.TrackEditor
                 return true;
             }
 
-            if ((ctrl && !shift && key == Keys.Y)  || (ctrl && shift && key == Keys.Z))
+            if ((ctrl && !shift && key == Keys.Y) || (ctrl && shift && key == Keys.Z))
             {
                 Debug.WriteLine("REDO");
                 UndoRedoManager?.Redo();
@@ -358,49 +358,395 @@ namespace Remcoposer64.TrackEditor
                 return true;
             }
 
+            bool editing =
+                editingOutChannel
+                || editingInChannel
+                || editingST
+                || editingKEY
+                || editingTrackName;
 
-            if (editingOutChannel)
+            if (!editing)
             {
-                switch (key)
+                if (key == Keys.Insert)
                 {
-                    case Keys.Enter:
-                        CommitOutChannel(outChannelInput);
-                        editingOutChannel = false;
-                        outChannelInput = "";
-                        RefreshCursor();
-                        return true;
-
-                    case Keys.Escape:
-                        editingOutChannel = false;
-                        outChannelInput = "";
-                        RefreshCursor();
-                        return true;
-                }
-
-                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
-                {
-                    if (key >= Keys.D0 && key <= Keys.D9) outChannelInput += (char)('0' + (key - Keys.D0));
-                    else outChannelInput += (char)('0' + (key - Keys.NumPad0));
-
-                    if (outChannelInput.Length >= 2)
+                    if (TrackCursor.Track == null)
                     {
-                        CommitOutChannel(outChannelInput);
+                        UndoRedoManager.Execute(
+                            new InsertTrackCommand(Project, -1));
 
-                        editingOutChannel = false;
-                        outChannelInput = "";
-
-                        RefreshCursor();
+                        MoveCursorTrack(Project.Track.First);
                     }
                     else
                     {
-                        RefreshCursor();
+                        var curNo = TrackCursor.Track.Value.Number;
+
+                        UndoRedoManager.Execute(
+                            new InsertTrackCommand(Project, curNo));
+
+                        MoveCursorTrack(
+                            GetTrackByIndex(curNo + 1));
+                    }
+                    return true;
+                }
+
+                if (key == Keys.Delete)
+                {
+                    if (TrackCursor.Track != null)
+                    {
+                        var curNo = TrackCursor.Track.Value.Number;
+                        UndoRedoManager.Execute(
+                            new DeleteTrackCommand(
+                                Project,
+                                curNo));
+                        //if (Project.Track.Count > 0)
+                        //{
+                            MoveCursorTrack(
+                                GetTrackByIndex(
+                                    Math.Min(curNo, Project.Track.Count - 1)));
+                        //}
+                        //else
+                        //{
+                        //    TrackCursor.Track = null;
+                        //    TrackCursor.Part = null;
+                        //    RefreshCursor();
+                        //}
+                    }
+                    return true;
+                }
+
+                if (ctrl && key == Keys.C)//copy
+                {
+                    if (TrackCursor.Track != null)
+                    {
+                        clipboardTrack =
+                            TrackCursor.Track.Value.Clone();
                     }
 
                     return true;
                 }
+                if (ctrl && key == Keys.X)
+                {
+                    if (TrackCursor.Track == null)
+                        return true;
+
+                    clipboardTrack =
+                        TrackCursor.Track.Value.Clone();
+
+                    var curNo =
+                        TrackCursor.Track.Value.Number;
+
+                    UndoRedoManager.Execute(
+                        new DeleteTrackCommand(
+                            Project,
+                            curNo));
+
+                    MoveCursorTrack(
+                        GetTrackByIndex(
+                            Math.Min(
+                                curNo,
+                                Project.Track.Count - 1)));
+
+                    return true;
+                }
+                if (ctrl && key == Keys.V)//paste
+                {
+                    if (clipboardTrack == null)
+                        return true;
+                    if (TrackCursor.Track == null)
+                    {
+                        var beforeCount = Project.Track.Count;
+                        UndoRedoManager.Execute(
+                            new InsertTrackFromClipboardCommand(
+                                Project,
+                                -1,
+                                clipboardTrack));
+                        if (Project.Track.Count > beforeCount)
+                        {
+                            MoveCursorTrack(Project.Track.First);
+                        }
+                    }
+                    else
+                    {
+                        int curNo =
+                            TrackCursor.Track.Value.Number;
+                        int beforeCount = Project.Track.Count;
+
+                        UndoRedoManager.Execute(
+                            new InsertTrackFromClipboardCommand(
+                                Project,
+                                curNo,
+                                clipboardTrack));
+                        if (Project.Track.Count > beforeCount)
+                        {
+                            MoveCursorTrack(
+                                GetTrackByIndex(curNo + 1));
+                        }
+                    }
+                    return true;
+                }
+            }
+            else
+            {
+                if (editingOutChannel)
+                {
+                    switch (key)
+                    {
+                        case Keys.Enter:
+                            CommitOutChannel(outChannelInput);
+                            editingOutChannel = false;
+                            outChannelInput = "";
+                            RefreshCursor();
+                            return true;
+
+                        case Keys.Escape:
+                            editingOutChannel = false;
+                            outChannelInput = "";
+                            RefreshCursor();
+                            return true;
+                    }
+
+                    if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                    {
+                        if (key >= Keys.D0 && key <= Keys.D9) outChannelInput += (char)('0' + (key - Keys.D0));
+                        else outChannelInput += (char)('0' + (key - Keys.NumPad0));
+
+                        if (outChannelInput.Length >= 2)
+                        {
+                            CommitOutChannel(outChannelInput);
+
+                            editingOutChannel = false;
+                            outChannelInput = "";
+
+                            RefreshCursor();
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+
+                        return true;
+                    }
+                }
+
+                if (editingInChannel)
+                {
+                    switch (key)
+                    {
+                        case Keys.Enter:
+                            CommitInChannel(inChannelInput);
+                            editingInChannel = false;
+                            inChannelInput = "";
+                            RefreshCursor();
+                            return true;
+
+                        case Keys.Escape:
+                            editingInChannel = false;
+                            inChannelInput = "";
+                            RefreshCursor();
+                            return true;
+                    }
+
+                    if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                    {
+                        if (key >= Keys.D0 && key <= Keys.D9) inChannelInput += (char)('0' + (key - Keys.D0));
+                        else inChannelInput += (char)('0' + (key - Keys.NumPad0));
+
+                        if (inChannelInput.Length >= 2)
+                        {
+                            CommitInChannel(inChannelInput);
+
+                            editingInChannel = false;
+                            inChannelInput = "";
+
+                            RefreshCursor();
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+
+                        return true;
+                    }
+                }
+
+                if (editingST)
+                {
+                    switch (key)
+                    {
+                        case Keys.Enter:
+                            CommitST(stInput);
+                            editingST = false;
+                            stInput = "";
+                            RefreshCursor();
+                            return true;
+                        case Keys.Escape:
+                            editingST = false;
+                            stInput = "";
+                            RefreshCursor();
+                            return true;
+                    }
+                    if (key == Keys.Oemplus || key == Keys.Add)
+                    {
+                        if (stInput.Length == 0)
+                            stInput = "+";
+
+                        RefreshCursor();
+                        return true;
+                    }
+                    if (key == Keys.OemMinus || key == Keys.Subtract)
+                    {
+                        if (stInput.Length == 0)
+                            stInput = "-";
+
+                        RefreshCursor();
+                        return true;
+                    }
+                    if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                    {
+                        if (key >= Keys.D0 && key <= Keys.D9) stInput += (char)('0' + (key - Keys.D0));
+                        else stInput += (char)('0' + (key - Keys.NumPad0));
+                        if (stInput.Length >= 3)
+                        {
+                            bool signed =
+                                stInput.StartsWith("+")
+                                || stInput.StartsWith("-");
+
+                            if (!signed)
+                            {
+                                CommitST(stInput);
+                                editingST = false;
+                                stInput = "";
+                                RefreshCursor();
+                            }
+                            else if (stInput.Length >= 4)
+                            {
+                                CommitST(stInput);
+                                editingST = false;
+                                stInput = "";
+                                RefreshCursor();
+                            }
+                            else
+                            {
+                                RefreshCursor();
+                            }
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+                        return true;
+                    }
+                    if (key == Keys.Back)
+                    {
+                        if (stInput.Length > 0)
+                        {
+                            stInput = stInput.Substring(0, stInput.Length - 1);
+                            RefreshCursor();
+                        }
+                        return true;
+                    }
+                }
+
+                if (editingKEY)
+                {
+                    switch (key)
+                    {
+                        case Keys.Enter:
+                            CommitKEY(keyInput);
+                            editingKEY = false;
+                            keyInput = "";
+                            RefreshCursor();
+                            return true;
+                        case Keys.Escape:
+                            editingKEY = false;
+                            keyInput = "";
+                            RefreshCursor();
+                            return true;
+                    }
+                    if (key == Keys.Oemplus || key == Keys.Add)
+                    {
+                        if (keyInput.Length == 0)
+                            keyInput = "+";
+
+                        RefreshCursor();
+                        return true;
+                    }
+                    if (key == Keys.OemMinus || key == Keys.Subtract)
+                    {
+                        if (keyInput.Length == 0)
+                            keyInput = "-";
+
+                        RefreshCursor();
+                        return true;
+                    }
+                    if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
+                    {
+                        if (key >= Keys.D0 && key <= Keys.D9) keyInput += (char)('0' + (key - Keys.D0));
+                        else keyInput += (char)('0' + (key - Keys.NumPad0));
+                        if (keyInput.Length >= 3)
+                        {
+                            bool signed =
+                                keyInput.StartsWith("+")
+                                || keyInput.StartsWith("-");
+
+                            if (!signed)
+                            {
+                                CommitKEY(keyInput);
+                                editingKEY = false;
+                                keyInput = "";
+                                RefreshCursor();
+                            }
+                            else if (keyInput.Length >= 4)
+                            {
+                                CommitKEY(keyInput);
+                                editingKEY = false;
+                                keyInput = "";
+                                RefreshCursor();
+                            }
+                            else
+                            {
+                                RefreshCursor();
+                            }
+                        }
+                        else
+                        {
+                            RefreshCursor();
+                        }
+                        return true;
+                    }
+                    if (key == Keys.Back)
+                    {
+                        if (keyInput.Length > 0)
+                        {
+                            keyInput = keyInput.Substring(0, keyInput.Length - 1);
+                            RefreshCursor();
+                        }
+                        return true;
+                    }
+                }
+
+                if (editingTrackName)
+                {
+                    switch (key)
+                    {
+                        case Keys.Enter:
+                            CommitTrackName(trackNameInput);
+                            editingTrackName = false;
+                            trackNameInput = "";
+                            RefreshCursor();
+                            return true;
+
+                        case Keys.Escape:
+                            editingTrackName = false;
+                            trackNameInput = "";
+                            RefreshCursor();
+                            return true;
+                    }
+                }
+
             }
 
-            if (TrackCursor.HeaderColumn == TrackHeaderColumn.OutChannel)
+            if (!editing && TrackCursor.Track != null && TrackCursor.HeaderColumn == TrackHeaderColumn.OutChannel)
             {
                 if ((key >= Keys.D0 && key <= Keys.D9)||(key >= Keys.NumPad0 && key <= Keys.NumPad9))
                 {
@@ -409,48 +755,7 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
-            if (editingInChannel)
-            {
-                switch (key)
-                {
-                    case Keys.Enter:
-                        CommitInChannel(inChannelInput);
-                        editingInChannel = false;
-                        inChannelInput = "";
-                        RefreshCursor();
-                        return true;
-
-                    case Keys.Escape:
-                        editingInChannel = false;
-                        inChannelInput = "";
-                        RefreshCursor();
-                        return true;
-                }
-
-                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
-                {
-                    if (key >= Keys.D0 && key <= Keys.D9) inChannelInput += (char)('0' + (key - Keys.D0));
-                    else inChannelInput += (char)('0' + (key - Keys.NumPad0));
-
-                    if (inChannelInput.Length >= 2)
-                    {
-                        CommitInChannel(inChannelInput);
-
-                        editingInChannel = false;
-                        inChannelInput = "";
-
-                        RefreshCursor();
-                    }
-                    else
-                    {
-                        RefreshCursor();
-                    }
-
-                    return true;
-                }
-            }
-
-            if (TrackCursor.HeaderColumn == TrackHeaderColumn.InChannel)
+            if (!editing && TrackCursor.Track != null && TrackCursor.HeaderColumn == TrackHeaderColumn.InChannel)
             {
                 if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
                 {
@@ -459,85 +764,7 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
-            if(editingST)
-            {
-                switch (key)
-                {
-                    case Keys.Enter:
-                        CommitST(stInput);
-                        editingST = false;
-                        stInput = "";
-                        RefreshCursor();
-                        return true;
-                    case Keys.Escape:
-                        editingST = false;
-                        stInput = "";
-                        RefreshCursor();
-                        return true;
-                }
-                if (key == Keys.Oemplus || key == Keys.Add)
-                {
-                    if (stInput.Length == 0)
-                        stInput = "+";
-
-                    RefreshCursor();
-                    return true;
-                }
-                if (key == Keys.OemMinus || key == Keys.Subtract)
-                {
-                    if (stInput.Length == 0)
-                        stInput = "-";
-
-                    RefreshCursor();
-                    return true;
-                }
-                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
-                {
-                    if (key >= Keys.D0 && key <= Keys.D9) stInput += (char)('0' + (key - Keys.D0));
-                    else stInput += (char)('0' + (key - Keys.NumPad0));
-                    if (stInput.Length >= 3)
-                    {
-                        bool signed =
-                            stInput.StartsWith("+")
-                            || stInput.StartsWith("-");
-
-                        if (!signed)
-                        {
-                            CommitST(stInput);
-                            editingST = false;
-                            stInput = "";
-                            RefreshCursor();
-                        }
-                        else if (stInput.Length >= 4)
-                        {
-                            CommitST(stInput);
-                            editingST = false;
-                            stInput = "";
-                            RefreshCursor();
-                        }
-                        else
-                        {
-                            RefreshCursor();
-                        }
-                    }
-                    else
-                    {
-                        RefreshCursor();
-                    }
-                    return true;
-                }
-                if(key == Keys.Back)
-                {
-                    if (stInput.Length > 0)
-                    {
-                        stInput = stInput.Substring(0, stInput.Length - 1);
-                        RefreshCursor();
-                    }
-                    return true;
-                }
-            }
-
-            if (TrackCursor.HeaderColumn == TrackHeaderColumn.ST)
+            if (!editing && TrackCursor.Track != null && TrackCursor.HeaderColumn == TrackHeaderColumn.ST)
             {
                 if (key == Keys.Oemplus || key == Keys.Add 
                     || key == Keys.OemMinus || key == Keys.Subtract
@@ -551,85 +778,7 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
-            if (editingKEY)
-            {
-                switch (key)
-                {
-                    case Keys.Enter:
-                        CommitKEY(keyInput);
-                        editingKEY = false;
-                        keyInput = "";
-                        RefreshCursor();
-                        return true;
-                    case Keys.Escape:
-                        editingKEY = false;
-                        keyInput = "";
-                        RefreshCursor();
-                        return true;
-                }
-                if (key == Keys.Oemplus || key == Keys.Add)
-                {
-                    if (keyInput.Length == 0)
-                        keyInput = "+";
-
-                    RefreshCursor();
-                    return true;
-                }
-                if (key == Keys.OemMinus || key == Keys.Subtract)
-                {
-                    if (keyInput.Length == 0)
-                        keyInput = "-";
-
-                    RefreshCursor();
-                    return true;
-                }
-                if ((key >= Keys.D0 && key <= Keys.D9) || (key >= Keys.NumPad0 && key <= Keys.NumPad9))
-                {
-                    if (key >= Keys.D0 && key <= Keys.D9) keyInput += (char)('0' + (key - Keys.D0));
-                    else keyInput += (char)('0' + (key - Keys.NumPad0));
-                    if (keyInput.Length >= 3)
-                    {
-                        bool signed =
-                            keyInput.StartsWith("+")
-                            || keyInput.StartsWith("-");
-
-                        if (!signed)
-                        {
-                            CommitKEY(keyInput);
-                            editingKEY = false;
-                            keyInput = "";
-                            RefreshCursor();
-                        }
-                        else if (keyInput.Length >= 4)
-                        {
-                            CommitKEY(keyInput);
-                            editingKEY = false;
-                            keyInput = "";
-                            RefreshCursor();
-                        }
-                        else
-                        {
-                            RefreshCursor();
-                        }
-                    }
-                    else
-                    {
-                        RefreshCursor();
-                    }
-                    return true;
-                }
-                if (key == Keys.Back)
-                {
-                    if (keyInput.Length > 0)
-                    {
-                        keyInput = keyInput.Substring(0, keyInput.Length - 1);
-                        RefreshCursor();
-                    }
-                    return true;
-                }
-            }
-
-            if (TrackCursor.HeaderColumn == TrackHeaderColumn.KEY)
+            if (!editing && TrackCursor.Track != null && TrackCursor.HeaderColumn == TrackHeaderColumn.KEY)
             {
                 if (key == Keys.Oemplus || key == Keys.Add
                     || key == Keys.OemMinus || key == Keys.Subtract
@@ -643,27 +792,7 @@ namespace Remcoposer64.TrackEditor
                 }
             }
 
-            if (editingTrackName)
-            {
-                switch (key)
-                {
-                    case Keys.Enter:
-                        CommitTrackName(trackNameInput);
-                        editingTrackName = false;
-                        trackNameInput = "";
-                        RefreshCursor();
-                        return true;
-
-                    case Keys.Escape:
-                        editingTrackName = false;
-                        trackNameInput = "";
-                        RefreshCursor();
-                        return true;
-                }
-            }
-
-            if (!editingTrackName
-                && TrackCursor.HeaderColumn == TrackHeaderColumn.Name)
+            if (!editing && TrackCursor.Track != null && TrackCursor.HeaderColumn == TrackHeaderColumn.Name)
             {
                 if (key != Keys.Up
                     && key != Keys.Down
@@ -680,7 +809,6 @@ namespace Remcoposer64.TrackEditor
                     BeginTrackNameEdit();
                 }
             }
-
 
             if (candidateForm != null && candidateForm.Visible)
             {
@@ -742,7 +870,8 @@ namespace Remcoposer64.TrackEditor
                     return true;
 
                 case Keys.Enter:
-                    RaiseTrackDoubleClicked(TrackCursor.Track);
+                    if (TrackCursor.Track != null)
+                        RaiseTrackDoubleClicked(TrackCursor.Track);
                     return true;
             }
 
@@ -781,7 +910,11 @@ namespace Remcoposer64.TrackEditor
             ClearInputMode();
 
             TrackCursor.Track = trk;
-            TrackCursor.Part = trk.Value.Part?.First;
+            if (trk != null)
+                TrackCursor.Part = trk.Value.Part?.First;
+            else
+                TrackCursor.Part = null;
+
             TrackCursor.HeaderColumn = column;
 
             EnsureCursorVisible();

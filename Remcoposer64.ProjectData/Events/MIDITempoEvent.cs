@@ -28,18 +28,38 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDITempoEvent()
-            {
-                Type = MIDIEventType.MetaTempo,
+            var e =
+                new MIDITempoEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                TempoValue = this.TempoValue,
-                RelativeTempoChange=this.RelativeTempoChange,
-                RelativeTempoChangeValue=this.RelativeTempoChangeValue,
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDITempoEvent)other;
+
+            TempoValue =
+                e.TempoValue;
+
+            backupTempoValue =
+                e.backupTempoValue;
+
+            RelativeTempoChange =
+                e.RelativeTempoChange;
+
+            backupRelativeTempoChange =
+                e.backupRelativeTempoChange;
+
+            RelativeTempoChangeValue =
+                e.RelativeTempoChangeValue;
+
+            backupRelativeTempoChangeValue =
+                e.backupRelativeTempoChangeValue;
         }
 
         public bool IsValidDisplayValue(int v)

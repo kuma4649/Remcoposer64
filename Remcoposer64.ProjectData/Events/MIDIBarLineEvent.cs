@@ -17,16 +17,22 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIBarLineEvent()
-            {
-                Type = MIDIEventType.BarLine,
+            MIDIBarLineEvent e =
+                new MIDIBarLineEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                MeasureTotalST = this.MeasureTotalST
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e = (MIDIBarLineEvent)other;
+
+            MeasureTotalST = e.MeasureTotalST;
+            backupMeasureTotalST = e.backupMeasureTotalST;
         }
 
     }

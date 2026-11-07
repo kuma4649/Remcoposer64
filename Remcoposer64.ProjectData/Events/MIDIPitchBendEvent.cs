@@ -46,17 +46,23 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIPitchBendEvent()
-            {
-                Type = MIDIEventType.PitchBend,
+            MIDIPitchBendEvent e =
+                new MIDIPitchBendEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                PitchValue = this.PitchValue,
+            return e;
+        }
 
-            };
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIPitchBendEvent)other;
+
+            PitchValue = e.PitchValue;
+            backupPitchValue = e.backupPitchValue;
         }
     }
 }

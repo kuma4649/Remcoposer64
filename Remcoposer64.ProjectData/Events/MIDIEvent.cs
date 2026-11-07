@@ -42,9 +42,34 @@
 
         public virtual void CopyFrom(MIDIEvent other)
         {
+            Type = other.Type;
+
             Meas = other.Meas;
             Step = other.Step;
+            Offset = other.Offset;
+
             ST = other.ST;
+            backupST = other.backupST;
+
+            STsum = other.STsum;
+
+            if (other.MIDIMessage != null)
+                MIDIMessage =
+                    (byte[])other.MIDIMessage.Clone();
+
+            if (other.MIDIMessageLst != null)
+            {
+                MIDIMessageLst =
+                    new byte[other.MIDIMessageLst.Length][];
+
+                for (int i = 0; i < other.MIDIMessageLst.Length; i++)
+                {
+                    MIDIMessageLst[i] =
+                        other.MIDIMessageLst[i] != null
+                        ? (byte[])other.MIDIMessageLst[i].Clone()
+                        : null;
+                }
+            }
         }
 
     }

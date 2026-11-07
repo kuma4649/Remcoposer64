@@ -642,6 +642,52 @@ namespace Remcoposer64.ProjectData
 
         }
 
+        public MIDITrack Clone()
+        {
+            MIDITrack trk = new MIDITrack();
+
+            trk.BeforeIndex = BeforeIndex;
+            trk.AfterIndex = AfterIndex;
+
+            trk.Number = Number;
+            trk.Name = Name;
+            trk.Memo = Memo;
+            trk.Comment = Comment;
+
+            trk.OutDevice = OutDevice;
+            trk.OutChannel = OutChannel;
+
+            trk.InDevice = InDevice;
+            trk.InChannel = InChannel;
+
+            trk.Solo = Solo;
+            trk.Mute = Mute;
+
+            trk.Color = Color;
+
+            trk.RythmMode = RythmMode;
+
+            trk.Key = Key;
+            trk.St = St;
+
+            trk.mStartIndex = mStartIndex;
+            trk.mEndIndex = mEndIndex;
+            trk.mNumber = mNumber;
+
+            trk.TrackNumber = TrackNumber;
+
+            foreach (var r in Rythm)
+            {
+                trk.Rythm.AddLast(r.Clone());
+            }
+
+            foreach (var p in Part)
+            {
+                trk.Part.AddLast(p.Clone());
+            }
+
+            return trk;
+        }
     }
 
 }

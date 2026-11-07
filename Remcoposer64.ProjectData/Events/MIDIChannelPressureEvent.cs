@@ -24,17 +24,29 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIChannelPressureEvent()
-            {
-                Type = MIDIEventType.ChannelAfterTouch,
+            MIDIChannelPressureEvent e =
+                new MIDIChannelPressureEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                PressureChannel = this.PressureChannel,
-                PressureValue = this.PressureValue
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIChannelPressureEvent)other;
+
+            PressureChannel = e.PressureChannel;
+            PressureValue = e.PressureValue;
+
+            backupPressureChannel =
+                e.backupPressureChannel;
+
+            backupPressureValue =
+                e.backupPressureValue;
         }
     }
 }

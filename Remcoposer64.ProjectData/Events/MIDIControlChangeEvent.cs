@@ -23,17 +23,32 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIControlChangeEvent()
-            {
-                Type = MIDIEventType.ControlChange,
+            MIDIControlChangeEvent e =
+                new MIDIControlChangeEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                ControllerNumber = this.ControllerNumber,
-                ControllerValue = this.ControllerValue,
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIControlChangeEvent)other;
+
+            ControllerNumber =
+                e.ControllerNumber;
+
+            ControllerValue =
+                e.ControllerValue;
+
+            backupControllerNumber =
+                e.backupControllerNumber;
+
+            backupControllerValue =
+                e.backupControllerValue;
         }
     }
 }

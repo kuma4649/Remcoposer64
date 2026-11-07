@@ -20,16 +20,27 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDISameMeasEvent()
-            {
-                Type = MIDIEventType.SameMeas,
+            var e =
+                new MIDISameMeasEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                RepeatMeas = this.RepeatMeas
-            };
+            return e;
         }
+        
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDISameMeasEvent)other;
+
+            RepeatMeas = e.RepeatMeas;
+            backupRepeatMeas = e.backupRepeatMeas;
+
+            RepeatMeasBeforeNode = null;
+            backupRepeatMeasBeforeNode = null;
+        }
+
     }
 }

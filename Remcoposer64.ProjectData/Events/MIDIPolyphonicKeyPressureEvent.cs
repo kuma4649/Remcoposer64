@@ -26,17 +26,26 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIPolyphonicKeyPressureEvent()
-            {
-                Type = MIDIEventType.KeyAfterTouch,
+            MIDIPolyphonicKeyPressureEvent e =
+                new MIDIPolyphonicKeyPressureEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                KeyNumber = this.KeyNumber,
-                PressureValue= this.PressureValue,
-            };
+            return e;
+        }
+
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIPolyphonicKeyPressureEvent)other;
+
+            KeyNumber = e.KeyNumber;
+            backupKeyNumber = e.backupKeyNumber;
+
+            PressureValue = e.PressureValue;
+            backupPressure = e.backupPressure;
         }
     }
 }

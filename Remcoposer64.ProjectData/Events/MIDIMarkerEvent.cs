@@ -13,22 +13,28 @@ namespace Remcoposer64.ProjectData.Events
         public MIDIMarkerEvent()
         {
             Type = MIDIEventType.MetaMarker;
-            virVal = " ";//編集モードに入っていることを示すために、virValを空白に設定
+            virVal = " ";
         }
 
         public override MIDIEvent Clone()
         {
-            return new MIDIMemoEvent()
-            {
-                Type = MIDIEventType.MetaMarker,
+            MIDIMarkerEvent e =
+                new MIDIMarkerEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                Text = this.Text
-            };
+            return e;
         }
 
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIMarkerEvent)other;
+
+            Text = e.Text;
+            backupText = e.backupText;
+        }
     }
 }

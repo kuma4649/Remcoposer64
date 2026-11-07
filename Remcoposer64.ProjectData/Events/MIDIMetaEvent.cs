@@ -16,22 +16,37 @@ namespace Remcoposer64.ProjectData.Events
         public MIDIMetaEvent()
         {
             Type = MIDIEventType.Meta;
-        }   
+        }
 
         public override MIDIEvent Clone()
         {
-            return new MIDIMetaEvent()
-            {
-                Type = MIDIEventType.Meta,
+            MIDIMetaEvent e =
+                new MIDIMetaEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
+            e.CopyFrom(this);
 
-                MetaType = this.MetaType,
-                Data = this.Data
-            };
+            return e;
         }
 
+        public override void CopyFrom(MIDIEvent other)
+        {
+            base.CopyFrom(other);
+
+            var e =
+                (MIDIMetaEvent)other;
+
+            MetaType = e.MetaType;
+            backupMetaType = e.backupMetaType;
+
+            Data =
+                e.Data != null
+                ? (byte[])e.Data.Clone()
+                : Array.Empty<byte>();
+
+            backupData =
+                e.backupData != null
+                ? (byte[])e.backupData.Clone()
+                : null;
+        }
     }
 }

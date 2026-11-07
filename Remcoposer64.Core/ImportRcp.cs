@@ -624,23 +624,23 @@ namespace Remcoposer64.Core
                 nevt = nevt.Next;
             }
 
-#if DEBUG
-            Debug.WriteLine($"Part Name: {part.Value.Name} ");
-            nevt = part.Value.Event.First;
-            while(nevt != null)
-            {
-                MIDIEvent evt = nevt.Value;
-                // SameMeasure 判定
-                if (evt.Type != MIDIEventType.SameMeas)
-                {
-                    nevt = nevt.Next;
-                    continue;
-                }
-                MIDISameMeasEvent sevt = (MIDISameMeasEvent)evt;
-                Debug.WriteLine($"SameMeasure: {sevt.ST} / RepeatMeas: {sevt.RepeatMeas}");
-                nevt = nevt.Next;
-            }
-#endif
+//#if DEBUG
+//            Debug.WriteLine($"Part Name: {part.Value.Name} ");
+//            nevt = part.Value.Event.First;
+//            while(nevt != null)
+//            {
+//                MIDIEvent evt = nevt.Value;
+//                // SameMeasure 判定
+//                if (evt.Type != MIDIEventType.SameMeas)
+//                {
+//                    nevt = nevt.Next;
+//                    continue;
+//                }
+//                MIDISameMeasEvent sevt = (MIDISameMeasEvent)evt;
+//                Debug.WriteLine($"SameMeasure: {sevt.ST} / RepeatMeas: {sevt.RepeatMeas}");
+//                nevt = nevt.Next;
+//            }
+//#endif
         }
 
         private void onpu(MIDITrack trkn, int[] pk, LinkedListNode<MIDIEvent> pEvt)
@@ -1043,28 +1043,28 @@ namespace Remcoposer64.Core
                     measureStartNode.Clear();
                     BuildMeasureStartNode(measureStartNode, nPrt.Value, 0, 0);
 
-#if DEBUG
-                    Debug.WriteLine($"{nPrt.Value.Name} -----------------------------------");
-                    foreach (var kvp in measureStartNode)
-                    {
-                        if (kvp.Value.Value.Type == MIDIEventType.SameMeas)
-                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}, bytes:{string.Join(',', kvp.Value.Value.MIDIMessage)}");
-                        else
-                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}");
-                    }
-                    foreach (var nevt in nPrt.Value.Event)
-                    {
-                        if (nevt.Type == MIDIEventType.SameMeas)
-                        {
-                            MIDISameMeasEvent sevt = (MIDISameMeasEvent)nevt;
-                            Debug.WriteLine($"SameMeasure Event: ST: {sevt.ST}, RepeatMeas: {sevt.RepeatMeas}, bytes:{string.Join(',', sevt.MIDIMessage)}");
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"Event Type: {nevt.Type}, ST: {nevt.ST}");
-                        }
-                    }
-#endif
+//#if DEBUG
+//                    Debug.WriteLine($"{nPrt.Value.Name} -----------------------------------");
+//                    foreach (var kvp in measureStartNode)
+//                    {
+//                        if (kvp.Value.Value.Type == MIDIEventType.SameMeas)
+//                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}, bytes:{string.Join(',', kvp.Value.Value.MIDIMessage)}");
+//                        else
+//                            Debug.WriteLine($"Track: {kvp.Key.track}, Part: {kvp.Key.part}, Measure: {kvp.Key.meas}, Node Type: {kvp.Value.Value.Type}");
+//                    }
+//                    foreach (var nevt in nPrt.Value.Event)
+//                    {
+//                        if (nevt.Type == MIDIEventType.SameMeas)
+//                        {
+//                            MIDISameMeasEvent sevt = (MIDISameMeasEvent)nevt;
+//                            Debug.WriteLine($"SameMeasure Event: ST: {sevt.ST}, RepeatMeas: {sevt.RepeatMeas}, bytes:{string.Join(',', sevt.MIDIMessage)}");
+//                        }
+//                        else
+//                        {
+//                            Debug.WriteLine($"Event Type: {nevt.Type}, ST: {nevt.ST}");
+//                        }
+//                    }
+//#endif
 
                     LinkedListNode<MIDIEvent> nEvt = nPrt.Value.Event.First;
                     while(nEvt!=null)

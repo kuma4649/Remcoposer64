@@ -13,14 +13,12 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            return new MIDIEndEvent()
-            {
-                Type = MIDIEventType.MetaEndOfTrack,
+            MIDIEndEvent e =
+                new MIDIEndEvent();
 
-                Meas = this.Meas,
-                Step = this.Step,
-                ST = this.ST,
-            };
+            e.CopyFrom(this);
+
+            return e;
         }
     }
 }

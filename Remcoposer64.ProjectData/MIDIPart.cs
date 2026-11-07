@@ -212,6 +212,23 @@ namespace Remcoposer64.ProjectData
             return this.Event.AddAfter(TargetEvent, eve);
         }
 
+        public MIDIPart Clone()
+        {
+            MIDIPart part = new MIDIPart();
+
+            part.Number = Number;
+            part.Name = Name;
+            part.StartTick = StartTick;
+            part.LengthTick = LengthTick;
+
+            foreach (var evt in Event)
+            {
+                part.Event.AddLast(
+                    evt.Clone());
+            }
+
+            return part;
+        }
     }
 
 }
