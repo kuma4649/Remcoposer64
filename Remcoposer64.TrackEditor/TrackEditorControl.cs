@@ -39,6 +39,9 @@ namespace Remcoposer64.TrackEditor
         public string trackNameInput = "";
         private MIDITrack clipboardTrack;
 
+
+        private int lastTrackNo;
+
         public event EventHandler<TrackDoubleClickEventArgs> TrackDoubleClicked;
 
         internal void RaiseTrackDoubleClicked(
@@ -97,6 +100,10 @@ namespace Remcoposer64.TrackEditor
 
         public void SetHeaderLine(int v)
         {
+            TrackCursor.Clear();
+            TrackSelection.Clear();
+            RefreshCursorPosition();
+
             pxScrollY = 0;
             vScrollBar1.Value = 0;
 
@@ -346,7 +353,7 @@ namespace Remcoposer64.TrackEditor
             {
                 Debug.WriteLine("UNDO");
                 UndoRedoManager?.Undo();
-                RefreshCursor();
+                RefreshTrackStructure();
                 return true;
             }
 
@@ -354,7 +361,7 @@ namespace Remcoposer64.TrackEditor
             {
                 Debug.WriteLine("REDO");
                 UndoRedoManager?.Redo();
-                RefreshCursor();
+                RefreshTrackStructure();
                 return true;
             }
 
@@ -385,6 +392,9 @@ namespace Remcoposer64.TrackEditor
 
                         MoveCursorTrack(
                             GetTrackByIndex(curNo - 1));
+
+                        RefreshCursorPosition();
+
                     }
 
                     return true;
@@ -404,6 +414,9 @@ namespace Remcoposer64.TrackEditor
 
                         MoveCursorTrack(
                             GetTrackByIndex(curNo + 1));
+
+                        RefreshCursorPosition();
+
                     }
 
                     return true;
@@ -430,6 +443,7 @@ namespace Remcoposer64.TrackEditor
                         MoveCursorTrack(
                             GetTrackByIndex(curNo + 1));
                     }
+                    RefreshTrackStructure();
                     return true;
                 }
                 if (key == Keys.Delete)
@@ -441,19 +455,12 @@ namespace Remcoposer64.TrackEditor
                             new DeleteTrackCommand(
                                 Project,
                                 curNo));
-                        //if (Project.Track.Count > 0)
-                        //{
-                            MoveCursorTrack(
-                                GetTrackByIndex(
-                                    Math.Min(curNo, Project.Track.Count - 1)));
-                        //}
-                        //else
-                        //{
-                        //    TrackCursor.Track = null;
-                        //    TrackCursor.Part = null;
-                        //    RefreshCursor();
-                        //}
+
+                        MoveCursorTrack(
+                            GetTrackByIndex(
+                                Math.Min(curNo, Project.Track.Count - 1)));
                     }
+                    RefreshTrackStructure();
                     return true;
                 }
                 if (ctrl && key == Keys.C)//copy
@@ -487,6 +494,8 @@ namespace Remcoposer64.TrackEditor
                             Math.Min(
                                 curNo,
                                 Project.Track.Count - 1)));
+
+                    RefreshTrackStructure();
 
                     return true;
                 }
@@ -524,6 +533,9 @@ namespace Remcoposer64.TrackEditor
                                 GetTrackByIndex(curNo + 1));
                         }
                     }
+
+                    RefreshTrackStructure();
+
                     return true;
                 }
 
@@ -873,36 +885,38 @@ namespace Remcoposer64.TrackEditor
             {
                 case Keys.Home:
                     MoveCursorTrack(Project.Track.First);
-                    RefreshCursor();
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.End:
                     MoveCursorTrack(Project.Track.Last);
-                    RefreshCursor();
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.Up:
                     if (TrackCursor.Track?.Previous != null)
                         MoveCursorTrack(TrackCursor.Track.Previous);
-                    RefreshCursor();
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.Down:
                     if (TrackCursor.Track?.Next != null)
                         MoveCursorTrack(TrackCursor.Track.Next);
-                    RefreshCursor();
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.Left:
                     MoveCursorColumn(
                         trackHeaderPanel.PrevColumn(
                             TrackCursor.HeaderColumn));
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.Right:
                     MoveCursorColumn(
                         trackHeaderPanel.NextColumn(
                             TrackCursor.HeaderColumn));
+                    RefreshCursorPosition();
                     return true;
 
                 case Keys.Space:
@@ -918,6 +932,55 @@ namespace Remcoposer64.TrackEditor
             return base.ProcessCmdKey(
                 ref msg,
                 keyData);
+        }
+
+        private void ValidateCursor()
+        {
+            if (TrackCursor.Track == null)
+                return;
+
+            var trk = Project.Track.First;
+
+            while (trk != null)
+            {
+                if (ReferenceEquals(trk, TrackCursor.Track))
+                    return;
+
+                trk = trk.Next;
+            }
+
+            if (TrackCursor.Track.List == null)
+            {
+                if (Project.Track.Count == 0)
+                {
+                    MoveCursorTrack(null);
+                }
+                else
+                {
+                    MoveCursorTrack(
+                        GetTrackByIndex(
+                            Math.Min(
+                                lastTrackNo,
+                                Project.Track.Count - 1)));
+                }
+            }
+        }
+
+        private void RefreshTrackStructure()
+        {
+            UpdateScrollRange();
+
+            ValidateCursor();
+
+            EnsureCursorVisible();
+
+            RefreshCursor();
+        }
+        
+        public void RefreshCursorPosition()
+        {
+            EnsureCursorVisible();
+            RefreshCursor();
         }
 
         public void ClearInputMode()
@@ -957,8 +1020,8 @@ namespace Remcoposer64.TrackEditor
 
             TrackCursor.HeaderColumn = column;
 
-            EnsureCursorVisible();
-            RefreshCursor();
+            if (trk != null)
+                lastTrackNo = trk.Value.Number;
         }
 
         public void MoveCursorColumn(TrackHeaderColumn column)
@@ -967,8 +1030,6 @@ namespace Remcoposer64.TrackEditor
 
             TrackCursor.HeaderColumn = column;
 
-            EnsureCursorVisible();
-            RefreshCursor();
         }
 
         private void EnsureCursorVisible()

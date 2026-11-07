@@ -350,6 +350,7 @@ namespace Remcoposer64.TrackEditor.Internal
             TrackHeaderColumn col = HitTestColumn(e.X, e.Y);
 
             TrackEditorControl.MoveCursorTrack(trk, col);
+            TrackEditorControl.RefreshCursorPosition();
 
             if (IsPopupColumn(col)
                 || col == TrackHeaderColumn.Mute
