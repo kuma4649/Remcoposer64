@@ -367,6 +367,50 @@ namespace Remcoposer64.TrackEditor
 
             if (!editing)
             {
+
+                // トラックの入れ替え
+
+                if (shift && key == Keys.Up)
+                {
+                    if (TrackCursor.Track?.Previous != null)
+                    {
+                        int curNo =
+                            TrackCursor.Track.Value.Number;
+
+                        UndoRedoManager.Execute(
+                            new MoveTrackCommand(
+                                Project,
+                                curNo,
+                                curNo - 1));
+
+                        MoveCursorTrack(
+                            GetTrackByIndex(curNo - 1));
+                    }
+
+                    return true;
+                }
+                if (shift && key == Keys.Down)
+                {
+                    if (TrackCursor.Track?.Next != null)
+                    {
+                        int curNo =
+                            TrackCursor.Track.Value.Number;
+
+                        UndoRedoManager.Execute(
+                            new MoveTrackCommand(
+                                Project,
+                                curNo,
+                                curNo + 1));
+
+                        MoveCursorTrack(
+                            GetTrackByIndex(curNo + 1));
+                    }
+
+                    return true;
+                }
+
+                // トラックの追加・削除・コピー・貼り付け
+
                 if (key == Keys.Insert)
                 {
                     if (TrackCursor.Track == null)
@@ -388,7 +432,6 @@ namespace Remcoposer64.TrackEditor
                     }
                     return true;
                 }
-
                 if (key == Keys.Delete)
                 {
                     if (TrackCursor.Track != null)
@@ -413,7 +456,6 @@ namespace Remcoposer64.TrackEditor
                     }
                     return true;
                 }
-
                 if (ctrl && key == Keys.C)//copy
                 {
                     if (TrackCursor.Track != null)
@@ -484,9 +526,11 @@ namespace Remcoposer64.TrackEditor
                     }
                     return true;
                 }
+
             }
             else
             {
+
                 if (editingOutChannel)
                 {
                     switch (key)
@@ -527,7 +571,6 @@ namespace Remcoposer64.TrackEditor
                         return true;
                     }
                 }
-
                 if (editingInChannel)
                 {
                     switch (key)
@@ -568,7 +611,6 @@ namespace Remcoposer64.TrackEditor
                         return true;
                     }
                 }
-
                 if (editingST)
                 {
                     switch (key)
@@ -646,7 +688,6 @@ namespace Remcoposer64.TrackEditor
                         return true;
                     }
                 }
-
                 if (editingKEY)
                 {
                     switch (key)
@@ -724,7 +765,6 @@ namespace Remcoposer64.TrackEditor
                         return true;
                     }
                 }
-
                 if (editingTrackName)
                 {
                     switch (key)
