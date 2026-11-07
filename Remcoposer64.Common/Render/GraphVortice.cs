@@ -10,94 +10,27 @@ namespace Remcoposer64.Common.Render
 {
     public class GraphVortice :IGraph, IDisposable
     {
-        private ID2D1Factory1 d2dFactory;
-        private IDWriteFactory dwFactory;
-        private ID2D1HwndRenderTarget renderTarget;
-
-        private IDWriteTextFormat textFormat;
-        private ID2D1SolidColorBrush brushFg;
-        private ID2D1SolidColorBrush brushBg;
-
-        private int fontSize = 16;
-        private AsciiMonoCache cache;
-        //private ID2D1Bitmap cacheDxMaskBitmap;
-        private Dictionary<int, ID2D1Bitmap> dicCacheDxMaskBitmap = new Dictionary<int, ID2D1Bitmap>();
-        private string FontName = "Meiryo";//"Courier New";
-        private Point _Offset = Point.Empty;
-        private byte[] cacheDxMaskPixels;
-        private SizeI cacheDxMaskSize;
-        private uint cacheDxMaskStride;
-        private IWICImagingFactory wicFactory = new IWICImagingFactory();
-
-        public System.Drawing.Color ForeColor { set { brushFg = renderTarget.CreateSolidColorBrush(new Color4(value.R / 255f, value.G / 255f, value.B / 255f, 1)); } }
-        public System.Drawing.Color BackColor { set { brushBg = renderTarget.CreateSolidColorBrush(new Color4(value.R / 255f, value.G / 255f, value.B / 255f, 1)); } }
-
-        public GraphVortice(IntPtr hwnd)
-        {
-            // Direct2D Factory
-            d2dFactory = D2D1.D2D1CreateFactory<ID2D1Factory1>();
-
-            // DirectWrite Factory
-            dwFactory = DWrite.DWriteCreateFactory<IDWriteFactory>();
-
-            // RenderTargetProperties
-            var rtProps = new RenderTargetProperties(
-                RenderTargetType.Default,
-                new Vortice.DCommon.PixelFormat(Format.B8G8R8A8_UNorm,Vortice.DCommon.AlphaMode.Ignore),
-                96.0F, 96.0F,
-                RenderTargetUsage.None,
-                FeatureLevel.Level_10);
-
-            var clientSize = GetClientSize(hwnd);
-
-            // HwndRenderTargetProperties
-            var hwndProps = new HwndRenderTargetProperties()
-            {
-                Hwnd = hwnd,
-                PixelSize = new SizeI(clientSize.Width, clientSize.Height),
-                PresentOptions = PresentOptions.None,                
-            };
-
-            // RenderTarget 作成
-            renderTarget = d2dFactory.CreateHwndRenderTarget(rtProps, hwndProps);
-
-            // フォント
-            textFormat = dwFactory.CreateTextFormat(FontName, fontSize);
-
-            // ブラシ
-            brushFg = renderTarget.CreateSolidColorBrush(new Color4(1, 1, 1, 1));
-            brushBg = renderTarget.CreateSolidColorBrush(new Color4(0, 0, 0, 1));
-
-            using var bmp = new Bitmap("Resource\\rFont_16.png");
-            fontSize = 16;
-            cache = new AsciiMonoCache(bmp, 16, 16);
-
-            CreateBitmapFromDIB(cache.MaskBitmap);
+        public System.Drawing.Color ForeColor 
+        { 
+            set { 
+                brushFg = renderTarget.CreateSolidColorBrush(
+                    new Color4(
+                        value.R / 255f,
+                        value.G / 255f,
+                        value.B / 255f, 1)
+                    ); 
+            } 
         }
-
-        public void SetFontSize(int size)
+        public System.Drawing.Color BackColor 
         {
-            fontSize = size;
-            textFormat?.Dispose();
-            //textFormat = dwFactory.CreateTextFormat("Courier New", fontSize);
-            textFormat = dwFactory.CreateTextFormat(FontName, fontSize);
-            using var bmp = new Bitmap(string.Format("Resource\\rFont_{0:d02}.png", fontSize));
-            cache?.Dispose();
-            cache = new AsciiMonoCache(bmp, fontSize, fontSize);
-
-            CreateBitmapFromDIB(cache.MaskBitmap);
-        }
-
-        public void EndPaint()
-        {
-            renderTarget.EndDraw();
-        }
-
-        public void BeginPaint()
-        {
-            renderTarget.BeginDraw();
-            renderTarget.Transform = Matrix3x2.Identity;
-            _Offset = Point.Empty; // オフセットなし
+            set {
+                brushBg = renderTarget.CreateSolidColorBrush(
+                    new Color4(
+                        value.R / 255f,
+                        value.G / 255f,
+                        value.B / 255f, 1)
+                    );
+            }
         }
 
         public void BeginPaint(Rectangle rect)
@@ -106,23 +39,30 @@ namespace Remcoposer64.Common.Render
             renderTarget.Transform = Matrix3x2.Identity;
             _Offset = rect.Location;
         }
-
-        public void FillRectangle(int x, int y, int width, int height)
+        public void EndPaint()
         {
-            renderTarget.FillRectangle(new Vortice.RawRectF(x, y, x+width, y+height), brushBg);
+            renderTarget.EndDraw();
         }
 
-        public void DrawLine(int x1, int y1, int x2, int y2, System.Drawing.Color color)
+        public void DrawGlyph(int x, int y, AsciiMonoCache.Glyph g, System.Drawing.Color fg, System.Drawing.Color bg)
         {
-            brushFg.Color = new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1);
+            BackColor = bg;
+            FillRectangle(x, y, g.Width, g.Height);
 
-            renderTarget.DrawLine(
-                new Vector2(x1, y1),
-                new Vector2(x2, y2),
-                brushFg,
-                1.0f);
+            int colKey = fg.B << 16 | fg.G << 8 | fg.R;
+            if (!dicCacheDxMaskBitmap.ContainsKey(colKey))
+            {
+                MakeCacheDxMaskBitmap(fg);
+            }
+
+            renderTarget.DrawBitmap(
+                dicCacheDxMaskBitmap[colKey]
+                , new Rect(x, y, g.Width, g.Height)
+                , 1.0f
+                , Vortice.Direct2D1.BitmapInterpolationMode.NearestNeighbor
+                , new Rect(g.X, g.Y, g.Width, g.Height)
+                );
         }
-
         public void DrawString(string text, ref Point position, System.Drawing.Color fg, System.Drawing.Color bg)
         {
             int cx = position.X - _Offset.X;
@@ -155,7 +95,6 @@ namespace Remcoposer64.Common.Render
             position.X = cx + _Offset.X;
             position.Y = cy + _Offset.Y;
         }
-
         public void DrawStringOSFont(string text, ref Point pos, System.Drawing.Color fg, System.Drawing.Color bg)
         {
             brushFg.Color = new Color4(fg.R / 255f, fg.G / 255f, fg.B / 255f, 1);
@@ -184,6 +123,41 @@ namespace Remcoposer64.Common.Render
                 pos.X += (int)metrics.Width;
             }
         }
+        public void DrawLine(int x1, int y1, int x2, int y2, System.Drawing.Color color)
+        {
+            brushFg.Color = new Color4(color.R / 255f, color.G / 255f, color.B / 255f, 1);
+
+            renderTarget.DrawLine(
+                new Vector2(x1, y1),
+                new Vector2(x2, y2),
+                brushFg,
+                1.0f);
+        }
+
+        public void SetFontSize(int size)
+        {
+            fontSize = size;
+            textFormat?.Dispose();
+            //textFormat = dwFactory.CreateTextFormat("Courier New", fontSize);
+            textFormat = dwFactory.CreateTextFormat(FontName, fontSize);
+            using var bmp = new Bitmap(string.Format("Resource\\rFont_{0:d02}.png", fontSize));
+            cache?.Dispose();
+            cache = new AsciiMonoCache(bmp, fontSize, fontSize);
+
+            CreateBitmapFromDIB(cache.MaskBitmap);
+        }
+        public void FillRectangle(int x, int y, int width, int height)
+        {
+            renderTarget.FillRectangle(new Vortice.RawRectF(x, y, x + width, y + height), brushBg);
+        }
+
+        public void Resize(int width, int height)
+        {
+            if (renderTarget != null && width > 0 && height > 0)
+            {
+                renderTarget.Resize(new SizeI(width, height));
+            }
+        }
 
         public int MeasureStringOSFont(string text)
         {
@@ -197,24 +171,47 @@ namespace Remcoposer64.Common.Render
             return (int)Math.Ceiling(metrics.Width);
         }
 
-        public void DrawGlyph(int x, int y, AsciiMonoCache.Glyph g, System.Drawing.Color fg, System.Drawing.Color bg)
+        public GraphVortice(IntPtr hwnd)
         {
-            BackColor = bg;
-            FillRectangle(x, y, g.Width, g.Height);
+            // Direct2D Factory
+            d2dFactory = D2D1.D2D1CreateFactory<ID2D1Factory1>();
 
-            int colKey = fg.B << 16 | fg.G << 8 | fg.R;
-            if (!dicCacheDxMaskBitmap.ContainsKey(colKey))
+            // DirectWrite Factory
+            dwFactory = DWrite.DWriteCreateFactory<IDWriteFactory>();
+
+            // RenderTargetProperties
+            var rtProps = new RenderTargetProperties(
+                RenderTargetType.Default,
+                new Vortice.DCommon.PixelFormat(Format.B8G8R8A8_UNorm, Vortice.DCommon.AlphaMode.Ignore),
+                96.0F, 96.0F,
+                RenderTargetUsage.None,
+                FeatureLevel.Level_10);
+
+            var clientSize = GetClientSize(hwnd);
+
+            // HwndRenderTargetProperties
+            var hwndProps = new HwndRenderTargetProperties()
             {
-                MakeCacheDxMaskBitmap(fg);
-            }
+                Hwnd = hwnd,
+                PixelSize = new SizeI(clientSize.Width, clientSize.Height),
+                PresentOptions = PresentOptions.None,
+            };
 
-            renderTarget.DrawBitmap(
-                dicCacheDxMaskBitmap[colKey]
-                , new Rect(x, y, g.Width, g.Height)
-                , 1.0f
-                , Vortice.Direct2D1.BitmapInterpolationMode.NearestNeighbor
-                , new Rect(g.X, g.Y, g.Width, g.Height)
-                );
+            // RenderTarget 作成
+            renderTarget = d2dFactory.CreateHwndRenderTarget(rtProps, hwndProps);
+
+            // フォント
+            textFormat = dwFactory.CreateTextFormat(FontName, fontSize);
+
+            // ブラシ
+            brushFg = renderTarget.CreateSolidColorBrush(new Color4(1, 1, 1, 1));
+            brushBg = renderTarget.CreateSolidColorBrush(new Color4(0, 0, 0, 1));
+
+            using var bmp = new Bitmap("Resource\\rFont_16.png");
+            fontSize = 16;
+            cache = new AsciiMonoCache(bmp, 16, 16);
+
+            CreateBitmapFromDIB(cache.MaskBitmap);
         }
 
         void IDisposable.Dispose()
@@ -227,13 +224,26 @@ namespace Remcoposer64.Common.Render
             d2dFactory?.Dispose();
         }
 
-        public void Resize(int width, int height)
-        {
-            if (renderTarget != null && width > 0 && height > 0)
-            {
-                renderTarget.Resize(new SizeI(width, height));
-            }
-        }
+
+
+        private ID2D1Factory1 d2dFactory;
+        private IDWriteFactory dwFactory;
+        private ID2D1HwndRenderTarget renderTarget;
+
+        private IDWriteTextFormat textFormat;
+        private ID2D1SolidColorBrush brushFg;
+        private ID2D1SolidColorBrush brushBg;
+
+        private int fontSize = 16;
+        private AsciiMonoCache cache;
+        //private ID2D1Bitmap cacheDxMaskBitmap;
+        private Dictionary<int, ID2D1Bitmap> dicCacheDxMaskBitmap = new Dictionary<int, ID2D1Bitmap>();
+        private string FontName = "Meiryo";//"Courier New";
+        private Point _Offset = Point.Empty;
+        private byte[] cacheDxMaskPixels;
+        private SizeI cacheDxMaskSize;
+        private uint cacheDxMaskStride;
+        private IWICImagingFactory wicFactory = new IWICImagingFactory();
 
         // Win32 API の定義
         [DllImport("user32.dll")]

@@ -707,7 +707,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 int caretDxY = 0;
                 if (me != null)
                 {
-                    caretDxX = mme.memoBoxDrawX + (string.IsNullOrEmpty(mme.memoBoxText) ? 0 : ((GraphVortice)grp).MeasureStringOSFont(mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex)));
+                    caretDxX = mme.memoBoxDrawX + (string.IsNullOrEmpty(mme.memoBoxText) ? 0 : grp.MeasureStringOSFont(mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex)));
                     caretDxY = mme.memoBoxDrawY;
                 }
 

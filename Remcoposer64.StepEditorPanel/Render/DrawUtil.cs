@@ -143,7 +143,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
         internal int MeasureStringOSFont(string left)
         {
-            return ((GraphVortice)grp).MeasureStringOSFont(left);
+            return grp.MeasureStringOSFont(left);
         }
 
         internal void FillRectangle(int memoBoxDrawX, int memoBoxDrawY, int memoBoxDrawWidth, int memoBoxDrawHeight)

@@ -9,93 +9,38 @@ namespace Remcoposer64.Common.Render
 
     public class GraphGDI : IGraph,IDisposable
     {
-        IntPtr _Window = IntPtr.Zero;
-        IntPtr _DC = IntPtr.Zero;
-        IntPtr _MemDC = IntPtr.Zero;
-        Point _Offset = Point.Empty;
-        IntPtr _MemBmp = IntPtr.Zero;
-        IntPtr _OrgMemBmp;
-        System.Drawing.Size _MemDcSize;
-        int _ForeColor;
-        IntPtr _Pen = IntPtr.Zero;
-        IntPtr _Brush = IntPtr.Zero;
-        IntPtr _NullPen = IntPtr.Zero;
-        IntPtr _Font = IntPtr.Zero;
-        private AsciiMonoCache cache;
-        private readonly System.Drawing.Font font = new("Courier New", 12, FontStyle.Regular);
-        IntPtr _WorkOldBmp = IntPtr.Zero;
-        IntPtr _WorkFgDC = IntPtr.Zero;
-        IntPtr _WorkFgBmp = IntPtr.Zero;
-        IntPtr _WorkOldFgBmp = IntPtr.Zero;
-        IntPtr _WorkBgDC = IntPtr.Zero;
-        IntPtr _WorkBgBmp = IntPtr.Zero;
-        IntPtr _WorkOldBgBmp = IntPtr.Zero;
-        System.Drawing.Size fontSize= new System.Drawing.Size();
-        Dictionary<int, IntPtr> pens = new Dictionary<int, IntPtr>();
-        Dictionary<int, IntPtr> brushes = new Dictionary<int, IntPtr>();
-
-
-        public GraphGDI(IntPtr handle)
+        public System.Drawing.Color ForeColor
         {
-            _Window = handle;
-            _DC = WinApi.GetDC(handle);
-
-            using var bmp = new Bitmap("Resource\\rFont_16.png");
-            fontSize.Width =16; fontSize.Height =16;
-            cache = new AsciiMonoCache(bmp,16,16);
-            CreateMeiryoFont(16); // 好きなサイズ
-
-        }
-
-        private void CreateMeiryoFont(int size)
-        {
-            LOGFONT lf = new LOGFONT();
-            lf.lfHeight = -size;        // 負値 → 高さを指定
-            lf.lfWeight = 400;          // 通常
-            lf.lfCharSet = 0;           // DEFAULT_CHARSET
-            lf.lfFaceName = "Meiryo";   // ★ここが重要
-
-            _Font = CreateFontIndirect(ref lf);
-        }
-
-        public void SetFontSize(int size)
-        {
-            // 古いキャッシュを破棄
-            cache?.Dispose();
-
-            // 新しいフォント画像を読み込む
-            // 例: rFont_08.png / rFont_12.png / rFont_16.png を用意する
-            string file = size switch
+            set
             {
-                8 => "Resource\\rFont_08.png",
-                12 => "Resource\\rFont_12.png",
-                16 => "Resource\\rFont_16.png", // 既存の16pxフォント
-                _ => "Resource\\rFont_16.png"
-            };
-
-            using var bmp = new Bitmap(file);
-            fontSize.Width = size; fontSize.Height = size;
-            cache = new AsciiMonoCache(bmp, size, size);
-        }
-
-        public void Dispose()
-        {
-
-            if (_MemDC != IntPtr.Zero)
-            {
-                SelectObject(_MemDC, _OrgMemBmp);
-                if (_MemBmp != IntPtr.Zero) DeleteObject(_MemBmp);
-                DeleteDC(_MemDC);
+                int foreColor = (value.R) | (value.G << 8) | (value.B << 16);
+                if (pens.ContainsKey(foreColor))
+                {
+                    _Pen = pens[_ForeColor];
+                }
+                else
+                {
+                    _Pen = WinApi.CreatePen(0, 1, foreColor);
+                    pens.Add(foreColor, _Pen);
+                }
             }
+        }
+        public System.Drawing.Color BackColor
+        {
+            set
+            {
+                int colorRef = (value.R) | (value.G << 8) | (value.B << 16);
 
-            SafeDeleteObject(_Pen);
-            SafeDeleteObject(_Brush);
-            SafeDeleteObject(_NullPen);
-            if (_Font != IntPtr.Zero)
-                SafeDeleteObject(_Font);
-            cache.Dispose();
-            foreach (var item in pens.Values)SafeDeleteObject(item);
-            foreach (var item in brushes.Values) SafeDeleteObject(item);
+                if (brushes.ContainsKey(colorRef))
+                {
+                    _Brush = brushes[colorRef];
+                }
+                else
+                {
+                    _Brush = WinApi.CreateSolidBrush(colorRef);
+                    brushes.Add(colorRef, _Brush);
+                }
+            }
         }
 
         public void BeginPaint(Rectangle paintRect)
@@ -119,7 +64,6 @@ namespace Remcoposer64.Common.Render
             SelectObject(_WorkBgDC, _WorkBgBmp);
 
         }
-
         public void EndPaint()
         {
             if (_MemDC != IntPtr.Zero)
@@ -150,110 +94,6 @@ namespace Remcoposer64.Common.Render
 
             RemoveClipRect();
             _Offset = Point.Empty;
-        }
-
-        public void RemoveClipRect()
-        {
-            WinApi.SelectClipRgn(DC, IntPtr.Zero);
-        }
-
-        IntPtr NullPen
-        {
-            get
-            {
-                const int PS_NULL = 5;
-                if (_NullPen == IntPtr.Zero)
-                {
-                    _NullPen = WinApi.CreatePen(PS_NULL, 0, 0);
-                }
-                return _NullPen;
-            }
-        }
-
-        IntPtr DC
-        {
-            get
-            {
-                return (_MemDC != IntPtr.Zero) ? _MemDC
-                                               : _DC;
-            }
-        }
-
-        static void SafeDeleteObject(IntPtr gdiObj)
-        {
-            if (gdiObj != IntPtr.Zero)
-                WinApi.DeleteObject(gdiObj);
-        }
-
-        public System.Drawing.Color ForeColor
-        {
-            set
-            {
-                int foreColor = (value.R) | (value.G << 8) | (value.B << 16);
-                if (pens.ContainsKey(foreColor))
-                {
-                    _Pen = pens[_ForeColor];
-                }
-                else
-                {
-                    _Pen = WinApi.CreatePen(0, 1, foreColor);
-                    pens.Add(foreColor, _Pen);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Background color used by drawing APIs.
-        /// </summary>
-        public System.Drawing.Color BackColor
-        {
-            set
-            {
-                int colorRef = (value.R) | (value.G << 8) | (value.B << 16);
-
-                if (brushes.ContainsKey(colorRef))
-                {
-                    _Brush = brushes[colorRef];
-                }
-                else
-                {
-                    _Brush = WinApi.CreateSolidBrush(colorRef);
-                    brushes.Add(colorRef, _Brush);
-                }
-            }
-        }
-
-
-        public void FillRectangle(int x, int y, int width, int height)
-        {
-            FillRectangle(DC, x, y, width, height);
-        }
-
-        public void FillRectangle(IntPtr dc,int x, int y, int width, int height)
-        {
-            x -= _Offset.X;
-            y -= _Offset.Y;
-            RECT r = new RECT { left = x, top = y, right = x + width, bottom = y + height };
-            WinApi.FillRect(dc, ref r, _Brush);
-        }
-
-        public void DrawText(string text, ref Point position, System.Drawing.Color foreColor)
-        {
-
-            var x = position.X - _Offset.X;
-            var y = position.Y - _Offset.Y;
-
-            var newFont = _Font;
-            var oldFont = WinApi.SelectObject(DC, newFont);
-            var oldForeColor = WinApi.SetTextColor(DC, foreColor);
-
-            WinApi.SetTextAlign(DC, false);
-            WinApi.SetBkMode(DC,WinApi.TRANSPARENT);
-            //WinApi.SetBkMode(DC, OPAQUE);
-            WinApi.ExtTextOut(DC, x, y, 0, text);
-
-            WinApi.SetTextColor(DC, oldForeColor);
-            WinApi.SelectObject(DC, oldFont);
         }
 
         public void DrawGlyph(int x, int y, AsciiMonoCache.Glyph g, System.Drawing.Color fg, System.Drawing.Color bg)
@@ -292,7 +132,6 @@ namespace Remcoposer64.Common.Render
             // 後始末
             //WinApi.SelectObject(_WorkDC, _WorkOldBmp);
         }
-
         public void DrawString(string text, ref Point position, System.Drawing.Color fg, System.Drawing.Color bg)
         {
             int cx = position.X - _Offset.X;
@@ -325,7 +164,6 @@ namespace Remcoposer64.Common.Render
             position.X = cx + _Offset.X;
             position.Y = cy + _Offset.Y;
         }
-
         public void DrawStringOSFont(string text, ref Point pos, System.Drawing.Color fg, System.Drawing.Color bg)
         {
             // --- 1. フォント選択 ---
@@ -371,7 +209,6 @@ namespace Remcoposer64.Common.Render
             // --- 7. pos.X を進める ---
             pos.X += size.cx;
         }
-
         public void DrawLine(int x1, int y1, int x2, int y2, System.Drawing.Color color)
         {
             // オフセット補正（BeginPaint の矩形位置）
@@ -393,9 +230,173 @@ namespace Remcoposer64.Common.Render
             WinApi.DeleteObject(pen);
         }
 
+        public void SetFontSize(int size)
+        {
+            // 古いキャッシュを破棄
+            cache?.Dispose();
+
+            // 新しいフォント画像を読み込む
+            // 例: rFont_08.png / rFont_12.png / rFont_16.png を用意する
+            string file = size switch
+            {
+                8 => "Resource\\rFont_08.png",
+                12 => "Resource\\rFont_12.png",
+                16 => "Resource\\rFont_16.png", // 既存の16pxフォント
+                _ => "Resource\\rFont_16.png"
+            };
+
+            using var bmp = new Bitmap(file);
+            fontSize.Width = size; fontSize.Height = size;
+            cache = new AsciiMonoCache(bmp, size, size);
+        }
+        public void FillRectangle(int x, int y, int width, int height)
+        {
+            FillRectangle(DC, x, y, width, height);
+        }
+
         public void Resize(int width, int height)
         {
         }
+
+        public int MeasureStringOSFont(string text)
+        {
+            IntPtr oldFont = SelectObject(DC, _Font);
+            SIZE size;
+            GetTextExtentPoint32(DC, text, text.Length, out size);
+            SelectObject(DC, oldFont);
+            return size.cx;
+        }
+
+        public GraphGDI(IntPtr handle)
+        {
+            _Window = handle;
+            _DC = WinApi.GetDC(handle);
+
+            using var bmp = new Bitmap("Resource\\rFont_16.png");
+            fontSize.Width = 16; fontSize.Height = 16;
+            cache = new AsciiMonoCache(bmp, 16, 16);
+            CreateMeiryoFont(16); // 好きなサイズ
+
+        }
+
+        public void Dispose()
+        {
+
+            if (_MemDC != IntPtr.Zero)
+            {
+                SelectObject(_MemDC, _OrgMemBmp);
+                if (_MemBmp != IntPtr.Zero) DeleteObject(_MemBmp);
+                DeleteDC(_MemDC);
+            }
+
+            SafeDeleteObject(_Pen);
+            SafeDeleteObject(_Brush);
+            SafeDeleteObject(_NullPen);
+            if (_Font != IntPtr.Zero)
+                SafeDeleteObject(_Font);
+            cache.Dispose();
+            foreach (var item in pens.Values) SafeDeleteObject(item);
+            foreach (var item in brushes.Values) SafeDeleteObject(item);
+        }
+
+
+
+        IntPtr _Window = IntPtr.Zero;
+        IntPtr _DC = IntPtr.Zero;
+        IntPtr _MemDC = IntPtr.Zero;
+        Point _Offset = Point.Empty;
+        IntPtr _MemBmp = IntPtr.Zero;
+        IntPtr _OrgMemBmp;
+        System.Drawing.Size _MemDcSize;
+        int _ForeColor;
+        IntPtr _Pen = IntPtr.Zero;
+        IntPtr _Brush = IntPtr.Zero;
+        IntPtr _NullPen = IntPtr.Zero;
+        IntPtr _Font = IntPtr.Zero;
+        private AsciiMonoCache cache;
+        private readonly System.Drawing.Font font = new("Courier New", 12, FontStyle.Regular);
+        IntPtr _WorkOldBmp = IntPtr.Zero;
+        IntPtr _WorkFgDC = IntPtr.Zero;
+        IntPtr _WorkFgBmp = IntPtr.Zero;
+        IntPtr _WorkOldFgBmp = IntPtr.Zero;
+        IntPtr _WorkBgDC = IntPtr.Zero;
+        IntPtr _WorkBgBmp = IntPtr.Zero;
+        IntPtr _WorkOldBgBmp = IntPtr.Zero;
+        System.Drawing.Size fontSize= new System.Drawing.Size();
+        Dictionary<int, IntPtr> pens = new Dictionary<int, IntPtr>();
+        Dictionary<int, IntPtr> brushes = new Dictionary<int, IntPtr>();
+
+        private void CreateMeiryoFont(int size)
+        {
+            LOGFONT lf = new LOGFONT();
+            lf.lfHeight = -size;        // 負値 → 高さを指定
+            lf.lfWeight = 400;          // 通常
+            lf.lfCharSet = 0;           // DEFAULT_CHARSET
+            lf.lfFaceName = "Meiryo";   // ★ここが重要
+
+            _Font = CreateFontIndirect(ref lf);
+        }
+
+        public void RemoveClipRect()
+        {
+            WinApi.SelectClipRgn(DC, IntPtr.Zero);
+        }
+
+        IntPtr NullPen
+        {
+            get
+            {
+                const int PS_NULL = 5;
+                if (_NullPen == IntPtr.Zero)
+                {
+                    _NullPen = WinApi.CreatePen(PS_NULL, 0, 0);
+                }
+                return _NullPen;
+            }
+        }
+
+        IntPtr DC
+        {
+            get
+            {
+                return (_MemDC != IntPtr.Zero) ? _MemDC
+                                               : _DC;
+            }
+        }
+
+        static void SafeDeleteObject(IntPtr gdiObj)
+        {
+            if (gdiObj != IntPtr.Zero)
+                WinApi.DeleteObject(gdiObj);
+        }
+
+        private void FillRectangle(IntPtr dc,int x, int y, int width, int height)
+        {
+            x -= _Offset.X;
+            y -= _Offset.Y;
+            RECT r = new RECT { left = x, top = y, right = x + width, bottom = y + height };
+            WinApi.FillRect(dc, ref r, _Brush);
+        }
+
+        public void DrawText(string text, ref Point position, System.Drawing.Color foreColor)
+        {
+
+            var x = position.X - _Offset.X;
+            var y = position.Y - _Offset.Y;
+
+            var newFont = _Font;
+            var oldFont = WinApi.SelectObject(DC, newFont);
+            var oldForeColor = WinApi.SetTextColor(DC, foreColor);
+
+            WinApi.SetTextAlign(DC, false);
+            WinApi.SetBkMode(DC,WinApi.TRANSPARENT);
+            //WinApi.SetBkMode(DC, OPAQUE);
+            WinApi.ExtTextOut(DC, x, y, 0, text);
+
+            WinApi.SetTextColor(DC, oldForeColor);
+            WinApi.SelectObject(DC, oldFont);
+        }
+
 
     }
 }

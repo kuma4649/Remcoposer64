@@ -23,5 +23,6 @@ namespace Remcoposer64.Common.Render
 
         void Resize(int width, int height);
 
+        int MeasureStringOSFont(string text);
    }
 }

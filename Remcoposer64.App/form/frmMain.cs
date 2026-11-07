@@ -717,16 +717,43 @@ namespace Remcoposer64.App
         {
             List<object> lst = new List<object>();
             foreach (var ctrl in dockPanel1.Contents) lst.Add(ctrl);
-            for(int i=0;i<lst.Count;i++)
+            for (int i = 0; i < lst.Count; i++)
             {
-                if (lst[i] is frmStepEditor) ((frmStepEditor)lst[i]).Close();
-                if (lst[i] is frmProject) ((frmProject)lst[i]).Close();
-                if (lst[i] is frmInformation) ((frmInformation)lst[i]).Close();
+                try
+                {
+                    if (lst[i] is frmStepEditor) ((frmStepEditor)lst[i]).Close();
+                    if (lst[i] is frmInformation)
+                        ((frmInformation)lst[i]).Close();
+                }
+                catch
+                {
+                    ;
+                }
             }
-            
+            //Application.DoEvents();
+            for (int i = 0; i < fProjects.Count; i++)
+            {
+                try
+                {
+                    //fProjects[i].DockState = DockState.Float;
+                    //Application.DoEvents();
+                    //Application.DoEvents();
+                    fProjects[i].Close();
+                }
+                catch
+                {
+                    ;
+                }
+            }
+            //Application.DoEvents();
+
             // frmProjectを閉じるとメインフォームがバグる現象を回避する
-            this.Size = new Size(this.Width - 1, this.Height - 1);
-            this.Size = new Size(this.Width + 1, this.Height + 1);
+            //this.Size = new Size(this.Width - 1, this.Height - 1);
+            //Application.DoEvents();
+            //this.Size = new Size(this.Width + 1, this.Height + 1);
+            //Application.DoEvents();
+            //dockPanel1.Update();
+            //Application.DoEvents();
 
             fProjects.Clear();
             projects.Clear();

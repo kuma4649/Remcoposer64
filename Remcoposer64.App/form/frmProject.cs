@@ -40,7 +40,7 @@ namespace Remcoposer64.App.form
 
         private void frmProject_FormClosed(object sender, FormClosedEventArgs e)
         {
-            parent.CloseProject();
+            //parent.CloseProject();
         }
     }
 }
