@@ -15,6 +15,8 @@ namespace Remcoposer64.TrackEditor
 
         public UndoRedoManager.UndoRedoManager UndoRedoManager { get; private set; } = null;
 
+        private const int HEADER_HEIGHT = 16;
+        private const int VSCROLLBAR_HEIGHT = 17;
         public int HeaderLine { get; private set; } = 2;
         public TrackEditorCursor TrackCursor = new();
         public TrackEditorSelection TrackSelection = new();
@@ -70,7 +72,17 @@ namespace Remcoposer64.TrackEditor
         {
             InitializeComponent();
 
-            BackColor = Color.FromArgb(40, 40, 40);
+            BackColor = Color.FromArgb(120, 110, 180);
+            
+            pnlRuler.Height = HEADER_HEIGHT;
+            pnlUpperHeader.Height = HEADER_HEIGHT;
+            trackHeaderPanel.Location = new Point(0, HEADER_HEIGHT);
+            trackCanvasPanel.Location = new Point(0, HEADER_HEIGHT);
+            vScrollBar1.Location = new Point(vScrollBar1.Location.X, HEADER_HEIGHT);
+            trackHeaderPanel.Size = new Size(trackHeaderPanel.Width, ClientSize.Height - HEADER_HEIGHT - VSCROLLBAR_HEIGHT);
+            trackCanvasPanel.Size = new Size(trackCanvasPanel.Width, ClientSize.Height - HEADER_HEIGHT - VSCROLLBAR_HEIGHT);
+            vScrollBar1.Size = new Size(vScrollBar1.Width, ClientSize.Height - HEADER_HEIGHT - VSCROLLBAR_HEIGHT);
+
             TrackCursor.Clear();
             TrackSelection.Clear();
         }
@@ -84,6 +96,8 @@ namespace Remcoposer64.TrackEditor
 
             trackHeaderPanel.SetContext(this, project, setting, player);
             trackCanvasPanel.SetContext(this, project, setting, player);
+            pnlUpperHeader.SetContext(this, project, setting, player);
+            pnlRuler.SetContext(this, project, setting, player);
 
             splitContainer1.SplitterDistance = ClientSize.Width <= 800 ? (ClientSize.Width / 2) : 400;
 
@@ -220,6 +234,7 @@ namespace Remcoposer64.TrackEditor
             pxScrollX = hScrollBar1.Value;
 
             trackCanvasPanel.Invalidate();
+            pnlRuler.Invalidate();
         }
 
         private void hHeaderScrollBar_ValueChanged(object sender, EventArgs e)
@@ -227,6 +242,7 @@ namespace Remcoposer64.TrackEditor
             pxHeaderScrollX = hHeaderScrollBar.Value;
 
             trackHeaderPanel.Invalidate();
+            pnlUpperHeader.Invalidate();
         }
 
         private void UpdateScrollPosition()
@@ -235,6 +251,8 @@ namespace Remcoposer64.TrackEditor
 
             trackHeaderPanel.Invalidate();
             trackCanvasPanel.Invalidate();
+            pnlUpperHeader.Invalidate();
+            pnlRuler.Invalidate();
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -1064,6 +1082,8 @@ namespace Remcoposer64.TrackEditor
         {
             trackHeaderPanel.Refresh();
             trackCanvasPanel.Refresh();
+            pnlUpperHeader.Refresh();
+            pnlRuler.Refresh();
         }
 
         public LinkedListNode<MIDITrack> GetTrackByIndex(int trackNo)

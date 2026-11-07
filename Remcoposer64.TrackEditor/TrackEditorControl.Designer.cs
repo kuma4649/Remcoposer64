@@ -12,8 +12,10 @@ namespace Remcoposer64.TrackEditor
         private void InitializeComponent()
         {
             splitContainer1 = new SplitContainer();
+            pnlUpperHeader = new TrackUpperHeaderPanel();
             hHeaderScrollBar = new HScrollBar();
             trackHeaderPanel = new Remcoposer64.TrackEditor.Internal.TrackHeaderPanel();
+            pnlRuler = new TrackRulerPanel();
             btnStretch = new Button();
             trackBar1 = new TrackBar();
             hScrollBar1 = new HScrollBar();
@@ -35,12 +37,14 @@ namespace Remcoposer64.TrackEditor
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(pnlUpperHeader);
             splitContainer1.Panel1.Controls.Add(hHeaderScrollBar);
             splitContainer1.Panel1.Controls.Add(trackHeaderPanel);
             splitContainer1.Panel1MinSize = 120;
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(pnlRuler);
             splitContainer1.Panel2.Controls.Add(btnStretch);
             splitContainer1.Panel2.Controls.Add(trackBar1);
             splitContainer1.Panel2.Controls.Add(hScrollBar1);
@@ -50,9 +54,18 @@ namespace Remcoposer64.TrackEditor
             splitContainer1.TabIndex = 0;
             splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
             // 
+            // pnlUpperHeader
+            // 
+            pnlUpperHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlUpperHeader.BackColor = Color.DarkSlateBlue;
+            pnlUpperHeader.Location = new Point(0, 0);
+            pnlUpperHeader.Name = "pnlUpperHeader";
+            pnlUpperHeader.Size = new Size(121, 32);
+            pnlUpperHeader.TabIndex = 2;
+            // 
             // hHeaderScrollBar
             // 
-            hHeaderScrollBar.Dock = DockStyle.Bottom;
+            hHeaderScrollBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             hHeaderScrollBar.Location = new Point(0, 418);
             hHeaderScrollBar.Name = "hHeaderScrollBar";
             hHeaderScrollBar.Size = new Size(121, 17);
@@ -61,18 +74,27 @@ namespace Remcoposer64.TrackEditor
             // 
             // trackHeaderPanel
             // 
+            trackHeaderPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             trackHeaderPanel.BackColor = Color.FromArgb(48, 48, 48);
-            trackHeaderPanel.Dock = DockStyle.Fill;
-            trackHeaderPanel.Location = new Point(0, 0);
+            trackHeaderPanel.Location = new Point(0, 32);
             trackHeaderPanel.Name = "trackHeaderPanel";
-            trackHeaderPanel.Size = new Size(121, 435);
+            trackHeaderPanel.Size = new Size(121, 386);
             trackHeaderPanel.TabIndex = 0;
             trackHeaderPanel.TabStop = true;
+            // 
+            // pnlRuler
+            // 
+            pnlRuler.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlRuler.BackColor = Color.DarkSlateBlue;
+            pnlRuler.Location = new Point(0, 0);
+            pnlRuler.Name = "pnlRuler";
+            pnlRuler.Size = new Size(385, 32);
+            pnlRuler.TabIndex = 2;
             // 
             // btnStretch
             // 
             btnStretch.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnStretch.Location = new Point(269, 418);
+            btnStretch.Location = new Point(269, 417);
             btnStretch.Name = "btnStretch";
             btnStretch.Size = new Size(17, 17);
             btnStretch.TabIndex = 1;
@@ -84,7 +106,7 @@ namespace Remcoposer64.TrackEditor
             // trackBar1
             // 
             trackBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            trackBar1.Location = new Point(291, 415);
+            trackBar1.Location = new Point(291, 418);
             trackBar1.Maximum = 1000;
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(71, 45);
@@ -107,17 +129,17 @@ namespace Remcoposer64.TrackEditor
             // 
             trackCanvasPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             trackCanvasPanel.BackColor = Color.FromArgb(32, 32, 32);
-            trackCanvasPanel.Location = new Point(0, 0);
+            trackCanvasPanel.Location = new Point(0, 32);
             trackCanvasPanel.Name = "trackCanvasPanel";
-            trackCanvasPanel.Size = new Size(365, 415);
+            trackCanvasPanel.Size = new Size(365, 386);
             trackCanvasPanel.TabIndex = 0;
             // 
             // vScrollBar1
             // 
-            vScrollBar1.Dock = DockStyle.Right;
-            vScrollBar1.Location = new Point(493, 0);
+            vScrollBar1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            vScrollBar1.Location = new Point(493, 32);
             vScrollBar1.Name = "vScrollBar1";
-            vScrollBar1.Size = new Size(17, 435);
+            vScrollBar1.Size = new Size(17, 403);
             vScrollBar1.TabIndex = 1;
             vScrollBar1.Scroll += vScrollBar1_Scroll;
             vScrollBar1.ValueChanged += vScrollBar1_ValueChanged;
@@ -146,5 +168,7 @@ namespace Remcoposer64.TrackEditor
         private HScrollBar hHeaderScrollBar;
         private TrackBar trackBar1;
         private Button btnStretch;
+        private TrackUpperHeaderPanel pnlUpperHeader;
+        private TrackRulerPanel pnlRuler;
     }
 }
