@@ -656,6 +656,12 @@ namespace Remcoposer64.Core.Player
                 trk.MemoWait = 60;
                 Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
             }
+            else if (evt.Type == MIDIEventType.MetaLyric)
+            {
+                //trk.Memo = ((MIDIMemoEvent)evt).Text;
+                //trk.MemoWait = 60;
+                //Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
+            }
             else if (evt.Type == MIDIEventType.UserExclusive1)
             {
                 MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;

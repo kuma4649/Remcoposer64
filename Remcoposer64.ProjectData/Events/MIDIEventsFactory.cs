@@ -21,6 +21,7 @@ namespace Remcoposer64.ProjectData.Events
                 case MIDIEventType.KeyAfterTouch:
                     return new MIDIPolyphonicKeyPressureEvent();
                 case MIDIEventType.Memo:
+                case MIDIEventType.MetaLyric:
                     return new MIDIMemoEvent();
                 case MIDIEventType.MetaTextEvent:
                     return new MIDIMemoEvent();

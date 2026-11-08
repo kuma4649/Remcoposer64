@@ -811,6 +811,10 @@ namespace Remcoposer64.Core
                     trk.Name = strFromByte;
                     break;
                 case 0x05://歌詞
+                    enc = Common.Common.GetCode(nam.ToArray());
+                    if (enc == null) enc = Encoding.UTF8;
+                    strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
+                    break;
                 case 0x06://マーカー
                 case 0x07://キューポイント 
                 case 0x08://プログラム名 (音色名) 

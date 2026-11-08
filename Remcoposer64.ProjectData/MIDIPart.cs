@@ -129,6 +129,24 @@ namespace Remcoposer64.ProjectData
                     eve.Type = MIDIEventType.BarLine;
                 }
             }
+            else if (eve is MIDIMemoEvent)
+            {
+                if (eve.Type == MIDIEventType.MetaLyric)
+                {
+                    eve.Type = MIDIEventType.Memo;
+                }
+                if (MIDImessage.Length > 2)
+                {
+                    Encoding encoding = Common.Common.GetCode(MIDImessage, 2, MIDImessage.Length - 2);
+                    if (encoding == null) encoding = Encoding.UTF8;
+                    string strFromByte = encoding.GetString(MIDImessage,2, MIDImessage.Length - 2).Replace("\0", "");
+                    ((MIDIMemoEvent)eve).Text = strFromByte;
+                }
+                else
+                {
+                    ((MIDIMemoEvent)eve).Text = "";
+                }
+            }
 
             return insertEve(TargetEvent, Step, eve);
         }
