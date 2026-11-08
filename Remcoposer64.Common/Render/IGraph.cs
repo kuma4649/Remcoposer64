@@ -24,5 +24,10 @@ namespace Remcoposer64.Common.Render
         void Resize(int width, int height);
 
         int MeasureStringOSFont(string text);
-   }
+
+        void DrawImage(int imageID,int characterID, Rectangle destRect);
+        void DrawImage(int imageID, int characterID, int x, int y);
+        Size GetImageSize(int imageID, int characterID);
+        void LoadImage(int imageID, string filePath, Dictionary<int, Rectangle> sourceRects);
+    }
 }

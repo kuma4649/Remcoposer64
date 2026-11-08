@@ -13,7 +13,7 @@ using Remcoposer64.Core.Player;
 namespace Remcoposer64.TrackEditor.Internal
 {
     [ToolboxItem(false)]
-    internal class TrackCanvasPanel : TrackPanelBase
+    public class TrackCanvasPanel : TrackPanelBase
     {
         //public int HeaderLines { get; } = 2;
 

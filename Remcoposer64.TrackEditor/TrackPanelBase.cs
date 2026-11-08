@@ -95,6 +95,7 @@ namespace Remcoposer64.TrackEditor
                 : new GraphVortice(Handle);
 
             graph.SetFontSize(pxFontHeight);
+
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)

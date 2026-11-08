@@ -1,5 +1,7 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.InteropServices;
+using Vortice;
 using Vortice.Direct2D1;
 using Vortice.DirectWrite;
 using Vortice.DXGI;
@@ -171,6 +173,89 @@ namespace Remcoposer64.Common.Render
             return (int)Math.Ceiling(metrics.Width);
         }
 
+        public void DrawImage(int imageID, int characterID, Rectangle destRect)
+        {
+            if (!imageResources.TryGetValue(imageID, out var img))
+                return;
+
+            if (!img.TryGetRect(characterID, out var srcRect))
+                return;
+
+            renderTarget.DrawBitmap(
+                img.Bitmap,
+                new RawRectF(
+                    destRect.Left,
+                    destRect.Top,
+                    destRect.Left + destRect.Width,
+                    destRect.Top + destRect.Height),
+                1.0f,
+                Vortice.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
+                new RawRectF(
+                    srcRect.Left,
+                    srcRect.Top,
+                    srcRect.Left + srcRect.Width,
+                    srcRect.Top + srcRect.Height));
+
+        }
+
+        public void DrawImage(int imageID, int characterID, int x, int y)
+        {
+            System.Drawing.Size sz = GetImageSize(imageID, characterID);
+            //Debug.WriteLine($"{sz.Width},{sz.Height}");
+
+            if (sz.IsEmpty)
+                return;
+
+            DrawImage(
+                imageID,
+                characterID,
+                new Rectangle(
+                    x,
+                    y,
+                    sz.Width,
+                    sz.Height));
+        }
+
+        public System.Drawing.Size GetImageSize(int imageID, int characterID)
+        {
+            if (!imageResources.TryGetValue(imageID, out var img))
+                return System.Drawing.Size.Empty;
+
+            if (!img.TryGetRect(characterID, out var rect))
+                return System.Drawing.Size.Empty;
+
+            return rect.Size;
+        }
+
+        public void LoadImage(
+            int imageID,
+            string filePath,
+            Dictionary<int, Rectangle> sourceRects)
+        {
+            imageResources.Remove(imageID);
+
+            using var decoder =
+                wicFactory.CreateDecoderFromFileName(filePath);
+
+            using var frame =
+                decoder.GetFrame(0);
+
+            using var converter =
+                wicFactory.CreateFormatConverter();
+
+            converter.Initialize(
+                frame,
+                PixelFormat.Format32bppPBGRA);
+
+            var bitmap =
+                renderTarget.CreateBitmapFromWicBitmap(converter);
+
+            imageResources[imageID]
+                = new ImageResource(
+                    bitmap,
+                    sourceRects);
+        }
+
         public GraphVortice(IntPtr hwnd)
         {
             // Direct2D Factory
@@ -216,6 +301,13 @@ namespace Remcoposer64.Common.Render
 
         void IDisposable.Dispose()
         {
+            foreach (var img in imageResources.Values)
+            {
+                img.Dispose();
+            }
+
+            imageResources.Clear();
+
             brushFg?.Dispose();
             brushBg?.Dispose();
             textFormat?.Dispose();
@@ -226,6 +318,7 @@ namespace Remcoposer64.Common.Render
 
 
 
+        private Dictionary<int, ImageResource> imageResources = new();
         private ID2D1Factory1 d2dFactory;
         private IDWriteFactory dwFactory;
         private ID2D1HwndRenderTarget renderTarget;

@@ -315,6 +315,9 @@ namespace Remcoposer64.TrackEditor.Internal
                 trk = trk.Next;
             }
 
+            graph.DrawImage(0, 0, 0, 0);
+            graph.DrawImage(0, 1, 32, 0);
+            graph.DrawImage(0, 2, 64, 0);
         }
 
         private void DrawFocusRect(

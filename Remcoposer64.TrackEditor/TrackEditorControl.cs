@@ -83,8 +83,11 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.Size = new Size(trackCanvasPanel.Width, ClientSize.Height - HEADER_HEIGHT - VSCROLLBAR_HEIGHT);
             vScrollBar1.Size = new Size(vScrollBar1.Width, ClientSize.Height - HEADER_HEIGHT - VSCROLLBAR_HEIGHT);
 
+            pnlRuler.trackEditorControl = this;
+
             TrackCursor.Clear();
             TrackSelection.Clear();
+
         }
 
         public void SetContext(MIDIProject project, Setting setting, RmPlayer player, UndoRedoManager.UndoRedoManager undoRedoManager)
@@ -93,6 +96,8 @@ namespace Remcoposer64.TrackEditor
             this.Setting = setting;
             this.Player = player;
             this.UndoRedoManager = undoRedoManager;
+
+            pnlRuler.currentProject = project;
 
             trackHeaderPanel.SetContext(this, project, setting, player);
             trackCanvasPanel.SetContext(this, project, setting, player);
@@ -315,14 +320,15 @@ namespace Remcoposer64.TrackEditor
             {
                 pxScrollX = 0;
                 trackCanvasPanel.Refresh();
+                pnlRuler.Refresh();
                 return;
             }
 
             int playX = trackCanvasPanel.TickToXAbsolute((int)Player.GetFrameCounter());
             playX = Math.Max(playX - 50, 0);
-            if (hScrollBar1.Value == playX) trackCanvasPanel.Refresh();
+            if (hScrollBar1.Value == playX) { trackCanvasPanel.Refresh(); pnlRuler.Refresh(); }
             else if (playX <= hScrollBar1.Maximum) hScrollBar1.Value = playX;
-            else trackCanvasPanel.Refresh();
+            else { trackCanvasPanel.Refresh(); pnlRuler.Refresh(); }
         }
 
         private int GetMaxTick()

@@ -267,6 +267,16 @@ namespace Remcoposer64.Common.Render
             return size.cx;
         }
 
+        public void DrawImage(int imageID, int characterID, Rectangle destRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadImage(int imageID, string filePath, Dictionary<int, Rectangle> charactersIDandRect)
+        {
+            throw new NotImplementedException();
+        }
+
         public GraphGDI(IntPtr handle)
         {
             _Window = handle;
@@ -397,6 +407,14 @@ namespace Remcoposer64.Common.Render
             WinApi.SelectObject(DC, oldFont);
         }
 
+        public void DrawImage(int imageID, int characterID, int x, int y)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Size GetImageSize(int imageID, int characterID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

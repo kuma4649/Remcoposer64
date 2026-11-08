@@ -162,7 +162,7 @@ namespace Remcoposer64.TrackEditor
 
         private SplitContainer splitContainer1;
         private Internal.TrackHeaderPanel trackHeaderPanel;
-        private Internal.TrackCanvasPanel trackCanvasPanel;
+        public Internal.TrackCanvasPanel trackCanvasPanel;
         private VScrollBar vScrollBar1;
         private HScrollBar hScrollBar1;
         private HScrollBar hHeaderScrollBar;
