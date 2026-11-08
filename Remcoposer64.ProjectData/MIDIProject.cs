@@ -11,107 +11,18 @@ namespace Remcoposer64.ProjectData
     [Serializable]
     public class MIDIProject
     {
-        private MIDIInformation _Information = new MIDIInformation();
-        //private List<MIDITrack> _Track = new List<MIDITrack>();
-        private List<MIDIUserExclusive> _UserExclusive = new List<MIDIUserExclusive>();
-        private List<MIDIRythm> _Rythm = new List<MIDIRythm>();
-        private bool _RelativeTempoChangeSW = false;
-        private double _RelativeTempoChangeTargetTempo = 0.0;
-        private double _RelativeTempoChangeTickSlice = 0.0;
-        private double _RelativeTempoChangeNowTempo = 0.0;
         private Setting setting;
-
-        public MIDIInformation Information
-        {
-            set
-            {
-                _Information = value;
-            }
-            get
-            {
-                return _Information;
-            }
-        }
-        public LinkedList<MIDITrack> Track { get; set; } = new LinkedList<MIDITrack>();
-        //{
-        //    set
-        //    {
-        //        _Track = value;
-        //    }
-        //    get
-        //    {
-        //        return _Track;
-        //    }
-        //}
-        public List<MIDIUserExclusive> UserExclusive
-        {
-            set
-            {
-                _UserExclusive = value;
-            }
-            get
-            {
-                return _UserExclusive;
-            }
-        }
-        public List<MIDIRythm> Rythm
-        {
-            set
-            {
-                _Rythm = value;
-            }
-            get
-            {
-                return _Rythm;
-            }
-        }
-
-        public bool RelativeTempoChangeSW
-        {
-            set
-            {
-                _RelativeTempoChangeSW = value;
-            }
-            get
-            {
-                return _RelativeTempoChangeSW;
-            }
-        }
-        public double RelativeTempoChangeTargetTempo
-        {
-            set
-            {
-                _RelativeTempoChangeTargetTempo = value;
-            }
-            get
-            {
-                return _RelativeTempoChangeTargetTempo;
-            }
-        }
-        public double RelativeTempoChangeTickSlice
-        {
-            set
-            {
-                _RelativeTempoChangeTickSlice = value;
-            }
-            get
-            {
-                return _RelativeTempoChangeTickSlice;
-            }
-        }
-        public double RelativeTempoChangeNowTempo
-        {
-            set
-            {
-                _RelativeTempoChangeNowTempo = value;
-            }
-            get
-            {
-                return _RelativeTempoChangeNowTempo;
-            }
-        }
-
         public object parentForm { get; set; }
+
+        public MIDIInformation Information { get; set; } = new MIDIInformation();
+        public LinkedList<MIDITrack> Track { get; set; } = new LinkedList<MIDITrack>();
+        public List<MIDIUserExclusive> UserExclusive { get; set; } = new List<MIDIUserExclusive>();
+        public List<MIDIRythm> Rythm { get; set; } = new List<MIDIRythm>();
+        public bool RelativeTempoChangeSW { get; set; } = false;
+        public double RelativeTempoChangeTargetTempo { get; set; } = 0.0;
+        public double RelativeTempoChangeTickSlice { get; set; } = 0.0;
+        public double RelativeTempoChangeNowTempo { get; set; } = 0.0;
+        public DPLayout DockPanelLayout { get; set; } = null;
 
         public MIDIProject()
         {
@@ -297,10 +208,19 @@ namespace Remcoposer64.ProjectData
                 Information = GetInformationDto(src.Information),
                 Tracks = GetTrackDto(src.Track),
                 UserExclusive = GetUserExclusiveDto(src.UserExclusive),
-                Rythm = GetRythmDto(src.Rythm)
+                Rythm = GetRythmDto(src.Rythm),
+                DPLayout = GetDPLayoutDto(src.DockPanelLayout)
             };
 
             return dto;
+        }
+
+        private DPLayoutDto GetDPLayoutDto(DPLayout dpl)
+        {
+            return new DPLayoutDto
+            {
+                LayoutXml = dpl.LayoutXml
+            };
         }
 
         private MIDIInformationDto GetInformationDto(MIDIInformation inf)

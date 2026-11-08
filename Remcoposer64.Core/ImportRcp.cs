@@ -1,13 +1,7 @@
-﻿using NAudio.Midi;
-using Remcoposer64.Common;
-using Remcoposer64.Common.Render;
+﻿using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
-using System.Diagnostics;
-using System.Runtime.Intrinsics.Arm;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Remcoposer64.Core
 {

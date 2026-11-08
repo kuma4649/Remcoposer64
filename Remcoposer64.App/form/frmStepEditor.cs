@@ -39,6 +39,11 @@ namespace Remcoposer64.App.form
             UpdateFormTitle();
         }
 
+        protected override string GetPersistString()
+        {
+            // クラス名と固有の情報を区切り文字（例:カンマやパイプ）で結合する
+            return $"{GetType().ToString()},{trk.Number},{prt.Number}";
+        }
 
 
         private void StepEditorPanel1_KeyDown(object sender, KeyEventArgs e)

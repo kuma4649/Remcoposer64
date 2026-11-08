@@ -822,18 +822,32 @@ namespace Remcoposer64.App
 
         private IDockContent DeserializeDockContent(string persistString)
         {
-            if (frmProject != null && persistString.IndexOf(frmProject.Name) >= 0) return frmProject;
-            else if (logViewer != null && persistString.IndexOf(logViewer.Name) >= 0) return logViewer;
-            else if (opePanel != null && persistString.IndexOf(opePanel.Name) >= 0) return opePanel;
-            else if (info != null && persistString.IndexOf(info.Name) >= 0) return info;
-            else if (persistString.IndexOf("frmStepEditor") >= 0)
+            if (frmProject != null && persistString.IndexOf(nameof(frmProject)) >= 0) return frmProject;
+            else if (logViewer != null && persistString.IndexOf(nameof(frmLogViewer)) >= 0) return logViewer;
+            else if (opePanel != null && persistString.IndexOf(nameof(frmOpePanel)) >= 0) return opePanel;
+            else if (info != null && persistString.IndexOf(nameof(frmInformation)) >= 0) return info;
+            else if (persistString.IndexOf(nameof(frmStepEditor)) >= 0)
             {
                 if (currentProject == null) return null;
-                frmStepEditor fse = new frmStepEditor(
-                    this,
-                    currentProject.Track.First.Value,
-                    currentProject.Track.First.Value.Part.First.Value,
-                    undoMng);
+                string[] parts = persistString.Split(',');
+                if(parts.Length < 3) return null;
+                string className = parts[0];
+                int trackNumber = int.Parse(parts[1]);
+                int partNumber = int.Parse(parts[2]);
+                MIDITrack trk = null;
+                MIDIPart prt = null;
+                try
+                {
+                    trk = currentProject.Track.ElementAt(trackNumber);
+                    prt = trk.Part.ElementAt(partNumber);
+                }
+                catch
+                {
+                    trk = null;
+                    prt = null;
+                }
+                if (trk == null || prt == null) return null;
+                frmStepEditor fse = new frmStepEditor(this, trk, prt, undoMng);
                 stepEditors.Add(fse);
                 return fse;
             }

@@ -1,12 +1,5 @@
-﻿using Remcoposer64.Common.Render;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Text;
-using static Remcoposer64.Common.WinApi;
-using static System.Net.Mime.MediaTypeNames;
+﻿using System.Text;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.Common
 {
@@ -300,6 +293,25 @@ namespace Remcoposer64.Common
             byte[] dst = new byte[v];
             Array.Copy(bs, ptr, dst, 0, v);
             return GetCode(dst);
+        }
+
+        public static string GetDockPanelXml(DockPanel dp)
+        {
+            string xmlString = "";
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // 第1引数に MemoryStream、第2引数に文字コードを指定して保存
+                dp.SaveAsXml(ms, Encoding.UTF8);
+
+                // ストリームの先頭に戻して文字列に変換
+                ms.Position = 0;
+                using (StreamReader reader = new StreamReader(ms, Encoding.UTF8))
+                {
+                    xmlString = reader.ReadToEnd();
+                }
+            }
+
+            return xmlString;
         }
 
     }

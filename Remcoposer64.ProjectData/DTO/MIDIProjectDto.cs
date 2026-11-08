@@ -10,6 +10,7 @@ namespace Remcoposer64.ProjectData.DTO
         public List<MIDITrackDto> Tracks { get; set; }
         public List<MIDIUserExclusiveDto> UserExclusive { get; set; }
         public List<MIDIRythmDto> Rythm { get; set; }
+        public DPLayoutDto DPLayout { get; set; }
 
     }
 }
