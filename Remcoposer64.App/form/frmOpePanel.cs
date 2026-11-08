@@ -11,6 +11,7 @@ namespace Remcoposer64.App.form
 {
     public partial class frmOpePanel : DockContent
     {
+        public Action afterClose;
         private frmMain main;
 
         public frmOpePanel(frmMain main)
@@ -47,7 +48,7 @@ namespace Remcoposer64.App.form
         private void cbFF_CheckedChanged(object sender, EventArgs e)
         {
             main.setting.player.playSpeed = cbFF.Checked ? 10.0 : 1.0;
-            cbSlow.Checked = false; 
+            cbSlow.Checked = false;
         }
 
         private void cbSlow_CheckedChanged(object sender, EventArgs e)
@@ -105,11 +106,12 @@ namespace Remcoposer64.App.form
             lblBeat.Text = main.GetBeatText();
         }
 
-        private void frmOpePanel_FormClosing(object sender, FormClosingEventArgs e)
+        private void frmOpePanel_FormClosed(object sender, FormClosedEventArgs e)
         {
-            e.Cancel = true; // Close をキャンセル
-            this.Hide();     // 非表示にするだけ
+            if (afterClose != null)
+            {
+                afterClose();
+            }
         }
-
     }
 }

@@ -4,8 +4,9 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Remcoposer64.App
 {
-    public partial class frmConsole : DockContent
+    public partial class frmLogViewer : DockContent
     {
+        public Action afterClose;
         private Setting setting;
 
         public void LogWrite(string message)
@@ -31,7 +32,7 @@ namespace Remcoposer64.App
             catch { }
         }
 
-        public frmConsole(Setting setting)
+        public frmLogViewer(Setting setting)
         {
             this.setting = setting;
             InitializeComponent();
@@ -73,12 +74,12 @@ namespace Remcoposer64.App
             tbLog.Clear();
         }
 
-        private void frmConsole_Load(object sender, EventArgs e)
+        private void frmLogViewer_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void frmConsole_Shown(object sender, EventArgs e)
+        private void frmLogViewer_Shown(object sender, EventArgs e)
         {
             updateLoglevel();
         }
@@ -92,14 +93,12 @@ namespace Remcoposer64.App
             tsmiInformation.Checked = Log.logLevel == LogLevel.Information;
         }
 
-        private void frmConsole_FormClosing(object sender, FormClosingEventArgs e)
+        private void frmLogViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
-        }
-
-        private void frmConsole_FormClosed(object sender, FormClosedEventArgs e)
-        {
+            if(afterClose != null)
+            {
+                afterClose();
+            }
         }
     }
 }

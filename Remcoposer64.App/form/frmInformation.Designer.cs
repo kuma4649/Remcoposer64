@@ -223,6 +223,7 @@
             MinimumSize = new Size(640, 480);
             Name = "frmInformation";
             Text = "Information";
+            FormClosed += frmInformation_FormClosed;
             ResumeLayout(false);
             PerformLayout();
         }

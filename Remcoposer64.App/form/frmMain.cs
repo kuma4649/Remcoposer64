@@ -12,16 +12,14 @@ namespace Remcoposer64.App
     public partial class frmMain : Form
     {
         public Setting setting;
-        private frmConsole console;
-        private frmOpePanel opePanel;
         private UndoRedoManager.UndoRedoManager undoMng;
-        private frmInformation info;
-
-        private List<MIDIProject> projects = new List<MIDIProject>();
         private MIDIProject currentProject = null;
         private RmPlayer player = null;
 
-        private List<frmProject> fProjects = new List<frmProject>();
+        private frmLogViewer logViewer;
+        private frmOpePanel opePanel;
+        private frmInformation info;
+        private frmProject frmProject;
         private List<frmStepEditor> stepEditors = new List<frmStepEditor>();
 
         public frmMain()
@@ -141,12 +139,10 @@ namespace Remcoposer64.App
             player.Close();
 
             // MIDIデバイスの表示を更新する
-            foreach (frmProject tab in fProjects)
-            {
                 try
                 {
-                    MIDIProject project = (MIDIProject)tab.Tag;
-                    TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
+                    MIDIProject project = (MIDIProject)frmProject.Tag;
+                    TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
                     tec.SetContext(project, setting, player, undoMng);
                     tec.Refresh();
                 }
@@ -154,7 +150,6 @@ namespace Remcoposer64.App
                 {
                     Log.ForcedWrite(e);
                 }
-            }
 
             // MIDIデバイスをオープンする
             player = new RmPlayer(setting);
@@ -165,17 +160,14 @@ namespace Remcoposer64.App
         {
 
             // MIDIデバイスの表示を更新する
-            foreach (frmProject tab in fProjects)
+            try
             {
-                try
-                {
-                    TrackEditorControl tec = (TrackEditorControl)tab.Controls[0];
-                    tec.SetHeaderLine(setting.common.TrackEditorRow);
-                }
-                catch (Exception e)
-                {
-                    Log.ForcedWrite(e);
-                }
+                TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
+                tec.SetHeaderLine(setting.common.TrackEditorRow);
+            }
+            catch (Exception e)
+            {
+                Log.ForcedWrite(e);
             }
 
         }
@@ -202,11 +194,6 @@ namespace Remcoposer64.App
             undoMng.Clear();
         }
 
-        private void tsmiShowConsole_Click(object sender, EventArgs e)
-        {
-            console.Show();
-            console.BringToFront();
-        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -226,16 +213,8 @@ namespace Remcoposer64.App
 
             // 開いていたファイルを全て記憶する
             setting.ui.OpenFiles = new List<string>();
-            foreach (var project in fProjects)
-            {
-                if (project?.Tag is not MIDIProject prj)
-                    continue;
-
-                if (string.IsNullOrWhiteSpace(prj.Information.FileFullName))
-                    continue;
-
-                setting.ui.OpenFiles.Add(((MIDIProject)project.Tag).Information.FileFullName);
-            }
+            if (currentProject!=null && !string.IsNullOrWhiteSpace(currentProject.Information.FileFullName))// frmProject?.Tag is MIDIProject prj &&
+                setting.ui.OpenFiles.Add(currentProject.Information.FileFullName);
 
             setting.Save();
         }
@@ -288,7 +267,7 @@ namespace Remcoposer64.App
             tab.Text = prj.Information.FileName;
 
             // プロジェクトの UI を構築
-            AddProjectTab(prj);
+            AddProjectTab(prj, true);
             UpdateTitle();
             UpdateInformation(prj);
 
@@ -299,6 +278,16 @@ namespace Remcoposer64.App
 
         private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
         {
+            if(opePanel != null)
+            {
+                opePanel.Close();
+            }
+            opePanel = new frmOpePanel(this);
+            opePanel.afterClose = () =>
+            {
+                opePanel = null;
+            };
+
             opePanel.Show(dockPanel1, new Rectangle(0, 0, 372, 121));
             //opePanel.Show();
             //opePanel.BringToFront();
@@ -306,9 +295,39 @@ namespace Remcoposer64.App
 
         private void tsmiOpenInformation_Click(object sender, EventArgs e)
         {
-            if (info == null) info = new frmInformation(currentProject);
+            if (info != null)
+            {
+                info.Close();
+            }
+
+            info = new frmInformation(currentProject);
+            info.afterClose = () =>
+            {
+                info = null;
+            };
+
             info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
             info.Size = new Size(640, 480);
+        }
+
+        private void tsmiOpenLogViewer_Click(object sender, EventArgs e)
+        {
+            if (logViewer != null)
+            {
+                logViewer.Close();
+            }
+
+            logViewer = new frmLogViewer(setting);
+            logViewer.afterClose = () =>
+            {
+                logViewer = null;
+            };
+
+            logViewer.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
+            logViewer.Size = new Size(640, 480);
+
+            //logViewer.Show();
+            //logViewer.BringToFront();
         }
 
         internal void tsmiPlay_Click(object sender, EventArgs e)
@@ -527,13 +546,13 @@ namespace Remcoposer64.App
                     break;
             }
 
-            RestoreLayout();
-
             foreach (string fn in setting.ui.OpenFiles)
             {
                 if (File.Exists(fn))
-                    ImportMidiFile(fn);
+                    ImportMidiFile(fn, false);
             }
+
+            RestoreLayout();
 
         }
 
@@ -550,7 +569,7 @@ namespace Remcoposer64.App
             undoMng.Clear();
         }
 
-        private void ImportMidiFile(string fileName)
+        private void ImportMidiFile(string fileName, bool openForm = true)
         {
             CloseProject();
             undoMng.Clear();
@@ -589,24 +608,23 @@ namespace Remcoposer64.App
 
             Log.Write(LogLevel.Information, $"Import {fileName} is success.");
 
-            projects.Add(project);
+            //projects.Add(project);
             currentProject = project;
 
-            AddProjectTab(project);
+            AddProjectTab(project,openForm);
             UpdateTitle();
             UpdateInformation(project);
         }
 
-        private void AddProjectTab(MIDIProject project)
+        private void AddProjectTab(MIDIProject project,bool openForm)
         {
             // 新しいタブページを作成
-            frmProject tab = new frmProject(this, project);
-            tab.Text = project.Information.FileName;
-
+             frmProject = new frmProject(this, project);
+            frmProject.Text = project.Information.FileName;
             // プロジェクトをタブに紐づける
-            tab.Tag = project;
-            project.parentForm = tab;
-            fProjects.Add(tab);
+            frmProject.Tag = project;
+            project.parentForm = frmProject;
+            currentProject = project;
 
             TrackEditorControl trackEditor = new TrackEditorControl();
 
@@ -623,17 +641,19 @@ namespace Remcoposer64.App
 
             trackEditor.SetHeaderLine(setting.common.TrackEditorRow);
 
-            tab.Controls.Add(trackEditor);
+            frmProject.Controls.Add(trackEditor);
 
             // タブを追加
-            tab.Show(dockPanel1, DockState.Document);
-            trackEditor.SetInitialSplitDistance();
+            if (openForm)
+            {
+                frmProject.Show(dockPanel1, DockState.Document);
+                trackEditor.SetInitialSplitDistance();
 
-            // そのタブを選択
-            tab.Activate();
-            trackEditor.StretchZoom();
-            projects.Add(project);
-            currentProject = project;
+                // そのタブを選択
+                frmProject.Activate();
+                trackEditor.StretchZoom();
+            }
+
             undoMng.Clear();
         }
 
@@ -722,8 +742,8 @@ namespace Remcoposer64.App
                 try
                 {
                     if (lst[i] is frmStepEditor) ((frmStepEditor)lst[i]).Close();
-                    if (lst[i] is frmInformation)
-                        ((frmInformation)lst[i]).Close();
+                    //if (lst[i] is frmInformation)
+                    //    ((frmInformation)lst[i]).Close();
                 }
                 catch
                 {
@@ -731,20 +751,21 @@ namespace Remcoposer64.App
                 }
             }
             //Application.DoEvents();
-            for (int i = 0; i < fProjects.Count; i++)
-            {
                 try
                 {
-                    //fProjects[i].DockState = DockState.Float;
+                    //frmProject[i].DockState = DockState.Float;
                     //Application.DoEvents();
                     //Application.DoEvents();
-                    fProjects[i].Close();
+                    frmProject?.Close();
                 }
                 catch
                 {
                     ;
                 }
-            }
+
+            info?.Close();
+            info = null;
+
             //Application.DoEvents();
 
             // frmProjectを閉じるとメインフォームがバグる現象を回避する
@@ -755,8 +776,7 @@ namespace Remcoposer64.App
             //dockPanel1.Update();
             //Application.DoEvents();
 
-            fProjects.Clear();
-            projects.Clear();
+            //projects.Clear();
             currentProject = null;
             undoMng.Clear();
 
@@ -765,18 +785,32 @@ namespace Remcoposer64.App
 
         private void RestoreLayout()
         {
-            console = new frmConsole(setting);
-            opePanel = new frmOpePanel(this);
+            logViewer = new frmLogViewer(setting);
+            logViewer.afterClose = () =>
+            {
+                logViewer = null;
+            };
 
-            string fullPath = Path.Combine(Common.Common.settingFilePath,
-                                Common.Common.cntLayoutFileName);
+            opePanel = new frmOpePanel(this);
+            opePanel.afterClose = () =>
+            {
+                opePanel = null;
+            };
+
+            info = new frmInformation(currentProject);
+            info.afterClose = () =>
+            {
+                info = null;
+            };
+
+            string fullPath = Path.Combine(Common.Common.settingFilePath, Common.Common.cntLayoutFileName);
             if (File.Exists(fullPath))
                 dockPanel1.LoadFromXml(fullPath, DeserializeDockContent);
 
-            if (console.DockState == DockState.Unknown)
+            if (logViewer.DockState == DockState.Unknown)
             {
-                console.Show(dockPanel1, new Rectangle(0, 0, 816, 489));
-                console.Size = new Size(816, 489);
+                logViewer.Show(dockPanel1, new Rectangle(0, 0, 816, 489));
+                logViewer.Size = new Size(816, 489);
             }
 
             if (opePanel.DockState == DockState.Unknown)
@@ -788,8 +822,21 @@ namespace Remcoposer64.App
 
         private IDockContent DeserializeDockContent(string persistString)
         {
-            if (persistString.IndexOf("frmConsole") >= 0) return console;
-            if (persistString.IndexOf("frmOpePanel") >= 0) return opePanel;
+            if (frmProject != null && persistString.IndexOf(frmProject.Name) >= 0) return frmProject;
+            else if (logViewer != null && persistString.IndexOf(logViewer.Name) >= 0) return logViewer;
+            else if (opePanel != null && persistString.IndexOf(opePanel.Name) >= 0) return opePanel;
+            else if (info != null && persistString.IndexOf(info.Name) >= 0) return info;
+            else if (persistString.IndexOf("frmStepEditor") >= 0)
+            {
+                if (currentProject == null) return null;
+                frmStepEditor fse = new frmStepEditor(
+                    this,
+                    currentProject.Track.First.Value,
+                    currentProject.Track.First.Value.Part.First.Value,
+                    undoMng);
+                stepEditors.Add(fse);
+                return fse;
+            }
 
             return null;
         }
@@ -995,26 +1042,22 @@ namespace Remcoposer64.App
 
         public void UpdateTitle()
         {
-            if (projects == null || projects.Count == 0)
+            if (currentProject == null)
             {
                 this.Text = "Remcoposer64";
                 return;
             }
 
-            projects[0].Information.UpdateFlag = undoMng.GetUndoCount() ? "*" : "";
-
-            if (projects.Count < 1)
-                this.Text = "Remcoposer64";
-            else
-                this.Text = $"{projects[0].Information.Title} {projects[0].Information.UpdateFlag}";
+            currentProject.Information.UpdateFlag = undoMng.GetUndoCount() ? "*" : "";
+            this.Text = $"{currentProject.Information.Title} {currentProject.Information.UpdateFlag}";
         }
 
         internal void SetFirstFrame()
         {
             player.StopPlayback();
             player.SetFirstFrame();
-            fProjects[0].SetCanvasScrollX(0);
-            fProjects[0].Refresh();
+            frmProject.SetCanvasScrollX(0);
+            frmProject.Refresh();
         }
     }
 }

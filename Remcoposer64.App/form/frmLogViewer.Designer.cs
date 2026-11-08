@@ -1,7 +1,7 @@
 ﻿
 namespace Remcoposer64.App
 {
-    partial class frmConsole
+    partial class frmLogViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace Remcoposer64.App
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConsole));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmLogViewer));
             tbLog = new TextBox();
             menuStrip1 = new MenuStrip();
             levelToolStripMenuItem = new ToolStripMenuItem();
@@ -115,7 +115,7 @@ namespace Remcoposer64.App
             tsmiClear.Text = "Clear";
             tsmiClear.Click += tsmiClear_Click;
             // 
-            // frmConsole
+            // frmLogViewer
             // 
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.Black;
@@ -125,12 +125,11 @@ namespace Remcoposer64.App
             ForeColor = SystemColors.ControlLightLight;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
-            Name = "frmConsole";
+            Name = "frmLogViewer";
             Text = "Log viewer";
-            FormClosing += frmConsole_FormClosing;
-            FormClosed += frmConsole_FormClosed;
-            Load += frmConsole_Load;
-            Shown += frmConsole_Shown;
+            FormClosed += frmLogViewer_FormClosed;
+            Load += frmLogViewer_Load;
+            Shown += frmLogViewer_Shown;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);

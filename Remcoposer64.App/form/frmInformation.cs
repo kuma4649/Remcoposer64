@@ -5,12 +5,14 @@ namespace Remcoposer64.App.form
 {
     public partial class frmInformation : DockContent
     {
+        public Action afterClose;
         private MIDIProject project;
 
         public frmInformation(MIDIProject prj)
         {
             InitializeComponent();
             this.project = prj;
+            if (prj == null) return;
 
             // 初期値を反映
             txtFileName.Text = prj.Information.FileName;
@@ -47,5 +49,13 @@ namespace Remcoposer64.App.form
             this.Close();
         }
 
+
+        private void frmInformation_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if(afterClose!=null)
+            {
+                afterClose();
+            }
+        }
     }
 }

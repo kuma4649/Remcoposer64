@@ -356,7 +356,7 @@
             Name = "frmOpePanel";
             StartPosition = FormStartPosition.Manual;
             Text = "Ope Panel";
-            FormClosing += frmOpePanel_FormClosing;
+            FormClosed += frmOpePanel_FormClosed;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
