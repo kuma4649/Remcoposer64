@@ -101,7 +101,7 @@ namespace Remcoposer64.Common.Render
         {
             brushFg.Color = new Color4(fg.R / 255f, fg.G / 255f, fg.B / 255f, 1);
             brushBg.Color = new Color4(bg.R / 255f, bg.G / 255f, bg.B / 255f, 1);
-            FillRectangle(pos.X, pos.Y, (int)(text.Length * fontSize * 0.6), fontSize);
+            if (bg != System.Drawing.Color.Transparent) FillRectangle(pos.X, pos.Y, (int)(text.Length * fontSize * 0.6), fontSize);
 
             using (var layout = dwFactory.CreateTextLayout(text, textFormat, 2000, 2000))
             {
@@ -116,7 +116,7 @@ namespace Remcoposer64.Common.Render
                 var drawPos = new Vector2(pos.X, pos.Y + offsetY);
 
                 // 背景塗りつぶし（必要なら）
-                FillRectangle(pos.X, pos.Y, (int)metrics.Width, lineHeight);
+                if (bg != System.Drawing.Color.Transparent) FillRectangle(pos.X, pos.Y, (int)metrics.Width, lineHeight);
 
                 // 描画
                 renderTarget.DrawTextLayout(drawPos, layout, brushFg);

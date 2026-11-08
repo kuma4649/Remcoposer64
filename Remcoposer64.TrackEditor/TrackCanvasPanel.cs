@@ -52,6 +52,12 @@ namespace Remcoposer64.TrackEditor.Internal
                 trk = trk.Next;
             }
 
+            int playX = 0;
+            if (Project == Player.GetPlayingProject())
+            {
+                playX = TickToX((int)Player.GetFrameCounter());
+            }
+
             for (int i = TrackEditorControl.FirstVisibleTrack; i < TrackEditorControl.LastVisibleTrack; i++)
             {
                 if (trk == null)
@@ -69,6 +75,13 @@ namespace Remcoposer64.TrackEditor.Internal
 
                 DrawParts(trk, y);
 
+                if (!string.IsNullOrEmpty(trk.Value.Memo))
+                {
+                    Point pos = new Point(playX + 4, y + 4);
+                    graph.DrawStringOSFont(trk.Value.Memo, ref pos, Color.LimeGreen, Color.Transparent);
+                    trk.Value.MemoWait--;
+                    if (trk.Value.MemoWait <= 0) trk.Value.Memo = "";
+                }
 
                 graph.BackColor = Color.FromArgb(0, 90, 80, 190);
                 graph.FillRectangle(
@@ -83,7 +96,6 @@ namespace Remcoposer64.TrackEditor.Internal
 
             if (Project == Player.GetPlayingProject())
             {
-                int playX = TickToX((int)Player.GetFrameCounter());
                 graph.BackColor = Color.LimeGreen;
                 graph.FillRectangle(
                     playX,

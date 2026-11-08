@@ -468,6 +468,7 @@ namespace Remcoposer64.ProjectData
         }
 
         public bool Played { get; set; } = false;
+        public int MemoWait { get; set; }
 
         //初めのpartを得る
         public LinkedListNode<MIDIPart> getStartPartNode()

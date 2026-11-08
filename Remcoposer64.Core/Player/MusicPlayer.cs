@@ -95,7 +95,6 @@ namespace Remcoposer64.Core.Player
             ClearPlayedFlag();
             
             int minSt = 0;
-
             foreach (var trk in _project.Track)
             {
                 minSt = Math.Min(minSt, trk.St);
@@ -156,6 +155,7 @@ namespace Remcoposer64.Core.Player
             while (nTrk != null)
             {
                 nTrk.Value.Played = false;
+                nTrk.Value.Memo = "";
                 nTrk.Value.LoopStack = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
                 nTrk.Value.SameMeasStack = new Stack<LinkedListNode<MIDIEvent>>();
                 LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
@@ -652,6 +652,8 @@ namespace Remcoposer64.Core.Player
             }
             else if (evt.Type == MIDIEventType.Memo)
             {
+                trk.Memo = ((MIDIMemoEvent)evt).Text;
+                trk.MemoWait = 60;
                 Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
             }
             else if (evt.Type == MIDIEventType.UserExclusive1)
