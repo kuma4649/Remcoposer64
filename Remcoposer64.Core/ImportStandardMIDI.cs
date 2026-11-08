@@ -220,7 +220,7 @@ namespace Remcoposer64.Core
                             evt = new LinkedListNode<MIDIEvent>(n);
                             if (!TrkEnd)
                             {
-                                prtAry[num].insertEventNode(evt, trkStep[num], (MIDIEventType)0x80, [0x80, 60, 0], 0);
+                                ImportHelper.insertEventNode(prtAry[num], evt, trkStep[num], (MIDIEventType)0x80, [0x80, 60, 0], 0);
                             }
                             evt = null;
                         }
@@ -228,7 +228,7 @@ namespace Remcoposer64.Core
 
                     if (!TrkEnd)
                     {
-                        prtAry[num].insertEventNode(evt, 0, (MIDIEventType)cmd, msg, 100);
+                        ImportHelper.insertEventNode(prtAry[num], evt, 0, (MIDIEventType)cmd, msg, 100);
                     }
                     else
                     {
@@ -460,7 +460,7 @@ namespace Remcoposer64.Core
                             }
                             eventNode = prt.Value.getNextEventNode(eventNode);
                         }
-                        prt.Value.insertEventNode(null, 0, MIDIEventType.MetaEndOfTrack , null);
+                        ImportHelper.insertEventNode(prt.Value, null, 0, MIDIEventType.MetaEndOfTrack, null);
                         prt = track.Value.getNextPartNode(prt);
                     }
                 }
@@ -543,7 +543,7 @@ namespace Remcoposer64.Core
                             {
 
                                 // 小節線を挿入
-                                LinkedListNode<MIDIEvent> barLineNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.BarLine, null);
+                                LinkedListNode<MIDIEvent> barLineNode = ImportHelper.insertEventNode(prt.Value, eventNode, 0, MIDIEventType.BarLine, null);
                                 MIDIBarLineEvent barLineEvent = (MIDIBarLineEvent)barLineNode.Value;
 
                                 eventNode = barLineNode;
@@ -558,7 +558,7 @@ namespace Remcoposer64.Core
                                     if (dicActiveNote.Keys.Count < 1)
                                     {
                                         // 休符 (remcoposer64では GT:0 Vel:0 のNoteOnを休符として扱う)
-                                        LinkedListNode<MIDIEvent> restNoteNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.NoteON, null);
+                                        LinkedListNode<MIDIEvent> restNoteNode = ImportHelper.insertEventNode(prt.Value, eventNode, 0, MIDIEventType.NoteON, null);
                                         ((MIDINoteEvent)restNoteNode.Value).KeyNumber = 0;
                                         ((MIDINoteEvent)restNoteNode.Value).ST = st;
                                         ((MIDINoteEvent)restNoteNode.Value).GT = 0;
@@ -573,7 +573,7 @@ namespace Remcoposer64.Core
                                         {
                                             ActiveNote item = notes[i];
                                             if (firstMeasureSplit) ((MIDINoteEvent)item.NoteNode.Value).GT = item.OriginalGT - item.RemainGT + 1; 
-                                            LinkedListNode<MIDIEvent> activetNoteNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.NoteON, null);
+                                            LinkedListNode<MIDIEvent> activetNoteNode = ImportHelper.insertEventNode(prt.Value, eventNode, 0, MIDIEventType.NoteON, null);
                                             ((MIDINoteEvent)activetNoteNode.Value).KeyNumber = ((MIDINoteEvent)item.NoteNode.Value).KeyNumber;
                                             ((MIDINoteEvent)activetNoteNode.Value).ST = (i == notes.Count - 1) ? st : 0;
                                             ((MIDINoteEvent)activetNoteNode.Value).GT = Math.Min(item.RemainGT, measureLen + 1);
@@ -597,7 +597,7 @@ namespace Remcoposer64.Core
                                 if (sum == 0 && crossedMeasure)
                                 {
                                     // 小節線を挿入
-                                    barLineNode = prt.Value.insertEventNode(eventNode, 0, MIDIEventType.BarLine, null);
+                                    barLineNode = ImportHelper.insertEventNode(prt.Value, eventNode, 0, MIDIEventType.BarLine, null);
                                     barLineEvent = (MIDIBarLineEvent)barLineNode.Value;
 
                                     eventNode = barLineNode;

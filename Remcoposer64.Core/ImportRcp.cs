@@ -659,7 +659,8 @@ namespace Remcoposer64.Core
             };
 
             // イベント挿入
-            trkn.Part.First.Value.insertEventNode(
+            ImportHelper.insertEventNode(
+                trkn.Part.First.Value,
                 pEvt,
                 pk[1],              // Step
                 MIDIEventType.NoteON,
@@ -704,7 +705,8 @@ namespace Remcoposer64.Core
                     ex.Add((byte)(pk[2] & 0xff));
                     ex.Add((byte)(pk[3] & 0xff));
 
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDISpEventType.ChExclusive,
@@ -743,7 +745,8 @@ namespace Remcoposer64.Core
                 case 0xdd:
                 case 0xde:
                 case 0xdf:
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         (MIDISpEventType)pk[0],
@@ -753,7 +756,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xe2: // Bank & Program
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDISpEventType.BankProgram,
@@ -766,7 +770,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xe5: // KeyScan
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDISpEventType.KeyScan,
@@ -776,7 +781,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xe6: // MIDI CH
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDISpEventType.MIDICh,
@@ -786,7 +792,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xe7: // TempoChange
-                    LinkedListNode<MIDIEvent> nEvt= trkn.Part.First.Value.insertSpEventNode(
+                    LinkedListNode<MIDIEvent> nEvt= ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDISpEventType.TempoChange,
@@ -815,7 +822,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xea: // Channel AfterTouch
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDIEventType.ChannelAfterTouch,
@@ -826,7 +834,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xeb: // ControlChange
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDIEventType.ControlChange,
@@ -837,7 +846,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xec: // Program Change
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDIEventType.ProgramChange,
@@ -848,7 +858,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xed: // Key AfterTouch
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDIEventType.KeyAfterTouch,
@@ -859,7 +870,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xee: // Pitch Bend
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         pk[1],
                         MIDIEventType.PitchBend,
@@ -870,7 +882,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xf5: // Key Change
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         0,
                         MIDISpEventType.KeyChange,
@@ -900,12 +913,23 @@ namespace Remcoposer64.Core
                             ex.Add(ebs[pt++]);
                             ex.Add(ebs[pt++]);
                         }
+                        // メッセージ確認
+                        List<byte> exx = new List<byte>();
+                        for (int i = 0; i < ex.Count; i++)
+                        {
+                            if (ex[i] == 0x00 && i + 1 < ex.Count && ex[i + 1] == 0x00)
+                            {
+                                break;
+                            }
+                            exx.Add(ex[i]);
+                        }
 
-                        trkn.Part.First.Value.insertEventNode(
+                        ImportHelper.insertEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             0,
                             MIDIEventType.Memo,
-                            ex.ToArray()
+                            exx.ToArray()
                         );
                     }
                     else
@@ -920,7 +944,8 @@ namespace Remcoposer64.Core
                             ex.Add(ebs[pt++]);
                         }
 
-                        trkn.Part.First.Value.insertEventNode(
+                        ImportHelper.insertEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             pk[1],
                             MIDIEventType.Memo,
@@ -932,7 +957,8 @@ namespace Remcoposer64.Core
                 case 0xf8: // Loop End
                     if (IsG36)
                     {
-                        trkn.Part.First.Value.insertSpEventNode(
+                        ImportHelper.insertSpEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             0,
                             MIDISpEventType.LoopEnd,
@@ -943,7 +969,8 @@ namespace Remcoposer64.Core
                     }
                     else
                     {
-                        trkn.Part.First.Value.insertSpEventNode(
+                        ImportHelper.insertSpEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             0,
                             MIDISpEventType.LoopEnd,
@@ -956,7 +983,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xf9: // Loop Start
-                    trkn.Part.First.Value.insertSpEventNode(
+                    ImportHelper.insertSpEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         0,
                         MIDISpEventType.LoopStart,
@@ -970,7 +998,8 @@ namespace Remcoposer64.Core
                 case 0xFC: // Same Measure
                     if (IsG36)
                     {
-                        trkn.Part.First.Value.insertEventNode(
+                        ImportHelper.insertEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             0,
                             MIDIEventType.SameMeas,
@@ -983,7 +1012,8 @@ namespace Remcoposer64.Core
                     }
                     else
                     {
-                        trkn.Part.First.Value.insertEventNode(
+                        ImportHelper.insertEventNode(
+                            trkn.Part.First.Value,
                             pEvt,
                             0,
                             MIDIEventType.SameMeas,
@@ -998,7 +1028,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xFD: // Measure End
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         0,
                         MIDIEventType.BarLine,
@@ -1008,7 +1039,8 @@ namespace Remcoposer64.Core
                     break;
 
                 case 0xFE: // End of Track
-                    trkn.Part.First.Value.insertEventNode(
+                    ImportHelper.insertEventNode(
+                        trkn.Part.First.Value,
                         pEvt,
                         0,
                         MIDIEventType.MetaEndOfTrack,
