@@ -209,7 +209,23 @@ namespace Remcoposer64.Core
 
                     // 直前のイベントのSTに経過したTick値をここでセットする
                     LinkedListNode<MIDIEvent> evt = prtAry[num].getEndEventNode();
-                    if (evt != null) evt.Value.ST = trkStep[num];
+                    if (evt != null)
+                    {
+                        //if (evt.Value.Type == MIDIEventType.Memo || evt.Value.Type==MIDIEventType.MetaTrackName)
+                        //{
+                        //    if (trkStep[num] != 0)
+                        //    {
+                        //        if (!TrkEnd)
+                        //        {
+                        //            evt = ImportHelper.insertEventNode(prtAry[num], evt, trkStep[num], (MIDIEventType)0x90, [0x90, 60, 0], 0);
+                        //        }
+                        //    }
+                        //}
+                        //else
+                        {
+                            evt.Value.ST = trkStep[num];
+                        }
+                    }
                     else
                     {
                         // トラック最初が休符の場合を対策
@@ -461,6 +477,48 @@ namespace Remcoposer64.Core
                             eventNode = prt.Value.getNextEventNode(eventNode);
                         }
                         ImportHelper.insertEventNode(prt.Value, null, 0, MIDIEventType.MetaEndOfTrack, null);
+                        prt = track.Value.getNextPartNode(prt);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.ForcedWrite(ex);
+                    throw;
+                }
+
+                track = prj.getNextTrackNode(track);
+            }
+
+
+            #endregion
+
+            #region Memoイベント調整
+
+            track = prj.getStartTrackNode();
+            while (track != null)
+            {
+                try
+                {
+                    LinkedListNode<MIDIPart> prt = track.Value.getStartPartNode();
+                    while (prt != null)
+                    {
+                        LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
+                        while (eventNode != null)
+                        {
+                            if (eventNode.Value.Type != MIDIEventType.Memo || eventNode.Value.ST == 0)
+                            {
+                                eventNode = eventNode.Next;
+                                continue;
+                            }
+
+                            int st = eventNode.Value.ST;
+                            eventNode.Value.ST = 0;
+
+                            eventNode = ImportHelper.insertEventNode(prt.Value, eventNode, st, (MIDIEventType)0x90, [0x90, 0, 0], 0);// RemcoではGT0のノートオンはＭＩＤＩに送信されない(RCP系の仕様)
+
+                            eventNode = eventNode.Next;
+                        }
+
                         prt = track.Value.getNextPartNode(prt);
                     }
                 }

@@ -36,6 +36,7 @@ namespace Remcoposer64.Core.Player
         public long frameCounter;
         // 44100Hz刻みのカウンター
         public long timerCounter=0;
+        public double timerCounterD = 0.0;
         private Dictionary<int, long>[][] dicNoteOnTable = null;
         private NAudio.Midi.MidiOut[] midiOutDevice;
         private NAudio.Midi.MidiIn[] midiInDevice;
@@ -102,6 +103,7 @@ namespace Remcoposer64.Core.Player
 
             frameCounter = minSt;
             timerCounter = 0;
+            timerCounterD = 0;
             _meas = 0;
             _step = 0;
             _tick = minSt;
@@ -178,7 +180,14 @@ namespace Remcoposer64.Core.Player
 
         public void UpdateTimer()
         {
-            timerCounter++;
+
+            timerCounterD += _setting.player.playSpeed;
+            while (timerCounterD >= 1.0)
+            {
+                timerCounter++;
+                timerCounterD -= 1.0;
+            }
+
             // 1frameあたりのppq進行量
             double ppqPerFrame = (_bpm * _ppq) / 60.0 / Common.Common.DATA_SEQUENCE_FREQUENCE * _setting.player.playSpeed;
             // 現在ppqを進める
@@ -883,6 +892,7 @@ namespace Remcoposer64.Core.Player
         {
             frameCounter = 0;
             timerCounter = 0;
+            timerCounterD = 0;
             _meas = 0;
             _step = 0;
             _tick = 0;
