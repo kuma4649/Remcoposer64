@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Documents/">
     <File Path="OperationManual.txt" />
+    <File Path="README.md" />
     <File Path="removeZoneIdent.bat" />
     <File Path="リファレンス.txt" />
   </Folder>
