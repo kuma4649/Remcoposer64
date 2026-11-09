@@ -257,11 +257,19 @@ namespace Remcoposer64.Common
         public class UI
         {
             public List<string> OpenFiles { get; set; } = [];
+            public formStatus FormMain { get; set; } = new formStatus();
+            public formStatus FormOpePanel { get; set; } = new formStatus();
+            public formStatus FormLogViewer { get; set; } = new formStatus();
+            public formStatus FormInformation { get; set; } = new formStatus();
 
             public UI Copy()
             {
                 UI ui = new();
                 ui.OpenFiles = this.OpenFiles;
+                ui.FormMain = this.FormMain.Copy();
+                ui.FormOpePanel = this.FormOpePanel.Copy();
+                ui.FormLogViewer = this.FormLogViewer.Copy();
+                ui.FormInformation = this.FormInformation.Copy();
 
                 return ui;
             }
@@ -286,9 +294,35 @@ namespace Remcoposer64.Common
                 return cmn;
             }
         }
+
         public enum GraphType
         {
             GDI,Vortice
         }
+
+        public class formStatus
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public FormWindowState State { get; set; }
+            public string ScreenDeviceName { get; set; } = "";
+            public bool Visible { get; set; }
+
+            public formStatus Copy()
+            {
+                formStatus fs = new();
+                fs.X = this.X;
+                fs.Y = this.Y;
+                fs.Width = this.Width;
+                fs.Height = this.Height;
+                fs.State = this.State;
+                fs.ScreenDeviceName = this.ScreenDeviceName;
+                fs.Visible = this.Visible;
+                return fs;
+            }
+        }
+
     }
 }

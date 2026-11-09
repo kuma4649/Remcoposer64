@@ -6,6 +6,7 @@ using Remcoposer64.ProjectData;
 using Remcoposer64.TrackEditor;
 using System.Text;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Remcoposer64.App
 {
@@ -209,11 +210,13 @@ namespace Remcoposer64.App
             }
             catch { }
 
+            SaveFormStatus();
+
             base.OnFormClosing(e);
 
             // 開いていたファイルを全て記憶する
             setting.ui.OpenFiles = new List<string>();
-            if (currentProject!=null && !string.IsNullOrWhiteSpace(currentProject.Information.FileFullName))// frmProject?.Tag is MIDIProject prj &&
+            if (currentProject != null && !string.IsNullOrWhiteSpace(currentProject.Information.FileFullName))// frmProject?.Tag is MIDIProject prj &&
                 setting.ui.OpenFiles.Add(currentProject.Information.FileFullName);
 
             setting.Save();
@@ -485,6 +488,7 @@ namespace Remcoposer64.App
             setting = Setting.Load();
 
 
+
             undoMng = new UndoRedoManager.UndoRedoManager();
             undoMng.UpdateUndoRedo = () =>
             {
@@ -553,7 +557,96 @@ namespace Remcoposer64.App
             }
 
             RestoreLayout();
+            RestoreFormStatus();
 
+        }
+
+        private void SaveFormStatus()
+        {
+            setting.ui.FormMain = SaveFormStatus(this);
+            setting.ui.FormOpePanel = SaveFormStatus(opePanel);
+            setting.ui.FormLogViewer = SaveFormStatus(logViewer);
+            setting.ui.FormInformation = SaveFormStatus(info);
+        }
+
+        private Setting.formStatus SaveFormStatus(Form frm)
+        {
+            if (frm == null) return null;
+
+            Rectangle rc = frm.WindowState == FormWindowState.Normal
+                ? frm.Bounds
+                : frm.RestoreBounds;
+            Screen currentScreen = Screen.FromControl(frm);
+
+            return new Setting.formStatus
+            {
+                X = rc.X,
+                Y = rc.Y,
+                Width = rc.Width,
+                Height = rc.Height,
+                State = frm.WindowState,
+                ScreenDeviceName = currentScreen.DeviceName,
+                Visible = frm.Visible
+            };
+        }
+
+        private void RestoreFormStatus()
+        {
+            RestoreFormStatus(this, setting.ui.FormMain);
+            RestoreFormStatus(opePanel, setting.ui.FormOpePanel, true);
+            RestoreFormStatus(logViewer, setting.ui.FormLogViewer, true);
+            RestoreFormStatus(info, setting.ui.FormInformation, true);
+        }
+
+        private void RestoreFormStatus(Form frm, Setting.formStatus fs,bool restoreVisible = false)
+        {
+            if (fs == null) return;
+            if (fs.Width < 100 || fs.Height < 100) return;
+
+            frm.StartPosition = FormStartPosition.Manual;
+
+            Rectangle rc = new Rectangle(
+                fs.X,
+                fs.Y,
+                fs.Width,
+                fs.Height
+            );
+
+            long visiblePixels = Screen.AllScreens
+                .Select(s => Rectangle.Intersect(s.WorkingArea, rc))
+                .Sum(r => (long)r.Width * r.Height);
+
+            bool visible = visiblePixels >= 100L * 100L;
+
+            if (!visible)
+            {
+                Screen? primary = Screen.PrimaryScreen;
+                if (primary == null) return;
+
+                rc = primary.WorkingArea;
+                frm.SetBounds(
+                    rc.X + 100,
+                    rc.Y + 100,
+                    Math.Min(1280, rc.Width),
+                    Math.Min(900, rc.Height)
+                );
+            }
+            else
+            {
+                frm.SetBounds(
+                    fs.X,
+                    fs.Y,
+                    fs.Width,
+                    fs.Height
+                );
+            }
+
+            frm.WindowState =
+                fs.State == FormWindowState.Maximized
+                    ? FormWindowState.Maximized
+                    : FormWindowState.Normal;
+
+            if (restoreVisible) frm.Visible = fs.Visible;
         }
 
         private void ImportMidiFile()
