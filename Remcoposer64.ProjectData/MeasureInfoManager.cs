@@ -183,26 +183,6 @@ namespace Remcoposer64.ProjectData
                 {
                     return trk.SameMeasStack.Pop();
                 }
-
-                //int num = ((MIDIBarLineEvent)evt).BeatNum;
-                //int den = ((MIDIBarLineEvent)evt).BeatDen;
-                //if (num == 0)
-                //{
-                //    num = currentNum;
-                //    den = currentDen;
-                //}
-
-                //if (TimeSignatures.ContainsKey(frameCounter)) TimeSignatures.Remove(frameCounter);
-
-                //TimeSignatures.Add(frameCounter, new TimeSignaturePoint()
-                //{
-                //    Tick = frameCounter,
-                //    Track = trk,
-                //    Numerator = num,
-                //    Denominator = den
-                //});
-                //currentNum = num;
-                //currentDen = den;
             }
             else if (evt.Type == MIDIEventType.MetaEndOfTrack)
             {
