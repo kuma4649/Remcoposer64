@@ -23,8 +23,6 @@ namespace Remcoposer64.ProjectData
         private DateTime _UpdatedDate = DateTime.MinValue;
         private int _TimeBase = 480;
         private int _Tempo = 120;
-        private int _BeatDen = 4; //拍子（分母）
-        private int _BeatMol = 4; //拍子（分子）
         private List<int> _Marker = new List<int>();
         private int? _StartTrackIndex = null;
         private int? _EndTrackIndex = null;
@@ -216,28 +214,18 @@ namespace Remcoposer64.ProjectData
                 return _Tempo;
             }
         }
-        public int BeatDen//拍子（分母）
-        {
-            set
-            {
-                _BeatDen = value;
-            }
-            get
-            {
-                return _BeatDen;
-            }
-        }
-        public int BeatMol
-        {
-            set
-            {
-                _BeatMol = value;
-            }
-            get
-            {
-                return _BeatMol;
-            }
-        }
+
+        /// <summary>
+        /// 拍子(分母)(初期値)
+        /// </summary>
+        public int BeatDen { get; set; } = 4;
+
+        /// <summary>
+        /// 拍子(分子)(初期値)
+        /// </summary>
+        public int BeatNum { get; set; } = 4;
+
+
         public List<int> Marker
         {
             set
@@ -298,5 +286,9 @@ namespace Remcoposer64.ProjectData
 
         public bool Played { get; set; } = false;
         public string UpdateFlag { get; set; } = "";
+
+        public List<MarkerPoint> Markers { get; set; } = new();
+        public List<MeasureInfo> Measures { get; set; } = new();
+
     }
 }

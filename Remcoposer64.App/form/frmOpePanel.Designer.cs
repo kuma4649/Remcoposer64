@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmOpePanel));
             btFirst = new Button();
             btPlay = new Button();
             btStop = new Button();
@@ -64,31 +65,31 @@
             // 
             // btFirst
             // 
+            btFirst.Image = (Image)resources.GetObject("btFirst.Image");
             btFirst.Location = new Point(6, 4);
             btFirst.Name = "btFirst";
             btFirst.Size = new Size(36, 32);
             btFirst.TabIndex = 0;
-            btFirst.Text = "|<";
             btFirst.UseVisualStyleBackColor = true;
             btFirst.Click += btRewind_Click;
             // 
             // btPlay
             // 
+            btPlay.Image = (Image)resources.GetObject("btPlay.Image");
             btPlay.Location = new Point(82, 4);
             btPlay.Name = "btPlay";
             btPlay.Size = new Size(52, 32);
             btPlay.TabIndex = 1;
-            btPlay.Text = ">";
             btPlay.UseVisualStyleBackColor = true;
             btPlay.Click += btPlay_Click;
             // 
             // btStop
             // 
+            btStop.Image = (Image)resources.GetObject("btStop.Image");
             btStop.Location = new Point(173, 4);
             btStop.Name = "btStop";
             btStop.Size = new Size(37, 32);
             btStop.TabIndex = 2;
-            btStop.Text = "■";
             btStop.UseVisualStyleBackColor = true;
             btStop.Click += btStop_Click;
             // 
@@ -207,6 +208,7 @@
             bt10.TabIndex = 8;
             bt10.Text = "A";
             bt10.UseVisualStyleBackColor = true;
+            bt10.Click += bt10_Click;
             // 
             // bt9
             // 
@@ -217,6 +219,7 @@
             bt9.TabIndex = 7;
             bt9.Text = "9";
             bt9.UseVisualStyleBackColor = true;
+            bt9.Click += bt9_Click;
             // 
             // bt8
             // 
@@ -315,11 +318,11 @@
             // cbFF
             // 
             cbFF.Appearance = Appearance.Button;
+            cbFF.Image = (Image)resources.GetObject("cbFF.Image");
             cbFF.Location = new Point(135, 4);
             cbFF.Name = "cbFF";
             cbFF.Size = new Size(37, 32);
             cbFF.TabIndex = 5;
-            cbFF.Text = ">>";
             cbFF.TextAlign = ContentAlignment.MiddleCenter;
             cbFF.UseVisualStyleBackColor = true;
             cbFF.CheckedChanged += cbFF_CheckedChanged;
@@ -327,11 +330,11 @@
             // cbSlow
             // 
             cbSlow.Appearance = Appearance.Button;
+            cbSlow.Image = (Image)resources.GetObject("cbSlow.Image");
             cbSlow.Location = new Point(44, 4);
             cbSlow.Name = "cbSlow";
             cbSlow.Size = new Size(37, 32);
             cbSlow.TabIndex = 6;
-            cbSlow.Text = "|>";
             cbSlow.TextAlign = ContentAlignment.MiddleCenter;
             cbSlow.UseVisualStyleBackColor = true;
             cbSlow.CheckedChanged += cbSlow_CheckedChanged;

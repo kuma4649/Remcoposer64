@@ -87,7 +87,7 @@ namespace Remcoposer64.Core
             prj.Information.Tempo = 120;
             prj.Information.TimeBase = delta;
             prj.Information.BeatDen = 4;
-            prj.Information.BeatMol = 4;
+            prj.Information.BeatNum = 4;
             prj.clearAllTrackMemory();
 
             //トラックを準備
@@ -492,7 +492,7 @@ namespace Remcoposer64.Core
 
             #endregion
 
-            #region Memoイベント調整
+            #region Memo/Markerイベント調整
 
             track = prj.getStartTrackNode();
             while (track != null)
@@ -505,7 +505,7 @@ namespace Remcoposer64.Core
                         LinkedListNode<MIDIEvent> eventNode = prt.Value.getStartEventNode();
                         while (eventNode != null)
                         {
-                            if (eventNode.Value.Type != MIDIEventType.Memo || eventNode.Value.ST == 0)
+                            if ((eventNode.Value.Type != MIDIEventType.Memo && eventNode.Value.Type != MIDIEventType.MetaMarker) || eventNode.Value.ST == 0)
                             {
                                 eventNode = eventNode.Next;
                                 continue;
@@ -540,7 +540,7 @@ namespace Remcoposer64.Core
             while (track != null)
             {
                 int beatDen = prj.Information.BeatDen;//分母
-                int beatMol = prj.Information.BeatMol;//分子
+                int beatMol = prj.Information.BeatNum;//分子
 
                 try
                 {
@@ -900,8 +900,8 @@ namespace Remcoposer64.Core
                 case 0x58://TimeSignature(拍子)
                     if (trkTick == 0)
                     {
-                        prj.Information.BeatDen = (int)nam[0]; //分子
-                        prj.Information.BeatMol = (int)Math.Pow(2.0, (double)nam[1]); //分母
+                        prj.Information.BeatNum = (int)nam[0]; //分子
+                        prj.Information.BeatDen = (int)Math.Pow(2.0, (double)nam[1]); //分母
                     }
                     break;
                 case 0x59://KeySignature(調号)

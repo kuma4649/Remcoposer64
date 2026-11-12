@@ -51,7 +51,7 @@ namespace Remcoposer64.TrackEditor
             int tick16 = ppq / 4;
             int tick8 = ppq / 2;
             int beatDen = currentProject.Information.BeatDen;
-            int beatMol = currentProject.Information.BeatMol;
+            int beatMol = currentProject.Information.BeatNum;
             int tickMeas = ppq * beatMol * 4 / beatDen;
             int tickBeat = ppq * 4 / beatDen;
 
@@ -99,6 +99,18 @@ namespace Remcoposer64.TrackEditor
                 else
                 {
                     graph.DrawImage(0, (int)RulerSprite.Tick1, x, Height - 9);
+                }
+
+                foreach (var marker in currentProject.Information.Markers)
+                {
+                    x = trackEditorControl.trackCanvasPanel.TickToX((int)marker.Tick);
+
+                    if (x < -32 || x > Width + 32)
+                        continue;
+
+                    graph.DrawImage(0, (int)RulerSprite.Marker2, x - 2, 0);
+                    Point pos = new Point(x + 4, 0);
+                    graph.DrawStringOSFont(marker.Text, ref pos, Color.LightGreen, Color.Transparent);
                 }
 
             }

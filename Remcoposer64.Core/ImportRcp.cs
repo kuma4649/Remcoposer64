@@ -196,7 +196,7 @@ namespace Remcoposer64.Core
 
             // 拍子
             prj.Information.BeatDen = bs[ptr++];
-            prj.Information.BeatMol = bs[ptr++];
+            prj.Information.BeatNum = bs[ptr++];
 
             // Key
             prj.Information.Key = bs[ptr++];
@@ -263,7 +263,7 @@ namespace Remcoposer64.Core
 
             // 拍子
             prj.Information.BeatDen = bs[ptr++];
-            prj.Information.BeatMol = bs[ptr++];
+            prj.Information.BeatNum = bs[ptr++];
 
             // Key
             prj.Information.Key = bs[ptr++];
@@ -1067,7 +1067,7 @@ namespace Remcoposer64.Core
                     LoopStack.Clear();
                     SameMeasStack.Clear();
                     measureStartNode.Clear();
-                    BuildMeasureStartNode(measureStartNode, nPrt.Value, 0, 0);
+                    Remcoposer64.ProjectData.Common.BuildMeasureStartNode(measureStartNode, nPrt.Value, 0, 0);
 
 //#if DEBUG
 //                    Debug.WriteLine($"{nPrt.Value.Name} -----------------------------------");
@@ -1271,50 +1271,50 @@ namespace Remcoposer64.Core
 
     //    }
 
-        public static void BuildMeasureStartNode(
-            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
-            , MIDIPart prt, int t, int p)
-        {
+        //public static void BuildMeasureStartNode(
+        //    Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode
+        //    , MIDIPart prt, int t, int p)
+        //{
 
-            var node = prt.Event.First;
-            int meas = 0;
+        //    var node = prt.Event.First;
+        //    int meas = 0;
 
-            measureStartNode[(t, p, meas)] = node;
+        //    measureStartNode[(t, p, meas)] = node;
 
-            while (node != null)
-            {
-                var evt = node.Value;
+        //    while (node != null)
+        //    {
+        //        var evt = node.Value;
 
-                if (evt.Type == MIDIEventType.BarLine)
-                {
-                    if (node.Previous == null || node.Previous.Value.Type == MIDIEventType.SameMeas)
-                    {
-                        meas++;
-                        measureStartNode[(t, p, meas)] = node;
-                    }
+        //        if (evt.Type == MIDIEventType.BarLine)
+        //        {
+        //            if (node.Previous == null || node.Previous.Value.Type == MIDIEventType.SameMeas)
+        //            {
+        //                meas++;
+        //                measureStartNode[(t, p, meas)] = node;
+        //            }
 
-                    meas++;
-                    measureStartNode[(t, p, meas)] = node.Next;
-                }
-                else if (evt.Type == MIDIEventType.SameMeas)
-                {
-                    if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
-                    {
-                        meas++;
-                        measureStartNode[(t, p, meas)] = node;
-                    }
-                }
-                else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
-                {
-                    meas++;
-                    measureStartNode[(t, p, meas)] = node;
-                }
+        //            meas++;
+        //            measureStartNode[(t, p, meas)] = node.Next;
+        //        }
+        //        else if (evt.Type == MIDIEventType.SameMeas)
+        //        {
+        //            if (node.Previous == null || node.Previous.Value.Type != MIDIEventType.BarLine)
+        //            {
+        //                meas++;
+        //                measureStartNode[(t, p, meas)] = node;
+        //            }
+        //        }
+        //        else if (node.Previous != null && node.Previous.Value.Type == MIDIEventType.SameMeas)
+        //        {
+        //            meas++;
+        //            measureStartNode[(t, p, meas)] = node;
+        //        }
 
-                node = node.Next;
-            }
+        //        node = node.Next;
+        //    }
 
 
-        }
+        //}
 
 
 

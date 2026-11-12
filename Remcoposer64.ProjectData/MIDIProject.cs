@@ -245,7 +245,7 @@ namespace Remcoposer64.ProjectData
                 TimeBase = inf.TimeBase,
                 Tempo = inf.Tempo,
                 BeatDen = inf.BeatDen,
-                BeatMol = inf.BeatMol,
+                BeatMol = inf.BeatNum,
                 Marker = inf.Marker != null ? new List<int>(inf.Marker) : new List<int>(),
                 tStartIndex = inf.tStartIndex,
                 tEndIndex = inf.tEndIndex,
@@ -994,7 +994,7 @@ namespace Remcoposer64.ProjectData
             inf.Tempo = dto.Tempo;
 
             inf.BeatDen = dto.BeatDen;
-            inf.BeatMol = dto.BeatMol;
+            inf.BeatNum = dto.BeatMol;
 
             inf.Marker = dto.Marker != null ? new List<int>(dto.Marker) : new List<int>();
 

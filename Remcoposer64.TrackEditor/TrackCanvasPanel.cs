@@ -167,7 +167,7 @@ namespace Remcoposer64.TrackEditor.Internal
             Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
             Stack<LinkedListNode<MIDIEvent>> SameMeasStack = new Stack<LinkedListNode<MIDIEvent>>();
             Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
-            Remcoposer64.Core.ImportRcp.BuildMeasureStartNode(measureStartNode, part, 0, 0);
+            ProjectData.Common.BuildMeasureStartNode(measureStartNode, part, 0, 0);
 
             LinkedListNode<MIDIEvent> nEvt = part.Event.First;
             int tick = 0;

@@ -7,6 +7,9 @@ namespace Remcoposer64.ProjectData.Events
     public class MIDIBarLineEvent : MIDIEvent
     {
         public int MeasureTotalST { get; set; }
+        //public int BeatNum { get; set; }
+        //public int BeatDen { get; set; }
+
         public int backupMeasureTotalST;
         public static int oldMeasureTotalST;
 

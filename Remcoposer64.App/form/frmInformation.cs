@@ -20,7 +20,7 @@ namespace Remcoposer64.App.form
             txtTempo.Text = prj.Information.Tempo.ToString();
             txtTimeBase.Text = prj.Information.TimeBase.ToString();
             txtBeat.Text = $"{prj.Information.BeatDen}";
-            txtBeat2.Text = $"{prj.Information.BeatMol}";
+            txtBeat2.Text = $"{prj.Information.BeatNum}";
             txtKey.Text = prj.Information.Key.ToString();
             txtCopyright.Text = prj.Information.Copyright;
             txtMemo.Text = prj.Information.Memo;
@@ -34,7 +34,7 @@ namespace Remcoposer64.App.form
             project.Information.TimeBase = int.Parse(txtTimeBase.Text);
 
             project.Information.BeatDen = int.Parse(txtBeat.Text);
-            project.Information.BeatMol = int.Parse(txtBeat2.Text);
+            project.Information.BeatNum = int.Parse(txtBeat2.Text);
             project.Information.Key = int.Parse(txtKey.Text);
             project.Information.Copyright = txtCopyright.Text;
             project.Information.Memo = txtMemo.Text;

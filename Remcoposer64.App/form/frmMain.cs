@@ -14,6 +14,7 @@ namespace Remcoposer64.App
     {
         public Setting setting;
         private UndoRedoManager.UndoRedoManager undoMng;
+        private MeasureInfoManager measInfoMng;
         private MIDIProject currentProject = null;
         private RmPlayer player = null;
 
@@ -494,6 +495,9 @@ namespace Remcoposer64.App
             {
                 UpdateTitle();
             };
+
+            measInfoMng = new MeasureInfoManager();
+
             player = new RmPlayer(setting);
 
             switch (setting.midiOut.CurrentDev)
@@ -550,15 +554,16 @@ namespace Remcoposer64.App
                     break;
             }
 
-            foreach (string fn in setting.ui.OpenFiles)
+            if (setting.ui.OpenFiles != null && setting.ui.OpenFiles.Count > 0)
             {
-                if (File.Exists(fn))
-                    ImportMidiFile(fn, false);
+                string fn = setting.ui.OpenFiles[0];
+                if (File.Exists(fn)) ImportMidiFile(fn, false);
             }
 
             RestoreLayout();
             RestoreFormStatus();
 
+            opePanel?.SetMarker(currentProject);
         }
 
         private void SaveFormStatus()
@@ -712,12 +717,15 @@ namespace Remcoposer64.App
         private void AddProjectTab(MIDIProject project,bool openForm)
         {
             // 新しいタブページを作成
-             frmProject = new frmProject(this, project);
-            frmProject.Text = project.Information.FileName;
-            // プロジェクトをタブに紐づける
-            frmProject.Tag = project;
+            frmProject = new frmProject(this, project)
+            {
+                Text = project.Information.FileName,
+                Tag = project // プロジェクトをTAGに紐づける
+            };
             project.parentForm = frmProject;
             currentProject = project;
+            measInfoMng.Build(currentProject);
+            opePanel?.SetMarker(currentProject);
 
             TrackEditorControl trackEditor = new TrackEditorControl();
 
@@ -1165,6 +1173,20 @@ namespace Remcoposer64.App
             player.SetFirstFrame();
             frmProject.SetCanvasScrollX(0);
             frmProject.Refresh();
+        }
+
+        internal void Play(MarkerPoint mp)
+        {
+            if (currentProject == null)
+            {
+                MessageBox.Show("再生するプロジェクトがありません。");
+                return;
+            }
+
+            Stop();
+
+            player.InitialPlay();
+            player.PlayMusic(currentProject, mp);
         }
     }
 }

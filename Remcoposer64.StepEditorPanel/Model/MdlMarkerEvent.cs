@@ -8,7 +8,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
 {
     public class MdlMarkerEvent : MdlEvent
     {
-        public override MIDIEventType Type => MIDIEventType.Memo;
+        public override MIDIEventType Type => MIDIEventType.MetaMarker;
 
         public bool memoBoxSwitch;
         public string memoBoxText = "";
@@ -35,7 +35,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
 
             memoBoxComposition = "";
             memoBoxSwitch = true;
-            memoBoxText = ((MIDIMemoEvent)me).Text ?? "";
+            memoBoxText = ((MIDIMarkerEvent)me).Text ?? "";
             memoBoxCaretIndex = memoBoxText.Length;
             me.editing = true;
             memoBoxBackupText = memoBoxText;
@@ -52,7 +52,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             CursorInfo cursor)
         {
 
-            MIDIMemoEvent mme = (MIDIMemoEvent)me;
+            MIDIMarkerEvent mme = (MIDIMarkerEvent)me;
             // ① 通常文字入力（Enter / Backspace / ESC 以外）
             if (keyChar != '\r' && keyChar != '\b' && keyChar != '\u001b')
             {
@@ -120,7 +120,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
 
         public override void Commit(MIDIEvent me, CursorInfo cursorInfo, CommitKeyPattern keyPattern)
         {
-            ((MIDIMemoEvent)me).Text = memoBoxText;
+            ((MIDIMarkerEvent)me).Text = memoBoxText;
 
             bool oldEditing = me.editing;
             me.editing = false;
@@ -140,12 +140,12 @@ namespace Remcoposer64.StepEditorPanelControl.Model
 
         public override string GetVal(MIDIEvent me, CursorInfo cursorInfo)
         {
-            return ((MIDIMemoEvent)me).Text;
+            return ((MIDIMarkerEvent)me).Text;
         }
 
         public override string ToClipboardString(MIDIEvent me)
         {
-            MIDIMemoEvent mme = (MIDIMemoEvent)me;
+            MIDIMarkerEvent mme = (MIDIMarkerEvent)me;
             return $"{mme.Meas + 1},{mme.Step + 1}: Memo: {mme.Text}";
         }
 
@@ -157,7 +157,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             if (!int.TryParse(vals[1], out int cc)) { WinApi.Beep(); return null; }
             if (!int.TryParse(vals[2], out int val)) { WinApi.Beep(); return null; }
 
-            return new MIDIMemoEvent()
+            return new MIDIMarkerEvent()
             {
                 Meas = meas,
                 Step = step,
@@ -170,11 +170,11 @@ namespace Remcoposer64.StepEditorPanelControl.Model
         {
             base.CopyFrom(srcMe, otherMe, otherMdle);
 
-            var n = (MIDIMemoEvent)otherMe;
+            var n = (MIDIMarkerEvent)otherMe;
             n.CopyFrom(otherMe);
 
             //((MIDIMemoEvent)srcMe).GT = n.GT;
-            ((MIDIMemoEvent)srcMe).Text = n.Text;
+            ((MIDIMarkerEvent)srcMe).Text = n.Text;
         }
 
         public override void EndEdit(MIDIEvent me, Keyboard keyb)

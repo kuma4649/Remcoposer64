@@ -139,12 +139,12 @@ namespace Remcoposer64.Core.Player
             _timer.RequestStart();
         }
 
-        public void PlayMusic(MIDIProject project)
+        public void PlayMusic(MIDIProject project, MarkerPoint mp = null)
         {
             if (project == null) return;
 
             // MusicPlayer にプロジェクトのイベントを渡す
-            musicPlayer.PlayMusic(project);
+            musicPlayer.PlayMusic(project, mp);
 
         }
 
