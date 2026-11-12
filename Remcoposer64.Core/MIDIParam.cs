@@ -9,26 +9,26 @@ namespace Remcoposer64.Core
         public int MIDIModule = 0;//0:GMIDI 1:XG 2:GS
         public byte[][] note = null;
         public string[] notes = null;
-        public byte[][] keyPress = null;
-        public byte[][] cc = null;
-        public byte[] pc = null;
-        public byte[] cPress = null;
-        public short[] bend = null;
+        public byte?[][] keyPress = null;
+        public byte?[][] cc = null;
+        public byte?[] pc = null;
+        public byte?[] cPress = null;
+        public short?[] bend = null;
         public int[][] level = null;
-        public byte[] nrpnVibRate = null;
-        public byte[] nrpnVibDepth = null;
-        public byte[] nrpnVibDelay = null;
-        public byte[] nrpnLPF = null;
-        public byte[] nrpnLPFRsn = null;
-        public byte[] nrpnHPF = null;
-        public byte[] nrpnEQBaseGain = null;
-        public byte[] nrpnEQTrebleGain = null;
-        public byte[] nrpnEQBaseFrq = null;
-        public byte[] nrpnEQTrebleFrq = null;
-        public byte[] nrpnEGAttack = null;
-        public byte[] nrpnEGDecay = null;
-        public byte[] nrpnEGRls = null;
-        public byte[] LCDDisplay = null;
+        public byte?[] nrpnVibRate = null;
+        public byte?[] nrpnVibDepth = null;
+        public byte?[] nrpnVibDelay = null;
+        public byte?[] nrpnLPF = null;
+        public byte?[] nrpnLPFRsn = null;
+        public byte?[] nrpnHPF = null;
+        public byte?[] nrpnEQBaseGain = null;
+        public byte?[] nrpnEQTrebleGain = null;
+        public byte?[] nrpnEQBaseFrq = null;
+        public byte?[] nrpnEQTrebleFrq = null;
+        public byte?[] nrpnEGAttack = null;
+        public byte?[] nrpnEGDecay = null;
+        public byte?[] nrpnEGRls = null;
+        public byte?[] LCDDisplay = null;
         public int LCDDisplayTime = 0;
         public byte[] LCD8850Display = null;
         public int LCD8850DisplayTime = 0;
@@ -163,26 +163,26 @@ namespace Remcoposer64.Core
         {
             note = [new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256]];
             notes = new string[16];
-            keyPress = [new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256]];
-            cc = new byte[16][] { new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256] };
-            pc = new byte[16];
-            cPress = new byte[16];
-            bend = new short[16];
+            keyPress = [new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256]];
+            cc = new byte?[16][] { new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256] };
+            pc = new byte?[16];
+            cPress = new byte?[16];
+            bend = new short?[16];
             level = new int[16][] { new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5], new int[5] };
-            nrpnVibRate = new byte[16];
-            nrpnVibDepth = new byte[16];
-            nrpnVibDelay = new byte[16];
-            nrpnLPF = new byte[16];
-            nrpnLPFRsn = new byte[16];
-            nrpnHPF = new byte[16];
-            nrpnEQBaseGain = new byte[16];
-            nrpnEQTrebleGain = new byte[16];
-            nrpnEQBaseFrq = new byte[16];
-            nrpnEQTrebleFrq = new byte[16];
-            nrpnEGAttack = new byte[16];
-            nrpnEGDecay = new byte[16];
-            nrpnEGRls = new byte[16];
-            LCDDisplay = new byte[64];
+            nrpnVibRate = new byte?[16];
+            nrpnVibDepth = new byte?[16];
+            nrpnVibDelay = new byte?[16];
+            nrpnLPF = new byte?[16];
+            nrpnLPFRsn = new byte?[16];
+            nrpnHPF = new byte?[16];
+            nrpnEQBaseGain = new byte?[16];
+            nrpnEQTrebleGain = new byte?[16];
+            nrpnEQBaseFrq = new byte?[16];
+            nrpnEQTrebleFrq = new byte?[16];
+            nrpnEGAttack = new byte?[16];
+            nrpnEGDecay = new byte?[16];
+            nrpnEGRls = new byte?[16];
+            LCDDisplay = new byte?[64];
             LCD8850Display = new byte[27 * 4 * 16];// 160*8];
             LCDDisplayTime = 0;
             LCD8850DisplayTime = 0;
@@ -267,11 +267,22 @@ namespace Remcoposer64.Core
 
         public void Send(int msg)
         {
-            byte[] dat = new byte[3];
-            dat[0] = (byte)(msg & 0xff);
-            dat[1] = (byte)((msg >> 8) & 0xff);
-            dat[2] = (byte)((msg >> 16) & 0xff);
-            SendBuffer(dat);
+            if ((msg & 0xf0) == 0xc0|| (msg & 0xf0) == 0xd0)
+            {
+                byte[] dat = new byte[2];
+                dat[0] = (byte)(msg & 0xff);
+                dat[1] = (byte)((msg >> 8) & 0xff);
+                SendBuffer(dat);
+
+            }
+            else
+            {
+                byte[] dat = new byte[3];
+                dat[0] = (byte)(msg & 0xff);
+                dat[1] = (byte)((msg >> 8) & 0xff);
+                dat[2] = (byte)((msg >> 16) & 0xff);
+                SendBuffer(dat);
+            }
         }   
 
         private void Analyze(byte d)
@@ -306,6 +317,10 @@ namespace Remcoposer64.Core
                     pc[ch] = msg[i + 0];
                     msgInd = 0;
                     break;
+                case 0xd0://Ch Press
+                    cPress[ch] = msg[i + 0];
+                    msgInd = 0;
+                    break;
             }
         }
 
@@ -322,12 +337,13 @@ namespace Remcoposer64.Core
 
                     if (msg[i + 1] != 0)//NOTE OFF の代用の場合は液晶パラメータの更新を行わない
                     {
-                        int lv = cc[ch][7] * cc[ch][11] * msg[i + 1] >> (7 + 7);
-                        int lvl = (lv * (cc[ch][10] > 64 ? ((127 - cc[ch][10]) * 2) : 127)) >> (7); //65->124 127->0
-                        int lvr = (lv * (cc[ch][10] < 64 ? (cc[ch][10] * 2) : 127)) >> (7); // 63->126 0->0
-                        level[ch][0] = (byte)lvl;
-                        level[ch][1] = (byte)lv;
-                        level[ch][2] = (byte)lvr;
+
+                        int? lv = cc[ch][7] * cc[ch][11] * msg[i + 1] >> (7 + 7);
+                        int? lvl = (lv * (cc[ch][10] > 64 ? ((127 - cc[ch][10]) * 2) : 127)) >> (7); //65->124 127->0
+                        int? lvr = (lv * (cc[ch][10] < 64 ? (cc[ch][10] * 2) : 127)) >> (7); // 63->126 0->0
+                        if (lvl != null) level[ch][0] = (byte)lvl;
+                        if (lv != null) level[ch][1] = (byte)lv;
+                        if (lvr != null) level[ch][2] = (byte)lvr;
                         if (level[ch][3] < lv)
                         {
                             level[ch][3] = (byte)lv;
@@ -343,10 +359,6 @@ namespace Remcoposer64.Core
                 case 0xb0://Control Change
                     cc[ch][msg[i + 0]] = msg[i + 1];
                     AnalyzeControlChange(ch);
-                    msgInd = 0;
-                    break;
-                case 0xd0://Ch Press
-                    cPress[ch] = msg[i + 0];
                     msgInd = 0;
                     break;
                 case 0xe0://Pitch Bend

@@ -29,8 +29,8 @@ namespace Remcoposer64.Core.Player
         private Setting.MidiIn _midiIn;
         private Setting.midiInInfo[] currentMidiIn;
         private readonly RmTimer _timer;
-        private NAudio.Midi.MidiOut[] midiOutDev;
-        private List<MIDIParam> midiParamList = new List<MIDIParam>();
+        private ThrottledMidiOut[] midiOutDev;
+        //private List<MIDIParam> midiParamList = new List<MIDIParam>();
         private NAudio.Midi.MidiIn[] midiInDev;
 
         public enum PlayerState
@@ -80,14 +80,12 @@ namespace Remcoposer64.Core.Player
 
             if (currentMidiOut != null && currentMidiOut.Length > 0)
             {
-                midiOutDev = new NAudio.Midi.MidiOut[currentMidiOut.Length];
-                midiParamList.Clear();
+                midiOutDev = new ThrottledMidiOut[currentMidiOut.Length];
                 for (int i = 0; i < currentMidiOut.Length; i++)
                 {
                     try
                     {
                         midiOutDev[i] = _deviceManager.GetMIDIOutDevice(currentMidiOut[i].name);
-                        midiParamList.Add(new MIDIParam());
                     }
                     catch
                     {
@@ -230,36 +228,6 @@ namespace Remcoposer64.Core.Player
                     //try { midiOut?.Close(); } catch { }
                 }
             }
-            foreach (var midiOut in midiParamList)
-            {
-                if (midiOut == null) continue;
-
-                try
-                {
-                    for (int ch = 0; ch < 16; ch++)
-                    {
-                        // All Sound Off (CC120)
-                        midiOut.Send((0xB0 | ch) | (120 << 8) | (0 << 16));
-                        // All Notes Off (CC123)
-                        midiOut.Send((0xB0 | ch) | (123 << 8) | (0 << 16));
-                        // Hold Pedal Off (CC64)
-                        midiOut.Send((0xB0 | ch) | (64 << 8) | (0 << 16));
-                        // Reset All Controllers (CC121)
-                        midiOut.Send((0xB0 | ch) | (121 << 8) | (0 << 16));
-                        // Pitch Bend Center (E0 00 40)
-                        midiOut.Send((0xE0 | ch) | (0 << 8) | (64 << 16));
-                    }
-                    //midiOut.Close();
-                }
-                catch (Exception ex)
-                {
-                    Common.Log.ForcedWrite($"Error sending All Sound Off to MIDIParam: {ex.Message}");
-                }
-                finally
-                {
-                    //try { midiOut?.Close(); } catch { }
-                }
-            }
         }
 
         public void Close()
@@ -337,9 +305,10 @@ namespace Remcoposer64.Core.Player
             musicPlayer.SetFirstFrame();
         }
 
-        public List<MIDIParam> GetMIDIParam()
+        public MIDIParam GetMIDIParam(int devNo)
         {
-            return musicPlayer.midiParamList;
+            
+            return midiOutDev[devNo].midiParam;
         }
     }
 }

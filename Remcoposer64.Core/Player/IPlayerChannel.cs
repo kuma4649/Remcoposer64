@@ -10,7 +10,7 @@ namespace Remcoposer64.Core.Player
         /// <summary>
         /// チャンネルの初期化処理（カーソル準備など）
         /// </summary>
-        void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, MidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice);
+        void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, ThrottledMidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice);
 
         /// <summary>
         /// 現在時刻に応じてイベントを発火する

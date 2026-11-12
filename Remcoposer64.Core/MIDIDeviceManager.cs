@@ -1,12 +1,13 @@
-﻿using System;
+﻿using NAudio.Midi;
+using Remcoposer64.Core;
+using System;
 using System.Collections.Generic;
-using NAudio.Midi;
 
 namespace Remcomposer64.Core
 {
     public class MidiDeviceManager : IDisposable
     {
-        private readonly Dictionary<string, MidiOut> openedOutDevices = new();
+        private readonly Dictionary<string, ThrottledMidiOut> openedOutDevices = new();
         private readonly Dictionary<string, MidiIn> openedInDevices = new();
 
         private readonly Dictionary<string, int> outNameToIndex = new();
@@ -41,7 +42,7 @@ namespace Remcomposer64.Core
             }
         }
 
-        public MidiOut GetMIDIOutDevice(string deviceName)
+        public ThrottledMidiOut GetMIDIOutDevice(string deviceName)
         {
             if (openedOutDevices.TryGetValue(deviceName, out var existing))
                 return existing;
@@ -51,8 +52,9 @@ namespace Remcomposer64.Core
                 //throw new Exception($"Not found MIDI OUT '{deviceName}'.");
 
             var dev = new MidiOut(index);
-            openedOutDevices[deviceName] = dev;
-            return dev;
+            var midi = new ThrottledMidiOut(dev, 30);
+            openedOutDevices[deviceName] = midi;
+            return midi;
         }
 
         public MidiIn GetMIDIInDevice(string deviceName)

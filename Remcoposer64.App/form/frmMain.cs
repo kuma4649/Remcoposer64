@@ -996,11 +996,11 @@ namespace Remcoposer64.App
                 }
             }
 
-            List<MIDIParam> prms = player.GetMIDIParam();
+            MIDIParam prms = player.GetMIDIParam(0);
             if (prms != null)
             {
                 Encoding enc = Encoding.ASCII;
-                letter = enc.GetString(prms[0].LCDDisplayLetter).Trim();
+                letter = enc.GetString(prms.LCDDisplayLetter).Trim();
                 if (letter != oldletter)
                 {
                     oldletter = letter;
