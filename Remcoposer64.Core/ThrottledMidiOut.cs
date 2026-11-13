@@ -159,7 +159,7 @@ namespace Remcoposer64.Core
             tokens += elapsed * bytesPerMs;
 
             // 最大100ms分保持
-            double maxTokens = bytesPerMs * 10.0;
+            double maxTokens = bytesPerMs * 100.0;
 
             if (tokens > maxTokens)
                 tokens = maxTokens;
