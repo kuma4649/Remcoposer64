@@ -19,8 +19,8 @@ namespace Remcoposer64.Core.Exceptions
         {
         }
 
-        protected RcFailedOpenSMFTrackNumberException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+        //protected RcFailedOpenSMFTrackNumberException(SerializationInfo info, StreamingContext context) : base(info, context)
+        //{
+        //}
     }
 }

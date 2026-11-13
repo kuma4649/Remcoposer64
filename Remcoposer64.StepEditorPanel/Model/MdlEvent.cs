@@ -1,6 +1,6 @@
 ﻿using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
-using Remcoposer64.StepEditorPanelControl.Events;
+using Remcoposer64.StepEditorPanel.Events;
 
 namespace Remcoposer64.StepEditorPanelControl.Model
 {
@@ -12,6 +12,16 @@ namespace Remcoposer64.StepEditorPanelControl.Model
         public static readonly string ST_SPACE = "    ";
         public static readonly int ST_MINVALUE = 0;
         public static readonly int ST_MAXVALUE = 9999;
+        
+        public static readonly int GT_MAXLEN = 4;
+        public static readonly string GT_SPACE = "    ";
+        public static readonly int GT_MINVALUE = 0;
+        public static readonly int GT_MAXVALUE = 9999;
+
+        public static readonly int VEL_MAXLEN = 3;
+        public static readonly string VEL_SPACE = "    ";
+        public static readonly int VEL_MINVALUE = 0;
+        public static readonly int VEL_MAXVALUE = 127;
 
         // 派生クラスが種類を識別できるようにする
         public abstract MIDIEventType Type { get; }

@@ -25,9 +25,9 @@ namespace Remcoposer64.Core
         private int rcpVer = 0;
         private Encoding enc;
 
-        private int trkTick = 0;
-        private int meaTick = 0;
-        private int meaInd = 0;
+        //private int trkTick = 0;
+        //private int meaTick = 0;
+        //private int meaInd = 0;
         private bool endTrack = false;
         private Dictionary<byte, byte> taiDic;
         private int stDevNum = 0;
@@ -469,10 +469,10 @@ namespace Remcoposer64.Core
                 ptr += 36;
 
                 // イベント読み込み準備
-                trkTick = 0;
+                //trkTick = 0;
                 taiDic = new Dictionary<byte, byte>();
-                meaTick = 0;
-                meaInd = 0;
+                //meaTick = 0;
+                //meaInd = 0;
 
                 // イベント読み込み
                 musData(trk[trkNumber], bs);

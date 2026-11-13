@@ -1,8 +1,5 @@
-﻿using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
-using Remcoposer64.StepEditorPanelControl.Events;
+﻿using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
-using Remcoposer64.StepEditorPanelControl.Render;
 
 namespace Remcoposer64.StepEditorPanelControl.Render
 {
@@ -54,7 +51,7 @@ namespace Remcoposer64.StepEditorPanelControl.Render
                     if (cursor.Position == 1)
                     {
                         string nn = note.editVal;
-                        if (int.TryParse(nn, out int keyNumber)) nn = NoteEvent.KeyNumberToNoteName(keyNumber);
+                        if (int.TryParse(nn, out int keyNumber)) nn = MIDINoteEvent.KeyNumberToNoteName(keyNumber);
                         drawUtil.DrawCell(nn, ref pos, ref x, COL_NOTENAME, aryFb[0]);
                     }
                     else

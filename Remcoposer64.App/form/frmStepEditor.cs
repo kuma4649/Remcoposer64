@@ -34,7 +34,7 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.SysExEditRequested = ExecuteSysExEditor;
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
             stepEditorPanel1.GetScrollLockState = GetScrollLockState;
-            stepEditorPanel1.KeyDown += StepEditorPanel1_KeyDown;
+            stepEditorPanel1.KeyDownEvent += StepEditorPanel1_KeyDown;
 
             UpdateFormTitle();
         }

@@ -1,8 +1,8 @@
-﻿using Remcoposer64.ProjectData;
+﻿using Remcoposer64.Common;
+using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanel.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
-using Remcoposer64.StepEditorPanelControl.Events;
-using Remcoposer64.Common;
 
 namespace Remcoposer64.StepEditorPanelControl.Model
 {
@@ -14,12 +14,6 @@ namespace Remcoposer64.StepEditorPanelControl.Model
         public static readonly string KEYNUMBER_SPACE = "   ";
         public static readonly int NOTENAME_MAXLEN = 4;
         public static readonly string NOTENAME_SPACE = "    ";
-
-        public static readonly int GT_MAXLEN = 4;
-        public static readonly string GT_SPACE = "    ";
-
-        public static readonly int Vel_MAXLEN = 3;
-        public static readonly string Vel_SPACE = "   ";
 
 
         public MdlNoteEvent(EventManager parent) : base(parent)
@@ -242,23 +236,23 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             {
                 case 0:
                 case 1:
-                    ne.editVal = NoteEvent.KEYNUMBER_SPACE;
-                    ne.virVal = ne.KeyNumber.ToString().PadLeft(NoteEvent.KEYNUMBER_MAXLEN);
+                    ne.editVal = KEYNUMBER_SPACE;
+                    ne.virVal = ne.KeyNumber.ToString().PadLeft(KEYNUMBER_MAXLEN);
                     return true;
 
                 case 2:
-                    ne.editVal = NoteEvent.ST_SPACE;
-                    ne.virVal = ne.ST.ToString().PadLeft(NoteEvent.ST_MAXLEN);
+                    ne.editVal = ST_SPACE;
+                    ne.virVal = ne.ST.ToString().PadLeft(ST_MAXLEN);
                     return true;
 
                 case 3:
-                    ne.editVal = NoteEvent.GT_SPACE;
-                    ne.virVal = ne.GT.ToString().PadLeft(NoteEvent.GT_MAXLEN);
+                    ne.editVal = GT_SPACE;
+                    ne.virVal = ne.GT.ToString().PadLeft(GT_MAXLEN);
                     return true;
 
                 case 4:
-                    ne.editVal = NoteEvent.Vel_SPACE;
-                    ne.virVal = ne.Vel.ToString().PadLeft(NoteEvent.Vel_MAXLEN);
+                    ne.editVal = VEL_SPACE;
+                    ne.virVal = ne.Vel.ToString().PadLeft(VEL_MAXLEN);
                     return true;
 
                 default:
@@ -339,7 +333,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
                 var oldState = new NoteKeyState(ne.KeyNumber, ne.NoteName);
 
                 // 新しい NoteName を計算
-                string newNoteName = NoteEvent.KeyNumberToNoteName(newKeyNumber);
+                string newNoteName = MIDINoteEvent.KeyNumberToNoteName(newKeyNumber);
                 var newState = new NoteKeyState(newKeyNumber, newNoteName);
 
                 // ★ 値を更新（ここで初めて更新する）
@@ -506,7 +500,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
         {
             try
             {
-                ApplyCursorMove(ne, cursorInfo, newCursorInfo, action, 1, Vel_SPACE, ne.Vel.ToString().PadLeft(Vel_MAXLEN));
+                ApplyCursorMove(ne, cursorInfo, newCursorInfo, action, 1, VEL_SPACE, ne.Vel.ToString().PadLeft(VEL_MAXLEN));
 
                 if (!newEditing) commit(ne);
 
@@ -566,12 +560,12 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             }
 
             // 入力値を一旦受け入れる
-            string n = Vel_SPACE;
+            string n = VEL_SPACE;
             if (keyChar != 0)
                 n += ne.editVal + keyChar.ToString();
             else
                 n += ne.editVal.Length > 0 ? ne.editVal[..^1] : "";
-            n = n.Substring(n.Length - Vel_MAXLEN, Vel_MAXLEN);
+            n = n.Substring(n.Length - VEL_MAXLEN, VEL_MAXLEN);
 
             // 数値として問題無いか、空白かを判定して正式に受け入れる
             if (int.TryParse(n, out ni) && ni.IsBetween(0, 127)) ne.editVal = n;
@@ -579,7 +573,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             else WinApi.Beep();
 
             // ★ 最大文字数入力時の自動確定処理
-            if (ne.editVal.Trim().Length == Vel_MAXLEN)
+            if (ne.editVal.Trim().Length == VEL_MAXLEN)
             {
                 if (!int.TryParse(ne.editVal, out ni)) return;
 

@@ -318,7 +318,7 @@ namespace Remcoposer64.Common.Render
         IntPtr _MemBmp = IntPtr.Zero;
         IntPtr _OrgMemBmp;
         System.Drawing.Size _MemDcSize;
-        int _ForeColor;
+        int _ForeColor = 0;
         IntPtr _Pen = IntPtr.Zero;
         IntPtr _Brush = IntPtr.Zero;
         IntPtr _NullPen = IntPtr.Zero;

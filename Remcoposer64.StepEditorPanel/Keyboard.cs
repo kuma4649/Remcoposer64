@@ -1,9 +1,9 @@
-﻿using Remcoposer64.StepEditorPanelControl.Events;
-using System.Diagnostics;
+﻿using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanel.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
-using Remcoposer64.Common;
+using System.Diagnostics;
 
 namespace Remcoposer64.StepEditorPanelControl
 {
@@ -45,7 +45,7 @@ namespace Remcoposer64.StepEditorPanelControl
             bool shift = (keyData & (uint)Keys.Shift) != 0;
             bool alt = (keyData & (uint)Keys.Alt) != 0;
 
-            Debug.WriteLine($"KeyDown: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
+            Debug.WriteLine($"KeyDownEvent: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
 
 
             //CCのポップアップウィンドウが表示中の場合はカーソルキーなどの情報を渡して処理終了
@@ -248,7 +248,7 @@ namespace Remcoposer64.StepEditorPanelControl
         private void HandleKeyPressNone(char keyChar, CommitKeyPattern keyPattern)
         {
 
-            // KeyDown で処理されるキーは弾く
+            // KeyDownEvent で処理されるキーは弾く
             if (keyChar == '\b' // BackSpace
                 || keyChar == '\r' // Enter
                 || keyChar == '\u001b' // Escape

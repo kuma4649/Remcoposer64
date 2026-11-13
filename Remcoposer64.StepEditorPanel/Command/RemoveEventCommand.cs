@@ -1,12 +1,5 @@
-﻿using Remcoposer64.StepEditorPanelControl;
-using Remcoposer64.StepEditorPanelControl.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Remcoposer64.ProjectData.Events;
 using Remcoposer64.UndoRedoManager;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
 
 namespace Remcoposer64.StepEditorPanelControl.Command
 {

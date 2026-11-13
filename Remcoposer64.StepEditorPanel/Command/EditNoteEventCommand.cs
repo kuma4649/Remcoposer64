@@ -1,13 +1,7 @@
-﻿using Remcoposer64.StepEditorPanelControl.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanelControl.Model;
 using Remcoposer64.UndoRedoManager;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
-using Remcoposer64.StepEditorPanelControl.Model;
 
 namespace Remcoposer64.StepEditorPanelControl.Command
 {
@@ -132,8 +126,8 @@ namespace Remcoposer64.StepEditorPanelControl.Command
                         break;
 
                     case 4:
-                        ne.editVal = MdlNoteEvent.Vel_SPACE;
-                        ne.virVal = ne.Vel.ToString().PadLeft(MdlNoteEvent.Vel_MAXLEN);
+                        ne.editVal = MdlNoteEvent.VEL_SPACE;
+                        ne.virVal = ne.Vel.ToString().PadLeft(MdlNoteEvent.VEL_MAXLEN);
                         break;
                 }
             }

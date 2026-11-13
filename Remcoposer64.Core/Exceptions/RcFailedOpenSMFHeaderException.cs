@@ -19,8 +19,8 @@ namespace Remcoposer64.Core.Exceptions
         {
         }
 
-        protected RcFailedOpenSMFHeaderException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+        //protected RcFailedOpenSMFHeaderException(SerializationInfo info, StreamingContext context) : base(info, context)
+        //{
+        //}
     }
 }

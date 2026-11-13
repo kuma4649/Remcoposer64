@@ -625,7 +625,7 @@ namespace Remcoposer64.App
 
             if (!visible)
             {
-                Screen? primary = Screen.PrimaryScreen;
+                Screen primary = Screen.PrimaryScreen;
                 if (primary == null) return;
 
                 rc = primary.WorkingArea;

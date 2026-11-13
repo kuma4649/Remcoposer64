@@ -1,8 +1,5 @@
-﻿using Remcoposer64.StepEditorPanelControl;
-using Remcoposer64.StepEditorPanelControl.Events;
+﻿using Remcoposer64.ProjectData.Events;
 using Remcoposer64.UndoRedoManager;
-using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
 
 namespace Remcoposer64.StepEditorPanelControl.Command
 {

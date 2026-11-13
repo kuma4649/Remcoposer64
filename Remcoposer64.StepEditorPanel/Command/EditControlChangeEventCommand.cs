@@ -1,8 +1,7 @@
-﻿using Remcoposer64.StepEditorPanelControl.Events;
+﻿using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanelControl.Model;
 using Remcoposer64.UndoRedoManager;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
-using Remcoposer64.ProjectData;
-using Remcoposer64.ProjectData.Events;
 
 namespace Remcoposer64.StepEditorPanelControl.Command
 {
@@ -108,18 +107,18 @@ namespace Remcoposer64.StepEditorPanelControl.Command
                 switch (oldCursorPos)
                 {
                     case 2: // ST
-                        ev.editVal = ControlChangeEvent.ST_SPACE;
-                        ev.virVal = ev.ST.ToString().PadLeft(ControlChangeEvent.ST_MAXLEN);
+                        ev.editVal = MdlControlChangeEvent.ST_SPACE;
+                        ev.virVal = ev.ST.ToString().PadLeft(MdlControlChangeEvent.ST_MAXLEN);
                         break;
 
                     case 3: // ControllerNumber
-                        ev.editVal = ControlChangeEvent.GT_SPACE;
-                        ev.virVal = ev.ControllerNumber.ToString().PadLeft(ControlChangeEvent.GT_MAXLEN);
+                        ev.editVal = MdlControlChangeEvent.GT_SPACE;
+                        ev.virVal = ev.ControllerNumber.ToString().PadLeft(MdlControlChangeEvent.GT_MAXLEN);
                         break;
 
                     case 4: // ControllerValue
-                        ev.editVal = ControlChangeEvent.VEL_SPACE;
-                        ev.virVal = ev.ControllerValue.ToString().PadLeft(ControlChangeEvent.VEL_MAXLEN);
+                        ev.editVal = MdlControlChangeEvent.VEL_SPACE;
+                        ev.virVal = ev.ControllerValue.ToString().PadLeft(MdlControlChangeEvent.VEL_MAXLEN);
                         break;
                 }
             }

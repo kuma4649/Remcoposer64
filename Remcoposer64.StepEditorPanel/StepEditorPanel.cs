@@ -2,9 +2,9 @@
 using Remcoposer64.Common.Render;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanel.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
-using Remcoposer64.StepEditorPanelControl.Events;
 using Remcoposer64.StepEditorPanelControl.Model;
 using Remcoposer64.StepEditorPanelControl.Render;
 using System.ComponentModel;
@@ -32,7 +32,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public Func<SysExEditRequest, SysExEditResult> SysExEditRequested;
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
         public Func<bool> GetScrollLockState;
-        public event EventHandler<KeyEventArgs> KeyDown;
+        public event EventHandler<KeyEventArgs> KeyDownEvent;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -561,9 +561,9 @@ namespace Remcoposer64.StepEditorPanelControl
             {
                 case Keys.F5://再生
                 case Keys.F10://停止
-                    if (KeyDown != null)
+                    if (KeyDownEvent != null)
                     {
-                        KeyDown?.Invoke(this, e);
+                        KeyDownEvent?.Invoke(this, e);
                         return;
                     }
                     break;
