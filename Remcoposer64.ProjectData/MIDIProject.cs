@@ -219,7 +219,7 @@ namespace Remcoposer64.ProjectData
         {
             return new DPLayoutDto
             {
-                LayoutXml = dpl.LayoutXml
+                LayoutXml = dpl?.LayoutXml
             };
         }
 

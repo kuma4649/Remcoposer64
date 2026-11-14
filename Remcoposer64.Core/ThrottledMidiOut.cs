@@ -179,6 +179,14 @@ namespace Remcoposer64.Core
             skipMode = false;
         }
 
+        public void Flush2()
+        {
+            while (queue.Count > 0)
+            {
+                Thread.Sleep(1);
+            }
+        }
+
         public void FlushMIDI()
         {
             int status;
@@ -194,6 +202,10 @@ namespace Remcoposer64.Core
                         midiOut.Send(msg);
                     }
                 }
+                while (queue.Count > 0)
+                {
+                    Thread.Sleep(1);
+                }
 
                 status = 0xB0 | i; // CC
                 for (int j = 0; j < 128; j++)
@@ -204,12 +216,20 @@ namespace Remcoposer64.Core
                         midiOut.Send(msg);
                     }
                 }
+                while (queue.Count > 0)
+                {
+                    Thread.Sleep(1);
+                }
 
                 if (midiParam.pc[i] != null)
                 {
                     status = 0xC0 | i; // ProgramChange
                     msg = (int)(status + (midiParam.pc[i] << 8));
                     midiOut.Send(msg);
+                }
+                while (queue.Count > 0)
+                {
+                    Thread.Sleep(1);
                 }
 
                 status = 0xD0 | i; // Polyphonic Key Pressure
@@ -218,14 +238,20 @@ namespace Remcoposer64.Core
                     msg = (int)(status + (midiParam.cPress[i] << 8));
                     midiOut.Send(msg);
                 }
+                while (queue.Count > 0)
+                {
+                    Thread.Sleep(1);
+                }
 
                 status = 0xE0 | i; // PitchBend
                 if (midiParam.bend[i] != null)
                 {
-                    msg = (int)(status + ((midiParam.bend[i] & 0x3f80) << (16 - 7)) + ((midiParam.bend[i] & 0x7f) << 8));
+                    int bend = (int)midiParam.bend[i];
+                    byte lsb = (byte)(bend & 0x7F);
+                    byte msb = (byte)((bend >> 7) & 0x7F);
+                    msg = status | (lsb << 8) | (msb << 16);
                     midiOut.Send(msg);
                 }
-
                 while (queue.Count > 0)
                 {
                     Thread.Sleep(1);

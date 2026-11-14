@@ -4,6 +4,7 @@ using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.TrackEditor;
+using System.Security.Cryptography;
 using System.Text;
 using WeifenLuo.WinFormsUI.Docking;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -116,6 +117,59 @@ namespace Remcoposer64.App
         // Event
         //
 
+        private void tsmiNewSequence_Click(object sender, EventArgs e)
+        {
+
+            CloseProject();
+            undoMng.Clear();
+            MIDIProject prj = new MIDIProject();
+            // プロジェクトの UI を構築
+            AddProjectTab(prj, true);
+            UpdateTitle();
+            UpdateInformation(prj);
+
+            // ファイル名を更新
+            prj.Information.FileFullName = "";
+            prj.Information.FileName = "New Sequence";
+
+        }
+
+        private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
+        {
+
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            // プロジェクトをロード
+            MIDIProject prj = MIDIProject.Load(ofd.FileName);
+            if (prj == null)
+            {
+                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
+                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            CloseProject();
+            undoMng.Clear();
+
+            //// タブを作成
+            //TabPage tab = new TabPage();
+            //tab.Tag = prj;
+            //tab.Text = prj.Information.FileName;
+
+            // プロジェクトの UI を構築
+            AddProjectTab(prj, true);
+            UpdateTitle();
+            UpdateInformation(prj);
+
+            // ファイル名を更新
+            prj.Information.FileFullName = ofd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+        }
+
         private void tsmiExit_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -132,62 +186,6 @@ namespace Remcoposer64.App
 
             SetDevice();
             undoMng.Clear();
-        }
-
-        private void SetDevice()
-        {
-            // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
-            player.StopPlayback();
-            player.Close();
-
-            // MIDIデバイスの表示を更新する
-                try
-                {
-                    MIDIProject project = (MIDIProject)frmProject.Tag;
-                    TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
-                    tec.SetContext(project, setting, player, undoMng);
-                    tec.Refresh();
-                }
-                catch (Exception e)
-                {
-                    Log.ForcedWrite(e);
-                }
-
-            // MIDIデバイスをオープンする
-            player = new RmPlayer(setting);
-
-        }
-
-        private void SetTrackEditorRow()
-        {
-
-            // MIDIデバイスの表示を更新する
-            try
-            {
-                TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
-                tec.SetHeaderLine(setting.common.TrackEditorRow);
-            }
-            catch (Exception e)
-            {
-                Log.ForcedWrite(e);
-            }
-
-        }
-
-        private void SetStepEditor()
-        {
-            List<frmStepEditor> lst = new List<frmStepEditor>();
-            foreach (var ctrl in dockPanel1.Contents)
-            {
-                if (!(ctrl is frmStepEditor)) continue;
-                frmStepEditor fse = (frmStepEditor)ctrl;
-                lst.Add(fse);
-            }
-            for (int i = 0; i < lst.Count; i++)
-            {
-                lst[i].Close();//.UpdateFontSize();
-            }
-
         }
 
         private void tsmiImport_Click(object sender, EventArgs e)
@@ -227,7 +225,12 @@ namespace Remcoposer64.App
         {
             MIDIProject prj = currentProject;
             string fn = prj.Information.FileFullName;
-            fn = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
+            if(string.IsNullOrEmpty(fn))
+            {
+                fn = $"NewSequence_{DateTime.Now:yyMMddHHmmss}";
+            }
+            else
+                fn = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
 
             var sfd = new SaveFileDialog();
             sfd.FileName = fn;
@@ -244,45 +247,10 @@ namespace Remcoposer64.App
             undoMng.Clear();
         }
 
-        private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
-        {
-
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
-
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            // プロジェクトをロード
-            MIDIProject prj = MIDIProject.Load(ofd.FileName);
-            if (prj == null)
-            {
-                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
-                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            CloseProject();
-            undoMng.Clear();
-
-            // タブを作成
-            TabPage tab = new TabPage();
-            tab.Tag = prj;
-            tab.Text = prj.Information.FileName;
-
-            // プロジェクトの UI を構築
-            AddProjectTab(prj, true);
-            UpdateTitle();
-            UpdateInformation(prj);
-
-            // ファイル名を更新
-            prj.Information.FileFullName = ofd.FileName;
-            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
-        }
 
         private void tsmiOpenOpePanel_Click(object sender, EventArgs e)
         {
-            if(opePanel != null)
+            if (opePanel != null)
             {
                 opePanel.Close();
             }
@@ -603,7 +571,7 @@ namespace Remcoposer64.App
             RestoreFormStatus(info, setting.ui.FormInformation, true);
         }
 
-        private void RestoreFormStatus(Form frm, Setting.formStatus fs,bool restoreVisible = false)
+        private void RestoreFormStatus(Form frm, Setting.formStatus fs, bool restoreVisible = false)
         {
             if (fs == null) return;
             if (fs.Width < 100 || fs.Height < 100) return;
@@ -709,12 +677,12 @@ namespace Remcoposer64.App
             //projects.Add(project);
             currentProject = project;
 
-            AddProjectTab(project,openForm);
+            AddProjectTab(project, openForm);
             UpdateTitle();
             UpdateInformation(project);
         }
 
-        private void AddProjectTab(MIDIProject project,bool openForm)
+        private void AddProjectTab(MIDIProject project, bool openForm)
         {
             // 新しいタブページを作成
             frmProject = new frmProject(this, project)
@@ -779,7 +747,7 @@ namespace Remcoposer64.App
 
             frm.Show(
                 dockPanel1, DockState.Float);
-                //new Rectangle(0, 0, 816, 480));
+            //new Rectangle(0, 0, 816, 480));
 
             frm.Size = new Size(816, 480);
         }
@@ -852,17 +820,17 @@ namespace Remcoposer64.App
                 }
             }
             //Application.DoEvents();
-                try
-                {
-                    //frmProject[i].DockState = DockState.Float;
-                    //Application.DoEvents();
-                    //Application.DoEvents();
-                    frmProject?.Close();
-                }
-                catch
-                {
-                    ;
-                }
+            try
+            {
+                //frmProject[i].DockState = DockState.Float;
+                //Application.DoEvents();
+                //Application.DoEvents();
+                frmProject?.Close();
+            }
+            catch
+            {
+                ;
+            }
 
             info?.Close();
             info = null;
@@ -931,7 +899,7 @@ namespace Remcoposer64.App
             {
                 if (currentProject == null) return null;
                 string[] parts = persistString.Split(',');
-                if(parts.Length < 3) return null;
+                if (parts.Length < 3) return null;
                 string className = parts[0];
                 int trackNumber = int.Parse(parts[1]);
                 int partNumber = int.Parse(parts[2]);
@@ -1195,5 +1163,62 @@ namespace Remcoposer64.App
             opePanel.SetMarker(currentProject);
             frmProject.RefreshTrackEditor();
         }
+
+        private void SetDevice()
+        {
+            // 演奏停止し、発音を消音し、更にMIDIデバイスをクローズする
+            player.StopPlayback();
+            player.Close();
+
+            // MIDIデバイスの表示を更新する
+            try
+            {
+                MIDIProject project = (MIDIProject)frmProject.Tag;
+                TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
+                tec.SetContext(project, setting, player, undoMng);
+                tec.Refresh();
+            }
+            catch (Exception e)
+            {
+                Log.ForcedWrite(e);
+            }
+
+            // MIDIデバイスをオープンする
+            player = new RmPlayer(setting);
+
+        }
+
+        private void SetTrackEditorRow()
+        {
+
+            // MIDIデバイスの表示を更新する
+            try
+            {
+                TrackEditorControl tec = (TrackEditorControl)frmProject.Controls[0];
+                tec.SetHeaderLine(setting.common.TrackEditorRow);
+            }
+            catch (Exception e)
+            {
+                Log.ForcedWrite(e);
+            }
+
+        }
+
+        private void SetStepEditor()
+        {
+            List<frmStepEditor> lst = new List<frmStepEditor>();
+            foreach (var ctrl in dockPanel1.Contents)
+            {
+                if (!(ctrl is frmStepEditor)) continue;
+                frmStepEditor fse = (frmStepEditor)ctrl;
+                lst.Add(fse);
+            }
+            for (int i = 0; i < lst.Count; i++)
+            {
+                lst[i].Close();//.UpdateFontSize();
+            }
+
+        }
+
     }
 }

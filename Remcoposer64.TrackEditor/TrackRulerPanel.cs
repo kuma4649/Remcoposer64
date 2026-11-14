@@ -57,7 +57,7 @@ namespace Remcoposer64.TrackEditor
 
             for (int tick = startTick - (startTick % tick16); tick <= endTick; tick += tick16)
             {
-                int x = trackEditorControl.trackCanvasPanel.TickToX(tick);
+                int x = (int)trackEditorControl.trackCanvasPanel.TickToX(tick);
 
                 bool drawTick = x != lastX;
                 if (drawTick)
@@ -103,7 +103,7 @@ namespace Remcoposer64.TrackEditor
 
                 foreach (var marker in currentProject.Information.Markers)
                 {
-                    x = trackEditorControl.trackCanvasPanel.TickToX((int)marker.Tick);
+                    x = (int)trackEditorControl.trackCanvasPanel.TickToX((int)marker.Tick);
 
                     if (x < -32 || x > Width + 32)
                         continue;
@@ -117,7 +117,7 @@ namespace Remcoposer64.TrackEditor
 
             if (Project == Player.GetPlayingProject())
             {
-                int markerPos = trackEditorControl.trackCanvasPanel.TickToX((int)Player.GetFrameCounter());
+                int markerPos = (int)trackEditorControl.trackCanvasPanel.TickToX((int)Player.GetFrameCounter());
 
                 graph.DrawImage(
                     0,

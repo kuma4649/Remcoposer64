@@ -131,6 +131,10 @@ namespace Remcoposer64.App.form
 
             // Playerのオプション
             cbRCPMuteMode.Checked = setting.player.RCPMuteMode;
+
+            rbFast.Checked = setting.player.SkipModeType == 0;
+            rbMiddle.Checked = setting.player.SkipModeType == 1;
+            rbSlow.Checked = setting.player.SkipModeType == 2;
         }
 
         private void btnAddMIDIout_Click(object sender, EventArgs e)
@@ -414,7 +418,7 @@ namespace Remcoposer64.App.form
             }
 
             setting.player.RCPMuteMode = cbRCPMuteMode.Checked;
-
+            setting.player.SkipModeType = rbFast.Checked ? 0 : (rbMiddle.Checked ? 1 : 2);
             this.DialogResult = DialogResult.OK;
             this.Close();
 

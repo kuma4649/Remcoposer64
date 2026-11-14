@@ -212,6 +212,7 @@ namespace Remcoposer64.StepEditorPanelControl
             var startNode = FindStartNodeForAdjust(node);
             AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type, 
                 (ev.Type == MIDIEventType.SameMeas&& node.Previous.Value.Type != MIDIEventType.BarLine) ? 2 : 1);
+
         }
 
 
@@ -265,6 +266,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
             indexCache.RemoveAt(index);
             events.Remove(node);
+            prt.LengthTick -= ev.ST;
 
             // ★ SameMeas の index 補正
             foreach (var info in sameMeasList)
@@ -284,6 +286,8 @@ namespace Remcoposer64.StepEditorPanelControl
 
             AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type, 
                 (ev.Type == MIDIEventType.SameMeas && prevNode.Value.Type != MIDIEventType.BarLine) ? -2 : -1);
+
+            parent.RefreshTrackEditor();
         }
 
 
@@ -307,6 +311,7 @@ namespace Remcoposer64.StepEditorPanelControl
             int step = 0;
             int offset = 0;
             int sum = 0;
+            int totalTick = 0;
 
             LinkedListNode<MIDIEvent> node = events.First;
             while (node != null)
@@ -321,6 +326,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 if (ev.ST != 0) step++;
 
                 sum += ev.ST;
+                totalTick += ev.ST;
 
                 if (ev.Type == MIDIEventType.BarLine)
                 {
@@ -363,6 +369,8 @@ namespace Remcoposer64.StepEditorPanelControl
 
                 node = node.Next;
             }
+
+            prt.LengthTick = totalTick;
 
             // sameMeasのRepeatMeas/BeforeNodeの調整
             foreach (var si in sameMeasList)
@@ -691,6 +699,16 @@ namespace Remcoposer64.StepEditorPanelControl
 
             UpdateTieFlagsDiff(workEvent2);
 
+            UpdatePartLengthTick();
+
+            parent.RefreshTrackEditor();
+
+        }
+
+        private void UpdatePartLengthTick()
+        {
+            MeasureInfoManager mim = new MeasureInfoManager();
+            mim.BuildPartInfo(prt);
         }
 
         public MIDIEvent CreateEvent(MIDIEventType type)

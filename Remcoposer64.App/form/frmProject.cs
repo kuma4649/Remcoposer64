@@ -34,6 +34,7 @@ namespace Remcoposer64.App.form
                 if (cnt is TrackEditorControl)
                 {
                     ((TrackEditorControl)cnt).pnlRuler.RefreshRuler();
+                    ((TrackEditorControl)cnt).trackCanvasPanel.Refresh();
                 }
             }
         }

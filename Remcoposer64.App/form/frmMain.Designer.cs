@@ -110,69 +110,70 @@
             // tsmiNewSequence
             // 
             tsmiNewSequence.Name = "tsmiNewSequence";
-            tsmiNewSequence.Size = new Size(175, 22);
+            tsmiNewSequence.Size = new Size(180, 22);
             tsmiNewSequence.Text = "New Sequence file";
+            tsmiNewSequence.Click += tsmiNewSequence_Click;
             // 
             // tsmiOpenSequenceFile
             // 
             tsmiOpenSequenceFile.Name = "tsmiOpenSequenceFile";
-            tsmiOpenSequenceFile.Size = new Size(175, 22);
+            tsmiOpenSequenceFile.Size = new Size(180, 22);
             tsmiOpenSequenceFile.Text = "Open Sequence file";
             tsmiOpenSequenceFile.Click += tsmiOpenSequenceFile_Click;
             // 
             // tsmiSaveSequenceFile
             // 
             tsmiSaveSequenceFile.Name = "tsmiSaveSequenceFile";
-            tsmiSaveSequenceFile.Size = new Size(175, 22);
+            tsmiSaveSequenceFile.Size = new Size(180, 22);
             tsmiSaveSequenceFile.Text = "Save Sequence file";
             tsmiSaveSequenceFile.Click += tsmiSaveSequenceFile_Click;
             // 
             // tsmiSaveAs
             // 
             tsmiSaveAs.Name = "tsmiSaveAs";
-            tsmiSaveAs.Size = new Size(175, 22);
+            tsmiSaveAs.Size = new Size(180, 22);
             tsmiSaveAs.Text = "Save As";
             // 
             // tsmiCloseSequenceFile
             // 
             tsmiCloseSequenceFile.Name = "tsmiCloseSequenceFile";
-            tsmiCloseSequenceFile.Size = new Size(175, 22);
+            tsmiCloseSequenceFile.Size = new Size(180, 22);
             tsmiCloseSequenceFile.Text = "Close Sequence file";
             tsmiCloseSequenceFile.Click += tsmiCloseSequenceFile_Click;
             // 
             // tsmiRecentFiles
             // 
             tsmiRecentFiles.Name = "tsmiRecentFiles";
-            tsmiRecentFiles.Size = new Size(175, 22);
+            tsmiRecentFiles.Size = new Size(180, 22);
             tsmiRecentFiles.Text = "Recent files";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(172, 6);
+            toolStripSeparator1.Size = new Size(177, 6);
             // 
             // tsmiExport
             // 
             tsmiExport.Name = "tsmiExport";
-            tsmiExport.Size = new Size(175, 22);
+            tsmiExport.Size = new Size(180, 22);
             tsmiExport.Text = "Export";
             // 
             // tsmiImport
             // 
             tsmiImport.Name = "tsmiImport";
-            tsmiImport.Size = new Size(175, 22);
+            tsmiImport.Size = new Size(180, 22);
             tsmiImport.Text = "Import";
             tsmiImport.Click += tsmiImport_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(172, 6);
+            toolStripSeparator2.Size = new Size(177, 6);
             // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(175, 22);
+            tsmiExit.Size = new Size(180, 22);
             tsmiExit.Text = "&Exit";
             tsmiExit.Click += tsmiExit_Click;
             // 
@@ -265,7 +266,7 @@
             // 
             toolStrip1.Dock = DockStyle.None;
             toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, tsbMIDIOut_A, tsbMIDIOut_B, tsbMIDIOut_C, tsbMIDIOut_D, tsbMIDIOut_E, tsbMIDIOut_F, tsbMIDIOut_G });
-            toolStrip1.Location = new Point(3, 24);
+            toolStrip1.Location = new Point(4, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(223, 25);
             toolStrip1.TabIndex = 1;
@@ -399,7 +400,7 @@
             // 
             toolStrip2.Dock = DockStyle.None;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel2, tsbTrackRow1, tsbTrackRow2, tsbTrackRow3 });
-            toolStrip2.Location = new Point(227, 24);
+            toolStrip2.Location = new Point(239, 24);
             toolStrip2.Name = "toolStrip2";
             toolStrip2.Size = new Size(138, 25);
             toolStrip2.TabIndex = 2;
@@ -444,9 +445,9 @@
             // 
             toolStrip3.Dock = DockStyle.None;
             toolStrip3.Items.AddRange(new ToolStripItem[] { toolStripLabel3, tsbSEFont8, tsbSEFont12, tsbSEFont16 });
-            toolStrip3.Location = new Point(365, 24);
+            toolStrip3.Location = new Point(377, 24);
             toolStrip3.Name = "toolStrip3";
-            toolStrip3.Size = new Size(220, 25);
+            toolStrip3.Size = new Size(189, 25);
             toolStrip3.TabIndex = 3;
             // 
             // toolStripLabel3

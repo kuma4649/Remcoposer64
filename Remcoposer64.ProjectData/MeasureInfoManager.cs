@@ -270,6 +270,147 @@ namespace Remcoposer64.ProjectData
         {
             return null;
         }
+
+        public void BuildPartInfo(MIDIPart prt)
+        {
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNodePart = new();
+            Common.BuildMeasureStartNode(measureStartNodePart, prt, 0, 0);
+            TrackStatus ts=new TrackStatus();
+            ts.ps.Add(new PartStatus());
+            ProcessFrameFromPart(measureStartNodePart, prt, ts, ts.ps[0]);
+
+            prt.LengthTick = ts.ps[0].CurrentEventFrame;
+        }
+
+        public void ProcessFrameFromPart(
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNodePart,
+            MIDIPart prt,
+            TrackStatus ts,
+            PartStatus ps)
+        {
+
+            // 初期化（イベント開始前）
+            if (ps.CurrentEventFrame == -1)
+            {
+                ps.CurrentEventFrame = 0;// prt.StartTick;
+                ps.CurrentEvent = prt.Event.First;
+            }
+
+            if (ps.CurrentEvent == null)
+            {
+                return;
+            }
+
+            while (ps.CurrentEvent != null)
+            {
+                MIDIEvent evt = ps.CurrentEvent.Value;
+
+                ps.CurrentEvent = AnalyzeEventFromPart(measureStartNodePart, ts, ps.CurrentEvent);
+                ps.CurrentEventFrame += evt.ST;
+            }
+
+        }
+
+        private LinkedListNode<MIDIEvent> AnalyzeEventFromPart(
+            Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNodePart,
+            TrackStatus ts,
+            LinkedListNode<MIDIEvent> nEvt)
+        {
+            //MIDIPart prt = nPrt.Value;
+            MIDIEvent evt = nEvt.Value;
+
+            if (evt.Type == MIDIEventType.TempoChange)
+            {
+
+            }
+            else if (evt.Type == MIDIEventType.SameMeas)
+            {
+                if (ts.SameMeasStack.Count > 0)
+                {
+                    return ts.SameMeasStack.Pop();
+                }
+
+                bool first = true;
+                while (evt.Type == MIDIEventType.SameMeas)
+                {
+                    var sevt = (MIDISameMeasEvent)evt;
+                    int target = sevt.RepeatMeas;
+
+                    var key = (0, 0, target);
+
+                    if (!measureStartNodePart.TryGetValue(key, out var jumpNode))
+                        break;
+
+                    if (jumpNode.Value.Type == MIDIEventType.BarLine)
+                    {
+                        return nEvt.Next;
+                    }
+
+                    if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+                    {
+                        if (nEvt == jumpNode)
+                        {
+                            Log.Write(LogLevel.Error, $"MeasueInfoManager.cs: same measureEvent: Self-reference Case 4 : Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+                            break;
+                        }
+
+                        if (first) ts.SameMeasStack.Push(nEvt.Next);
+                        first = false;
+
+                        nEvt = jumpNode;
+                        evt = jumpNode.Value;
+                        continue;
+                    }
+
+                    // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+                    if (first) ts.SameMeasStack.Push(nEvt.Next);
+
+                    return jumpNode;
+
+                }
+            }
+            else if (evt.Type == MIDIEventType.BarLine)
+            {
+                if (ts.SameMeasStack.Count > 0)
+                {
+                    return ts.SameMeasStack.Pop();
+                }
+            }
+            else if (evt.Type == MIDIEventType.MetaEndOfTrack)
+            {
+                if (ts.SameMeasStack.Count > 0)
+                {
+                    return ts.SameMeasStack.Pop();
+                }
+            }
+            else if (evt.Type == MIDIEventType.LoopStart)
+            {
+                ts.LoopStack.Push((nEvt.Next, null));
+            }
+            else if (evt.Type == MIDIEventType.LoopEnd)
+            {
+                if (ts.LoopStack.Count > 0)
+                {
+                    var (levt, lcnt) = ts.LoopStack.Pop();
+                    MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
+                    if (lcnt == null)
+                    {
+                        lcnt = leEvt.LoopCounter;
+                    }
+
+                    lcnt--;
+
+                    if (lcnt > 0)
+                    {
+                        ts.LoopStack.Push((levt, lcnt));
+                        return levt;
+                    }
+                }
+            }
+
+            return nEvt.Next;
+        }
+
     }
 
     public class MeasureInfo

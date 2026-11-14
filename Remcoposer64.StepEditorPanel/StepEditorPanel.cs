@@ -33,7 +33,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
         public Func<bool> GetScrollLockState;
         public event EventHandler<KeyEventArgs> KeyDownEvent;
-        public event EventHandler RefreashTrackEditorEvent;
+        public event EventHandler RefreshTrackEditorEvent;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -903,7 +903,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
         public void RefreshTrackEditor()
         {
-            RefreashTrackEditorEvent?.Invoke(this, System.EventArgs.Empty);
+            RefreshTrackEditorEvent?.Invoke(this, System.EventArgs.Empty);
         }
 
         public void StartImeMode()

@@ -52,10 +52,10 @@ namespace Remcoposer64.TrackEditor.Internal
                 trk = trk.Next;
             }
 
-            int playX = 0;
+            long playX = 0;
             if (Project == Player.GetPlayingProject())
             {
-                playX = TickToX((int)Player.GetFrameCounter());
+                playX = TickToX(Player.GetFrameCounter());
             }
 
             for (int i = TrackEditorControl.FirstVisibleTrack; i < TrackEditorControl.LastVisibleTrack; i++)
@@ -77,7 +77,7 @@ namespace Remcoposer64.TrackEditor.Internal
 
                 if (!string.IsNullOrEmpty(trk.Value.Memo))
                 {
-                    Point pos = new Point(playX + 4, y + 4);
+                    Point pos = new Point((int)(playX + 4), y + 4);
                     graph.DrawStringOSFont(trk.Value.Memo, ref pos, Color.LimeGreen, Color.Transparent);
                     trk.Value.MemoWait--;
                     if (trk.Value.MemoWait <= 0) trk.Value.Memo = "";
@@ -98,7 +98,7 @@ namespace Remcoposer64.TrackEditor.Internal
             {
                 graph.BackColor = Color.LimeGreen;
                 graph.FillRectangle(
-                    playX,
+                    (int)playX,
                     0,
                     2,
                     ClientSize.Height);
@@ -113,8 +113,8 @@ namespace Remcoposer64.TrackEditor.Internal
 
             while (part != null)
             {
-                int x = TickToX(part.Value.StartTick);
-                int w = TickToWidth(part.Value.LengthTick);
+                long x = TickToX(part.Value.StartTick);
+                long w = TickToWidth(part.Value.LengthTick);
                 if (w <= 0) w = 1;
 
                 if (x >= ClientSize.Width)
@@ -126,7 +126,7 @@ namespace Remcoposer64.TrackEditor.Internal
                     continue;
                 }
 
-                DrawPart(part.Value, x, y, w);
+                DrawPart(part.Value, (int)x, y, (int)w);
 
                 part = part.Next;
             }
@@ -332,18 +332,18 @@ namespace Remcoposer64.TrackEditor.Internal
 
         public double tickZoom = 0.1;
 
-        public int TickToX(int tick)
+        public long TickToX(long tick)
         {
-            return (int)(tick * tickZoom) - TrackEditorControl.pxScrollX;
+            return (long)(tick * tickZoom) - TrackEditorControl.pxScrollX;
         }
         
-        public int TickToWidth(int tick)
+        public long TickToWidth(long tick)
         {
-            return (int)(tick * tickZoom);
+            return (long)(tick * tickZoom);
         }
-        public int TickToXAbsolute(int tick)
+        public long TickToXAbsolute(long tick)
         {
-            return (int)(tick * tickZoom);
+            return (long)(tick * tickZoom);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)

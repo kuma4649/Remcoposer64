@@ -106,12 +106,14 @@ namespace Remcoposer64.Common
         {
             public bool RCPMuteMode { get; set; } = true;
             public double playSpeed { get; set; } = 1.0;
+            public int SkipModeType { get; set; } = 0;
 
             public Player Copy()
             {
                 Player player = new Player();
                 player.RCPMuteMode = this.RCPMuteMode;
                 player.playSpeed = this.playSpeed;
+                player.SkipModeType = this.SkipModeType;
                 return player;
             }
         }

@@ -2,6 +2,7 @@
 using Remcoposer64.StepEditorPanelControl.Model;
 using Remcoposer64.UndoRedoManager;
 using static Remcoposer64.StepEditorPanelControl.Keyboard;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.StepEditorPanelControl.Command
 {

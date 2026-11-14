@@ -10,15 +10,15 @@ namespace Remcoposer64.ProjectData
     {
         public int Number { get; set; } = 0;
         public string Name { get; set; } = "";
-        public int StartTick { get; set; } = 0;
-        public int LengthTick { get; set; } = 0;
+        public long StartTick { get; set; } = 0;
+        public long LengthTick { get; set; } = 0;
 
         /// <summary>
         /// イベントリスト
         /// </summary>
         public LinkedList<MIDIEvent> Event { get; set; } = new LinkedList<MIDIEvent>();
         public LinkedListNode<MIDIEvent> CurrentEvent { get; set; }
-        public int CurrentEventFrame { get; set; }
+        public long CurrentEventFrame { get; set; }
         //public Stack<LinkedListNode<MIDIEvent>> JumpReturnStack { get; set; }
 
         //初めのイベントを得る

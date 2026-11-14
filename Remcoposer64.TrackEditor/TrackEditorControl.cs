@@ -199,7 +199,7 @@ namespace Remcoposer64.TrackEditor
             int maxScroll =
                 Math.Max(
                     0,
-                    trackCanvasPanel.TickToWidth(maxTick)
+                    (int)trackCanvasPanel.TickToWidth(maxTick)
                     - trackCanvasPanel.ClientSize.Width);
 
             hScrollBar1.Maximum =
@@ -325,7 +325,7 @@ namespace Remcoposer64.TrackEditor
                 return;
             }
 
-            int playX = trackCanvasPanel.TickToXAbsolute((int)Player.GetFrameCounter());
+            int playX = (int)trackCanvasPanel.TickToXAbsolute(Player.GetFrameCounter());
             playX = Math.Max(playX - 50, 0);
             if (hScrollBar1.Value == playX) { trackCanvasPanel.Refresh(); pnlRuler.Refresh(); }
             else if (playX <= hScrollBar1.Maximum) hScrollBar1.Value = playX;
@@ -347,8 +347,8 @@ namespace Remcoposer64.TrackEditor
                 {
                     maxTick = Math.Max(
                         maxTick,
-                        part.Value.StartTick
-                        + part.Value.LengthTick);
+                        (int)part.Value.StartTick
+                        + (int)part.Value.LengthTick);
 
                     part = part.Next;
                 }
@@ -1130,7 +1130,7 @@ namespace Remcoposer64.TrackEditor
                 while (nPrt != null)
                 {
 
-                    int absTick = nPrt.Value.StartTick + nPrt.Value.LengthTick;
+                    int absTick = (int)(nPrt.Value.StartTick + nPrt.Value.LengthTick);
                     maxAbsTick = Math.Max(maxAbsTick, absTick);
 
                     nPrt = nPrt.Next;

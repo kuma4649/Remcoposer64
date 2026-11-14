@@ -78,6 +78,7 @@ namespace Remcoposer64.App.form
 
         public void SetMarker(MIDIProject currentProject)
         {
+            if (currentProject == null) return;
             List<MarkerPoint> mps = currentProject.Information.Markers;
             Button[] bt = [ bt0, bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9 ];
 

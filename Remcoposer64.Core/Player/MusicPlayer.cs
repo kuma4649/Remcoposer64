@@ -48,6 +48,7 @@ namespace Remcoposer64.Core.Player
         private Setting _setting;
         private bool hasSolo = false;
         private long SkipFrameCount;
+        private int SkipModeType = 2;
 
         public void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, ThrottledMidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
         {
@@ -74,6 +75,14 @@ namespace Remcoposer64.Core.Player
             _project = project;
             _bpm = project.Information.Tempo;
             _ppq = project.Information.TimeBase;
+
+            int maxMIDIOut = 0;
+            foreach (var trk in _project.Track)
+            {
+                maxMIDIOut = Math.Max(maxMIDIOut, trk.OutDevice);
+            }
+            project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
+
             dicNoteOnTable = new Dictionary<int, long>[project.Information.MaxLengthMIDIOut][];
             for (int i = 0; i < project.Information.MaxLengthMIDIOut; i++)
             {
@@ -93,6 +102,8 @@ namespace Remcoposer64.Core.Player
 
         public void StartPlayback()
         {
+            SkipModeType = _setting.player.SkipModeType;
+
             _currentPpq = 0;
 
             Remcoposer64.ProjectData.Common.ClearPlayedFlag(_project);
@@ -112,9 +123,10 @@ namespace Remcoposer64.Core.Player
             _den = _project.Information.BeatDen; //初期値をセットする
             _mol = _project.Information.BeatNum; //初期値をセットする
 
+
             InitMIDI();
             FireFrameProcess = 0;
-            if (SkipFrameCount > 0)
+            if (SkipFrameCount > 0 && SkipModeType == 0)
             {
                 SkipModeONMIDI();
                 FireFrameProcess = (int)SkipFrameCount;
@@ -143,6 +155,15 @@ namespace Remcoposer64.Core.Player
             {
                 //spd = 100.0;
                 FireFrameProcess++;
+                
+                if (SkipModeType == 2)
+                {
+                    foreach (var midiout in midiOutDevice)
+                    {
+                        midiout.Flush2();
+                    }
+                }
+
                 return;
             }
 
@@ -169,7 +190,7 @@ namespace Remcoposer64.Core.Player
 
         public void ProcessFrame(long seqCounter)
         {
-            if (SkipFrameCount > 0) { SkipFrameCount--; if (SkipFrameCount == 0) FlushMIDI(); }
+            if (SkipFrameCount > 0) { SkipFrameCount--; if (SkipFrameCount == 0 && SkipModeType == 0) FlushMIDI(); }
             hasSolo = _project.Track.Any(t => t.Solo);
 
             if (RelativeTempoChangeSW)

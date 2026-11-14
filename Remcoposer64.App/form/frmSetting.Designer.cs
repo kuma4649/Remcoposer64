@@ -160,10 +160,14 @@
             label2 = new Label();
             btnAddMIDIin = new Button();
             btnSubMIDIin = new Button();
-            btnOK = new Button();
-            btnCancel = new Button();
             tpPlayer = new TabPage();
             cbRCPMuteMode = new CheckBox();
+            btnOK = new Button();
+            btnCancel = new Button();
+            groupBox1 = new GroupBox();
+            rbFast = new RadioButton();
+            rbMiddle = new RadioButton();
+            rbSlow = new RadioButton();
             tcSetting.SuspendLayout();
             tpOutput.SuspendLayout();
             tbcDeviceCategory.SuspendLayout();
@@ -198,6 +202,7 @@
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMIDIinListA).BeginInit();
             tpPlayer.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // tcSetting
@@ -346,7 +351,7 @@
             tbcMIDIOutList.Margin = new Padding(4);
             tbcMIDIOutList.Name = "tbcMIDIOutList";
             tbcMIDIOutList.SelectedIndex = 0;
-            tbcMIDIOutList.Size = new Size(478, 215);
+            tbcMIDIOutList.Size = new Size(478, 214);
             tbcMIDIOutList.TabIndex = 4;
             // 
             // tpA
@@ -358,7 +363,7 @@
             tpA.Margin = new Padding(4);
             tpA.Name = "tpA";
             tpA.Padding = new Padding(4);
-            tpA.Size = new Size(470, 187);
+            tpA.Size = new Size(470, 186);
             tpA.TabIndex = 0;
             tpA.Tag = "0";
             tpA.Text = "A";
@@ -379,7 +384,7 @@
             dgvMIDIoutListA.RowHeadersVisible = false;
             dgvMIDIoutListA.RowTemplate.Height = 21;
             dgvMIDIoutListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListA.Size = new Size(428, 179);
+            dgvMIDIoutListA.Size = new Size(428, 178);
             dgvMIDIoutListA.TabIndex = 1;
             dgvMIDIoutListA.CellMouseDoubleClick += dgvMIDIoutListA_CellMouseDoubleClick;
             // 
@@ -466,7 +471,7 @@
             // btnDownMIDIOut_A
             // 
             btnDownMIDIOut_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_A.Location = new Point(440, 111);
+            btnDownMIDIOut_A.Location = new Point(440, 110);
             btnDownMIDIOut_A.Margin = new Padding(4);
             btnDownMIDIOut_A.Name = "btnDownMIDIOut_A";
             btnDownMIDIOut_A.Size = new Size(26, 72);
@@ -482,7 +487,7 @@
             tpB.Controls.Add(dgvMIDIoutListB);
             tpB.Location = new Point(4, 24);
             tpB.Name = "tpB";
-            tpB.Size = new Size(470, 187);
+            tpB.Size = new Size(470, 186);
             tpB.TabIndex = 1;
             tpB.Text = "B";
             tpB.UseVisualStyleBackColor = true;
@@ -502,7 +507,7 @@
             // btnDownMIDIOut_B
             // 
             btnDownMIDIOut_B.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_B.Location = new Point(440, 111);
+            btnDownMIDIOut_B.Location = new Point(440, 110);
             btnDownMIDIOut_B.Margin = new Padding(4);
             btnDownMIDIOut_B.Name = "btnDownMIDIOut_B";
             btnDownMIDIOut_B.Size = new Size(26, 72);
@@ -526,7 +531,7 @@
             dgvMIDIoutListB.RowHeadersVisible = false;
             dgvMIDIoutListB.RowTemplate.Height = 21;
             dgvMIDIoutListB.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListB.Size = new Size(428, 179);
+            dgvMIDIoutListB.Size = new Size(428, 178);
             dgvMIDIoutListB.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn14
@@ -604,7 +609,7 @@
             tpC.Controls.Add(dgvMIDIoutListC);
             tpC.Location = new Point(4, 24);
             tpC.Name = "tpC";
-            tpC.Size = new Size(470, 187);
+            tpC.Size = new Size(470, 186);
             tpC.TabIndex = 2;
             tpC.Text = "C";
             tpC.UseVisualStyleBackColor = true;
@@ -624,7 +629,7 @@
             // btnDownMIDIOut_C
             // 
             btnDownMIDIOut_C.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_C.Location = new Point(440, 111);
+            btnDownMIDIOut_C.Location = new Point(440, 110);
             btnDownMIDIOut_C.Margin = new Padding(4);
             btnDownMIDIOut_C.Name = "btnDownMIDIOut_C";
             btnDownMIDIOut_C.Size = new Size(26, 72);
@@ -648,7 +653,7 @@
             dgvMIDIoutListC.RowHeadersVisible = false;
             dgvMIDIoutListC.RowTemplate.Height = 21;
             dgvMIDIoutListC.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListC.Size = new Size(428, 179);
+            dgvMIDIoutListC.Size = new Size(428, 178);
             dgvMIDIoutListC.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn19
@@ -726,7 +731,7 @@
             tpD.Controls.Add(dgvMIDIoutListD);
             tpD.Location = new Point(4, 24);
             tpD.Name = "tpD";
-            tpD.Size = new Size(470, 187);
+            tpD.Size = new Size(470, 186);
             tpD.TabIndex = 3;
             tpD.Text = "D";
             tpD.UseVisualStyleBackColor = true;
@@ -746,7 +751,7 @@
             // btnDownMIDIOut_D
             // 
             btnDownMIDIOut_D.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_D.Location = new Point(440, 111);
+            btnDownMIDIOut_D.Location = new Point(440, 110);
             btnDownMIDIOut_D.Margin = new Padding(4);
             btnDownMIDIOut_D.Name = "btnDownMIDIOut_D";
             btnDownMIDIOut_D.Size = new Size(26, 72);
@@ -770,7 +775,7 @@
             dgvMIDIoutListD.RowHeadersVisible = false;
             dgvMIDIoutListD.RowTemplate.Height = 21;
             dgvMIDIoutListD.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListD.Size = new Size(428, 179);
+            dgvMIDIoutListD.Size = new Size(428, 178);
             dgvMIDIoutListD.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn24
@@ -848,7 +853,7 @@
             tpE.Controls.Add(dgvMIDIoutListE);
             tpE.Location = new Point(4, 24);
             tpE.Name = "tpE";
-            tpE.Size = new Size(470, 187);
+            tpE.Size = new Size(470, 186);
             tpE.TabIndex = 4;
             tpE.Text = "E";
             tpE.UseVisualStyleBackColor = true;
@@ -868,7 +873,7 @@
             // btnDownMIDIOut_E
             // 
             btnDownMIDIOut_E.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_E.Location = new Point(440, 111);
+            btnDownMIDIOut_E.Location = new Point(440, 110);
             btnDownMIDIOut_E.Margin = new Padding(4);
             btnDownMIDIOut_E.Name = "btnDownMIDIOut_E";
             btnDownMIDIOut_E.Size = new Size(26, 72);
@@ -892,7 +897,7 @@
             dgvMIDIoutListE.RowHeadersVisible = false;
             dgvMIDIoutListE.RowTemplate.Height = 21;
             dgvMIDIoutListE.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListE.Size = new Size(428, 179);
+            dgvMIDIoutListE.Size = new Size(428, 178);
             dgvMIDIoutListE.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn29
@@ -970,7 +975,7 @@
             tpF.Controls.Add(dgvMIDIoutListF);
             tpF.Location = new Point(4, 24);
             tpF.Name = "tpF";
-            tpF.Size = new Size(470, 187);
+            tpF.Size = new Size(470, 186);
             tpF.TabIndex = 5;
             tpF.Text = "F";
             tpF.UseVisualStyleBackColor = true;
@@ -990,7 +995,7 @@
             // btnDownMIDIOut_F
             // 
             btnDownMIDIOut_F.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_F.Location = new Point(440, 111);
+            btnDownMIDIOut_F.Location = new Point(440, 110);
             btnDownMIDIOut_F.Margin = new Padding(4);
             btnDownMIDIOut_F.Name = "btnDownMIDIOut_F";
             btnDownMIDIOut_F.Size = new Size(26, 72);
@@ -1014,7 +1019,7 @@
             dgvMIDIoutListF.RowHeadersVisible = false;
             dgvMIDIoutListF.RowTemplate.Height = 21;
             dgvMIDIoutListF.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListF.Size = new Size(428, 179);
+            dgvMIDIoutListF.Size = new Size(428, 178);
             dgvMIDIoutListF.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn34
@@ -1092,7 +1097,7 @@
             tpG.Controls.Add(dgvMIDIoutListG);
             tpG.Location = new Point(4, 24);
             tpG.Name = "tpG";
-            tpG.Size = new Size(470, 187);
+            tpG.Size = new Size(470, 186);
             tpG.TabIndex = 6;
             tpG.Text = "G";
             tpG.UseVisualStyleBackColor = true;
@@ -1112,7 +1117,7 @@
             // btnDownMIDIOut_G
             // 
             btnDownMIDIOut_G.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_G.Location = new Point(440, 111);
+            btnDownMIDIOut_G.Location = new Point(440, 110);
             btnDownMIDIOut_G.Margin = new Padding(4);
             btnDownMIDIOut_G.Name = "btnDownMIDIOut_G";
             btnDownMIDIOut_G.Size = new Size(26, 72);
@@ -1136,7 +1141,7 @@
             dgvMIDIoutListG.RowHeadersVisible = false;
             dgvMIDIoutListG.RowTemplate.Height = 21;
             dgvMIDIoutListG.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListG.Size = new Size(428, 179);
+            dgvMIDIoutListG.Size = new Size(428, 178);
             dgvMIDIoutListG.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn39
@@ -1358,7 +1363,7 @@
             tbcMIDIinList.Margin = new Padding(4);
             tbcMIDIinList.Name = "tbcMIDIinList";
             tbcMIDIinList.SelectedIndex = 0;
-            tbcMIDIinList.Size = new Size(478, 215);
+            tbcMIDIinList.Size = new Size(478, 214);
             tbcMIDIinList.TabIndex = 4;
             // 
             // tabPage3
@@ -1370,7 +1375,7 @@
             tabPage3.Margin = new Padding(4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(4);
-            tabPage3.Size = new Size(470, 187);
+            tabPage3.Size = new Size(470, 186);
             tabPage3.TabIndex = 0;
             tabPage3.Tag = "0";
             tabPage3.Text = "...";
@@ -1391,7 +1396,7 @@
             dgvMIDIinListA.RowHeadersVisible = false;
             dgvMIDIinListA.RowTemplate.Height = 21;
             dgvMIDIinListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIinListA.Size = new Size(428, 179);
+            dgvMIDIinListA.Size = new Size(428, 178);
             dgvMIDIinListA.TabIndex = 1;
             dgvMIDIinListA.CellMouseDoubleClick += dgvMIDIinListA_CellMouseDoubleClick;
             // 
@@ -1470,7 +1475,7 @@
             // btnDownMIDIin_A
             // 
             btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIin_A.Location = new Point(440, 111);
+            btnDownMIDIin_A.Location = new Point(440, 110);
             btnDownMIDIin_A.Margin = new Padding(4);
             btnDownMIDIin_A.Name = "btnDownMIDIin_A";
             btnDownMIDIin_A.Size = new Size(26, 72);
@@ -1523,6 +1528,27 @@
             btnSubMIDIin.UseVisualStyleBackColor = true;
             btnSubMIDIin.Click += btnSubMIDIin_Click;
             // 
+            // tpPlayer
+            // 
+            tpPlayer.Controls.Add(groupBox1);
+            tpPlayer.Controls.Add(cbRCPMuteMode);
+            tpPlayer.Location = new Point(4, 24);
+            tpPlayer.Name = "tpPlayer";
+            tpPlayer.Size = new Size(512, 520);
+            tpPlayer.TabIndex = 1;
+            tpPlayer.Text = "Player";
+            tpPlayer.UseVisualStyleBackColor = true;
+            // 
+            // cbRCPMuteMode
+            // 
+            cbRCPMuteMode.AutoSize = true;
+            cbRCPMuteMode.Location = new Point(26, 23);
+            cbRCPMuteMode.Name = "cbRCPMuteMode";
+            cbRCPMuteMode.Size = new Size(203, 19);
+            cbRCPMuteMode.TabIndex = 0;
+            cbRCPMuteMode.Text = "RCP-compatible-style mute mode";
+            cbRCPMuteMode.UseVisualStyleBackColor = true;
+            // 
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -1545,25 +1571,50 @@
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
             // 
-            // tpPlayer
+            // groupBox1
             // 
-            tpPlayer.Controls.Add(cbRCPMuteMode);
-            tpPlayer.Location = new Point(4, 24);
-            tpPlayer.Name = "tpPlayer";
-            tpPlayer.Size = new Size(512, 520);
-            tpPlayer.TabIndex = 1;
-            tpPlayer.Text = "Player";
-            tpPlayer.UseVisualStyleBackColor = true;
+            groupBox1.Controls.Add(rbSlow);
+            groupBox1.Controls.Add(rbMiddle);
+            groupBox1.Controls.Add(rbFast);
+            groupBox1.Location = new Point(3, 48);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(496, 104);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Skip mode Type";
             // 
-            // cbRCPMuteMode
+            // rbFast
             // 
-            cbRCPMuteMode.AutoSize = true;
-            cbRCPMuteMode.Location = new Point(26, 23);
-            cbRCPMuteMode.Name = "cbRCPMuteMode";
-            cbRCPMuteMode.Size = new Size(203, 19);
-            cbRCPMuteMode.TabIndex = 0;
-            cbRCPMuteMode.Text = "RCP-compatible-style mute mode";
-            cbRCPMuteMode.UseVisualStyleBackColor = true;
+            rbFast.AutoSize = true;
+            rbFast.Location = new Point(6, 22);
+            rbFast.Name = "rbFast";
+            rbFast.Size = new Size(310, 19);
+            rbFast.TabIndex = 0;
+            rbFast.TabStop = true;
+            rbFast.Text = "Fast (Send controls in bulk when skipping is complete)";
+            rbFast.UseVisualStyleBackColor = true;
+            // 
+            // rbMiddle
+            // 
+            rbMiddle.AutoSize = true;
+            rbMiddle.Location = new Point(6, 47);
+            rbMiddle.Name = "rbMiddle";
+            rbMiddle.Size = new Size(225, 19);
+            rbMiddle.TabIndex = 1;
+            rbMiddle.TabStop = true;
+            rbMiddle.Text = "Middle(Send Controls While Skipping)";
+            rbMiddle.UseVisualStyleBackColor = true;
+            // 
+            // rbSlow
+            // 
+            rbSlow.AutoSize = true;
+            rbSlow.Location = new Point(6, 72);
+            rbSlow.Name = "rbSlow";
+            rbSlow.Size = new Size(283, 19);
+            rbSlow.TabIndex = 2;
+            rbSlow.TabStop = true;
+            rbSlow.Text = "Slow(Send controls incrementally while skipping)";
+            rbSlow.UseVisualStyleBackColor = true;
             // 
             // frmSetting
             // 
@@ -1617,6 +1668,8 @@
             ((System.ComponentModel.ISupportInitialize)dgvMIDIinListA).EndInit();
             tpPlayer.ResumeLayout(false);
             tpPlayer.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -1758,5 +1811,9 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
         private TabPage tpPlayer;
         private CheckBox cbRCPMuteMode;
+        private GroupBox groupBox1;
+        private RadioButton rbSlow;
+        private RadioButton rbMiddle;
+        private RadioButton rbFast;
     }
 }

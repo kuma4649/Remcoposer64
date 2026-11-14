@@ -4,8 +4,8 @@
     {
         public int Number { get; set; }
         public string Name { get; set; }
-        public int StartTick { get; set; }
-        public int LengthTick { get; set; }
+        public long StartTick { get; set; }
+        public long LengthTick { get; set; }
 
         public List<MIDIEventDto> Events { get; set; } = new List<MIDIEventDto>();
     }
