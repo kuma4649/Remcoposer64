@@ -183,7 +183,7 @@ namespace Remcoposer64.Core
         {
             while (queue.Count > 0)
             {
-                Thread.Sleep(1);
+                Thread.Sleep(0);
             }
         }
 
@@ -200,11 +200,8 @@ namespace Remcoposer64.Core
                     {
                         msg = (int)(status + (j << 8) + (midiParam.keyPress[i][j] << 16));
                         midiOut.Send(msg);
+                        Flush2();
                     }
-                }
-                while (queue.Count > 0)
-                {
-                    Thread.Sleep(1);
                 }
 
                 status = 0xB0 | i; // CC
@@ -214,11 +211,35 @@ namespace Remcoposer64.Core
                     {
                         msg = (int)(status + (j << 8) + (midiParam.cc[i][j] << 16));
                         midiOut.Send(msg);
+                        Flush2();
                     }
                 }
-                while (queue.Count > 0)
+
+                foreach(var n in midiParam.dicRPN[i].Keys)
                 {
-                    Thread.Sleep(1);
+                    byte msb = (byte)((n >> 8) & 0x7f);
+                    byte lsb = (byte)(n & 0x7f);
+                    byte ch = (byte)(0xb0 + i);
+                    midiOut.Send(ch | (0x65 << 8) | (msb << 16));
+                    midiOut.Send(ch | (0x64 << 8) | (lsb << 16));
+                    ushort val = midiParam.dicRPN[i][n];
+                    msb = (byte)((val >> 8) & 0x7f);
+                    lsb = (byte)(val & 0x7f);
+                    midiOut.Send(ch | (0x06 << 8) | (msb << 16));
+                    midiOut.Send(ch | (0x26 << 8) | (lsb << 16));
+                    Flush2();
+                }
+
+                foreach (var n in midiParam.dicNRPN[i].Keys)
+                {
+                    byte msb = (byte)((n >> 8) & 0x7f);
+                    byte lsb = (byte)(n & 0x7f);
+                    byte ch = (byte)(0xb0 + i);
+                    midiOut.Send(ch | (0x63 << 8) | (msb << 16));
+                    midiOut.Send(ch | (0x62 << 8) | (lsb << 16));
+                    byte val = midiParam.dicNRPN[i][n];
+                    midiOut.Send(ch | (0x06 << 8) | (val << 16));
+                    Flush2();
                 }
 
                 if (midiParam.pc[i] != null)
@@ -226,10 +247,7 @@ namespace Remcoposer64.Core
                     status = 0xC0 | i; // ProgramChange
                     msg = (int)(status + (midiParam.pc[i] << 8));
                     midiOut.Send(msg);
-                }
-                while (queue.Count > 0)
-                {
-                    Thread.Sleep(1);
+                    Flush2();
                 }
 
                 status = 0xD0 | i; // Polyphonic Key Pressure
@@ -237,10 +255,7 @@ namespace Remcoposer64.Core
                 {
                     msg = (int)(status + (midiParam.cPress[i] << 8));
                     midiOut.Send(msg);
-                }
-                while (queue.Count > 0)
-                {
-                    Thread.Sleep(1);
+                    Flush2();
                 }
 
                 status = 0xE0 | i; // PitchBend
@@ -251,10 +266,7 @@ namespace Remcoposer64.Core
                     byte msb = (byte)((bend >> 7) & 0x7F);
                     msg = status | (lsb << 8) | (msb << 16);
                     midiOut.Send(msg);
-                }
-                while (queue.Count > 0)
-                {
-                    Thread.Sleep(1);
+                    Flush2();
                 }
             }
             skipMode = false;

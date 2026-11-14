@@ -204,14 +204,25 @@ namespace Remcoposer64.Core.Player
                     {
                         // All Sound Off (CC120)
                         midiOut.Send((0xB0 | ch) | (120 << 8) | (0 << 16));
+                        midiOut.Flush2();
                         // All Notes Off (CC123)
                         midiOut.Send((0xB0 | ch) | (123 << 8) | (0 << 16));
+                        midiOut.Flush2();
                         // Hold Pedal Off (CC64)
                         midiOut.Send((0xB0 | ch) | (64 << 8) | (0 << 16));
+                        midiOut.Flush2();
+                        // Reverb 0 (CC91)
+                        midiOut.Send((0xB0 | ch) | (91 << 8) | (0 << 16));
+                        midiOut.Flush2();
+                        // Chorus 0 (CC93)
+                        midiOut.Send((0xB0 | ch) | (93 << 8) | (0 << 16));
+                        midiOut.Flush2();
                         // Reset All Controllers (CC121)
                         midiOut.Send((0xB0 | ch) | (121 << 8) | (0 << 16));
+                        midiOut.Flush2();
                         // Pitch Bend Center (E0 00 40)
                         midiOut.Send((0xE0 | ch) | (0 << 8) | (64 << 16));
+                        midiOut.Flush2();
                     }
                     //midiOut.Close();
                 }

@@ -158,6 +158,10 @@ namespace Remcoposer64.Core
             ,0x1100,0x1101,0x1102,0x1103,0x1104,0x1105,0x1106,0x1107,0x1108
         };
 
+        private bool IsRPN = false;
+        public Dictionary<ushort, ushort>[] dicRPN = new Dictionary<ushort, ushort>[16];
+        public Dictionary<ushort, byte>[] dicNRPN = new Dictionary<ushort, byte>[16];
+
 
         public MIDIParam()
         {
@@ -225,6 +229,11 @@ namespace Remcoposer64.Core
             }
             Lyric = "";
             latestCmd = 0;
+
+            IsRPN = false;
+            dicRPN = new Dictionary<ushort, ushort>[16];
+            dicNRPN = new Dictionary<ushort, byte>[16];
+            for (int i = 0; i < 16; i++) { dicRPN[i] = new(); dicNRPN[i] = new(); }
         }
 
         private byte latestCmd = 0;
@@ -368,16 +377,57 @@ namespace Remcoposer64.Core
             }
         }
 
+
         private void AnalyzeControlChange(byte ch)
         {
             switch (msg[1])
             {
                 case 0x06://Data Entry MSB
                     AnalyzeDataEntryMSB(ch);
+                    if (!IsRPN) AnalyzeNRPN(ch);
+                    else AnalyzeRPN(ch);
                     break;
                 case 0x26://Data Entry LSB
+                    if (IsRPN) AnalyzeRPN(ch);
+                    break;
+                case 0x65:
+                case 0x64:
+                    IsRPN = true;
+                    break;
+                case 0x63:
+                case 0x62:
+                    IsRPN = false;
                     break;
             }
+        }
+
+        private void AnalyzeRPN(byte ch)
+        {
+            byte RPN_MSB = 0; if (cc[ch][0x65] != null) RPN_MSB = (byte)cc[ch][0x65];
+            byte RPN_LSB = 0; if (cc[ch][0x64] != null) RPN_LSB = (byte)cc[ch][0x64];
+            byte Dat_MSB = 0; if (cc[ch][0x06] != null) Dat_MSB = (byte)cc[ch][0x06];
+            byte Dat_LSB = 0; if (cc[ch][0x26] != null) Dat_LSB = (byte)cc[ch][0x26];
+
+            ushort key = (ushort)((RPN_MSB << 8) | RPN_LSB);
+            ushort val = (ushort)((Dat_MSB << 8) | Dat_LSB);
+            if (dicRPN[ch].ContainsKey(key))
+                dicRPN[ch][key] = val;
+            else
+                dicRPN[ch].Add(key, val);
+        }
+
+        private void AnalyzeNRPN(byte ch)
+        {
+            byte NRPN_MSB = 0; if (cc[ch][0x63] != null) NRPN_MSB = (byte)cc[ch][0x63];
+            byte NRPN_LSB = 0; if (cc[ch][0x62] != null) NRPN_LSB = (byte)cc[ch][0x62];
+            byte Dat_MSB = 0; if (cc[ch][0x06] != null) Dat_MSB = (byte)cc[ch][0x06];
+
+            ushort key = (ushort)((NRPN_MSB << 8) | NRPN_LSB);
+            byte val = Dat_MSB;
+            if (dicNRPN[ch].ContainsKey(key))
+                dicNRPN[ch][key] = val;
+            else
+                dicNRPN[ch].Add(key, val);
         }
 
         private void AnalyzeDataEntryMSB(byte ch)
