@@ -3,6 +3,7 @@ using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
 using Remcoposer64.StepEditorPanel.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
+using static Remcoposer64.StepEditorPanelControl.Keyboard;
 
 namespace Remcoposer64.StepEditorPanelControl.Model
 {
@@ -191,13 +192,85 @@ namespace Remcoposer64.StepEditorPanelControl.Model
             int row = panel.cursor.Index - panel.scrollOffset;
 
             int noteColumnOffset = (panel.columnWidths[1] + panel.columnWidths[3]) * panel.charWidth;
-
-            memoBoxDrawX = panel.iconMergin + noteColumnOffset;
+            memoBoxDrawX = (int)(panel.charWidth * 1.2f + noteColumnOffset);
             memoBoxDrawY = (1 + row) * panel.lineHeight;
 
             memoBoxDrawWidth = 200;        // 必要なら panel から計算
             memoBoxDrawHeight = panel.lineHeight;
         }
 
+        public bool MoveCursorRight(Keyboard kbd,
+            MIDIMemoEvent me,
+            StepEditorPanel parent,
+            InputState inputState)
+        {
+            if (memoBoxSwitch)
+            {
+                memoBoxCaretIndex = Math.Min(memoBoxText.Length, memoBoxCaretIndex + 1);
+                UpdateMemoBoxInfo(parent);
+                parent.ScreenUpdate();
+                return true;
+            }
+
+            // ★ MemoEvent 非編集時に右キーで編集開始
+            if (inputState == InputState.None && parent.OverwriteMode)
+            {
+                memoBoxSwitch = true;
+                BeginEdit(me, parent.cursor, kbd);
+                memoBoxCaretIndex = me.Text.Length;   // 右端
+                parent.ScreenUpdate();
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool MoveCursorLeft(Keyboard kbd,
+            MIDIMemoEvent me,
+            StepEditorPanel parent,
+            InputState inputState)
+        {
+            if (memoBoxSwitch)
+            {
+                if (parent.imeMode == false)
+                {
+                    memoBoxCaretIndex = Math.Max(0, memoBoxCaretIndex - 1);
+                    UpdateMemoBoxInfo(parent);
+                    parent.ScreenUpdate();
+                    return true; 
+                }
+            }
+            else
+            {
+                // ★ MemoEvent 非編集時に左キーで編集開始
+                if (inputState == InputState.None && parent.OverwriteMode)
+                {
+                    memoBoxSwitch = true;
+                    BeginEdit(me, parent.cursor, kbd);
+                    memoBoxCaretIndex = Math.Max(0, me.Text.Length - 1); // 右端−1
+                    parent.ScreenUpdate();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool DeleteEvent(MIDIEvent activeEvent, StepEditorPanel parent)
+        {
+            if (!(activeEvent is MIDIMemoEvent aevt)) return false;
+            if (!activeEvent.editing) return false;
+            if (!memoBoxSwitch) return false;
+
+            // ★ MemoEvent 編集中なら文字削除にする
+            if (memoBoxCaretIndex < memoBoxText.Length)
+            {
+                memoBoxText = memoBoxText.Remove(memoBoxCaretIndex, 1);
+                aevt.Text = memoBoxText;
+                parent.Invalidate();
+            }
+
+            return true; // ★ イベント削除ロジックに行かせない
+        }
     }
 }

@@ -18,8 +18,7 @@ namespace Remcoposer64.ProjectData.Events
 
         public override MIDIEvent Clone()
         {
-            MIDIMarkerEvent e =
-                new MIDIMarkerEvent();
+            var e = new MIDIMarkerEvent();
 
             e.CopyFrom(this);
 

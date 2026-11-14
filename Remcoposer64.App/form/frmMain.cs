@@ -1188,5 +1188,12 @@ namespace Remcoposer64.App
             player.InitialPlay();
             player.PlayMusic(currentProject, mp);
         }
+
+        internal void RefreshTrackEditor()
+        {
+            measInfoMng.Build(currentProject);
+            opePanel.SetMarker(currentProject);
+            frmProject.RefreshTrackEditor();
+        }
     }
 }

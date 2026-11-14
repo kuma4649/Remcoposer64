@@ -57,6 +57,7 @@ namespace Remcoposer64.StepEditorPanelControl.Model
                 "ChannelPressure" => MdlChannelPressureEvent.FromClipboardBody(parent, meas, step, body),
                 "ControlChange" => MdlControlChangeEvent.FromClipboardBody(parent, meas, step, body),
                 "Memo" => MdlMemoEvent.FromClipboardBody(parent, meas, step, body),
+                "Marker" => MdlMarkerEvent.FromClipboardBody(parent, meas, step, body),
                 "Meta" => MdlMetaEvent.FromClipboardBody(parent, meas, step, body),
                 "NoteEvent" => MdlNoteEvent.FromClipboardBody(parent, meas, step, body),
                 "PolyphonicKeyPressure" => MdlPolyphonicKeyPressureEvent.FromClipboardBody(parent, meas, step, body),

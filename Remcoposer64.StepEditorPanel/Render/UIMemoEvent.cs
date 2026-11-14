@@ -32,13 +32,13 @@ namespace Remcoposer64.StepEditorPanelControl.Render
             };
         }
 
-        public override void DrawEvent(MIDIEvent ev,MdlEvent me, Point pos, ref int x, CursorInfo cursor, RowState state)
+        public override void DrawEvent(MIDIEvent ev, MdlEvent me, Point pos, ref int x, CursorInfo cursor, RowState state)
         {
 
             var memo = (MIDIMemoEvent)ev;
             var mme = (MdlMemoEvent)me;
 
-            if (!mme.memoBoxSwitch)
+            if (!mme.memoBoxSwitch || !ev.editing)
             {
                 FBColor fb = state switch
                 {
@@ -53,42 +53,41 @@ namespace Remcoposer64.StepEditorPanelControl.Render
 
             drawUtil.FillRectangle(mme.memoBoxDrawX, mme.memoBoxDrawY, mme.memoBoxDrawWidth, mme.memoBoxDrawHeight);
 
-            if (!string.IsNullOrEmpty(mme.memoBoxText))
-            {
-                string left = mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex);
-                string right = mme.memoBoxText.Substring(mme.memoBoxCaretIndex);
-
-                int baseX = mme.memoBoxDrawX;
-                int y = mme.memoBoxDrawY;
-
-                // 左側（確定文字）
-                Point posLeft = new Point(baseX, y);
-                drawUtil.DrawStringOSFont(left, ref posLeft, EventCursorEdit.Fore, EventCursorEdit.Back);
-
-                // composition（前編集文字）
-                int compX = baseX + drawUtil.MeasureStringOSFont(left);
-                Point posComp = new Point(compX, y);
-                if (!string.IsNullOrEmpty(mme.memoBoxComposition))
-                {
-                    drawUtil.DrawStringOSFont(mme.memoBoxComposition, ref posComp, EventCursorComposition.Fore, EventCursorComposition.Back);
-                    int w = drawUtil.MeasureStringOSFont(mme.memoBoxComposition);
-                    drawUtil.FillRectangle(compX, y + drawUtil.lineHeight - 2, w, 2, EventCursorComposition.Fore);
-                }
-
-                // 右側（確定文字）
-                int rightX = compX + drawUtil.MeasureStringOSFont(mme.memoBoxComposition);
-                Point posRight = new Point(rightX, y);
-                drawUtil.DrawStringOSFont(right, ref posRight, EventCursorEdit.Fore, EventCursorEdit.Back);
-
-                // キャレット描画
-                int caretX = compX + drawUtil.MeasureStringOSFont(mme.memoBoxComposition.Substring(0, mme.IMECursorPos));
-                drawUtil.FillRectangle(caretX, y, 1, drawUtil.lineHeight, Color.White);
-            }
-            else
+            if (string.IsNullOrEmpty(mme.memoBoxText))
             {
                 Point pos_ = new Point(mme.memoBoxDrawX, mme.memoBoxDrawY);
                 drawUtil.DrawStringOSFont(memo.virVal, ref pos_, EventCursorDefault.Fore, EventCursorDefault.Back);
+                return;
             }
+
+            string left = mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex);
+            string right = mme.memoBoxText.Substring(mme.memoBoxCaretIndex);
+
+            int baseX = mme.memoBoxDrawX;
+            int y = mme.memoBoxDrawY;
+
+            // 左側（確定文字）
+            Point posLeft = new Point(baseX, y);
+            drawUtil.DrawStringOSFont(left, ref posLeft, EventCursorEdit.Fore, EventCursorEdit.Back);
+
+            // composition（前編集文字）
+            int compX = baseX + drawUtil.MeasureStringOSFont(left);
+            Point posComp = new Point(compX, y);
+            if (!string.IsNullOrEmpty(mme.memoBoxComposition))
+            {
+                drawUtil.DrawStringOSFont(mme.memoBoxComposition, ref posComp, EventCursorComposition.Fore, EventCursorComposition.Back);
+                int w = drawUtil.MeasureStringOSFont(mme.memoBoxComposition);
+                drawUtil.FillRectangle(compX, y + drawUtil.lineHeight - 2, w, 2, EventCursorComposition.Fore);
+            }
+
+            // 右側（確定文字）
+            int rightX = compX + drawUtil.MeasureStringOSFont(mme.memoBoxComposition);
+            Point posRight = new Point(rightX, y);
+            drawUtil.DrawStringOSFont(right, ref posRight, EventCursorEdit.Fore, EventCursorEdit.Back);
+
+            // キャレット描画
+            int caretX = compX + drawUtil.MeasureStringOSFont(mme.memoBoxComposition.Substring(0, mme.IMECursorPos));
+            drawUtil.FillRectangle(caretX, y, 1, drawUtil.lineHeight, Color.White);
 
         }
     }

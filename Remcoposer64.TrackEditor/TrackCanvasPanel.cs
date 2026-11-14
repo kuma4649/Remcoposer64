@@ -384,7 +384,5 @@ namespace Remcoposer64.TrackEditor.Internal
             TrackEditorControl.RaiseTrackDoubleClicked(trk);
         }
 
-
-
     }
 }

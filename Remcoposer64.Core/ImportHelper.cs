@@ -32,6 +32,13 @@ namespace Remcoposer64.Core
                 string strFromByte = encoding.GetString(MIDImessage).Replace("\0", "");
                 ((MIDIMemoEvent)eve).Text = strFromByte;
             }
+            if (eve is MIDIMarkerEvent)
+            {
+                Encoding encoding = Common.Common.GetCode(MIDImessage, 0, MIDImessage.Length);
+                if (encoding == null) encoding = Encoding.UTF8;
+                string strFromByte = encoding.GetString(MIDImessage).Replace("\0", "");
+                ((MIDIMarkerEvent)eve).Text = strFromByte;
+            }
 
             return prt.insertEve(TargetEvent, Step, eve);
         }
@@ -101,6 +108,22 @@ namespace Remcoposer64.Core
                 else
                 {
                     ((MIDIMemoEvent)eve).Text = "";
+                }
+            }
+            else if (eve is MIDIMarkerEvent)
+            {
+                eve.Type = MIDIEventType.MetaMarker;
+
+                if (MIDImessage.Length > 2)
+                {
+                    Encoding encoding = Common.Common.GetCode(MIDImessage, 2, MIDImessage.Length - 2);
+                    if (encoding == null) encoding = Encoding.UTF8;
+                    string strFromByte = encoding.GetString(MIDImessage, 2, MIDImessage.Length - 2).Replace("\0", "");
+                    ((MIDIMarkerEvent)eve).Text = strFromByte;
+                }
+                else
+                {
+                    ((MIDIMarkerEvent)eve).Text = "";
                 }
             }
 

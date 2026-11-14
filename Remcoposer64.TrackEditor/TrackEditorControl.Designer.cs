@@ -169,6 +169,6 @@ namespace Remcoposer64.TrackEditor
         private TrackBar trackBar1;
         private Button btnStretch;
         private TrackUpperHeaderPanel pnlUpperHeader;
-        private TrackRulerPanel pnlRuler;
+        public TrackRulerPanel pnlRuler;
     }
 }

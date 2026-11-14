@@ -35,8 +35,14 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
             stepEditorPanel1.GetScrollLockState = GetScrollLockState;
             stepEditorPanel1.KeyDownEvent += StepEditorPanel1_KeyDown;
+            stepEditorPanel1.RefreashTrackEditorEvent += StepEditorPanel1_RefreashTrackEditorEvent;
 
             UpdateFormTitle();
+        }
+
+        private void StepEditorPanel1_RefreashTrackEditorEvent(object sender, EventArgs e)
+        {
+            parent.RefreshTrackEditor();
         }
 
         protected override string GetPersistString()

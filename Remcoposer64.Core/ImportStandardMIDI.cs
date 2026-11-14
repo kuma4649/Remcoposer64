@@ -882,6 +882,11 @@ namespace Remcoposer64.Core
                     strFromByte = enc.GetString(nam.ToArray()).Replace("\0", "");
                     break;
                 case 0x20://MIDIチャンネルプリフィックス
+                    if (format == 1 && msg.Count > 1)
+                    {
+                        stDevNum = nam[0];
+                        trk.OutChannel = stDevNum;
+                    }
                     break;
                 case 0x21://出力 PortPrefix
                     if (format == 1 && msg.Count > 1)
@@ -891,11 +896,13 @@ namespace Remcoposer64.Core
                     }
                     break;
                 case 0x2f://トラックの終端
+                    // 無視する
                     break;
                 case 0x51://テンポ
                     prj.Information.Tempo = 60000000 / (nam[0] * 0x10000 + nam[1] * 0x100 + nam[2]);
                     break;
                 case 0x54://SMPTE オフセット
+                    // 無視する
                     break;
                 case 0x58://TimeSignature(拍子)
                     if (trkTick == 0)
@@ -910,6 +917,15 @@ namespace Remcoposer64.Core
                     msg.Clear();
                     break;
                 case 0x7F://シーケンサー特定メタイベント
+                    if (msg.Count > 5
+                        && msg[1] == 0x04
+                        && msg[2] == 0x43
+                        && msg[3] == 0x00
+                        && msg[4] == 0x01)
+                    {
+                        //YAMAHA独自のMIDIポート指定
+                        trk.OutDevice = msg[5];
+                    }
                     break;
                 default:
                     Log.Write(LogLevel.Warning, $"Not support Meta event type ={cmd}");

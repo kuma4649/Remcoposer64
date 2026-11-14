@@ -355,27 +355,16 @@ namespace Remcoposer64.StepEditorPanelControl
 
         private void MoveCursorRight()
         {
-            var me = parent.cursor.EventNode.Value as MIDIMemoEvent;
-            if (me != null)
+            if (parent.cursor.EventNode.Value is MIDIMemoEvent me)
             {
                 MdlMemoEvent mme = (MdlMemoEvent)parent.eventManager.GetModel(me.Type);
-                if (mme.memoBoxSwitch)
-                {
-                    mme.memoBoxCaretIndex = Math.Min(mme.memoBoxText.Length, mme.memoBoxCaretIndex + 1);
-                    mme.UpdateMemoBoxInfo(parent);
-                    parent.ScreenUpdate();
-                    return;
-                }
+                if (mme.MoveCursorRight(this, me, parent, inputState)) return;
+            }
 
-                // ★ MemoEvent 非編集時に右キーで編集開始
-                if (inputState == InputState.None && parent.OverwriteMode)
-                {
-                    mme.memoBoxSwitch = true;
-                    mme.BeginEdit(me, parent.cursor, this);
-                    mme.memoBoxCaretIndex = me.Text.Length;   // 右端
-                    parent.ScreenUpdate();
-                    return;
-                }
+            if (parent.cursor.EventNode.Value is MIDIMarkerEvent mrk)
+            {
+                MdlMarkerEvent mmrk = (MdlMarkerEvent)parent.eventManager.GetModel(mrk.Type);
+                if (mmrk.MoveCursorRight(this, mrk, parent, inputState)) return;
             }
 
             if (inputState == InputState.EditEvent)
@@ -408,32 +397,16 @@ namespace Remcoposer64.StepEditorPanelControl
 
         private void MoveCursorLeft()
         {
-            var me = parent.cursor.EventNode.Value as MIDIMemoEvent;
-            if (me != null)
+            if (parent.cursor.EventNode.Value is MIDIMemoEvent me)
             {
                 MdlMemoEvent mme = (MdlMemoEvent)parent.eventManager.GetModel(me.Type);
-                if (mme.memoBoxSwitch)
-                {
-                    if (parent.imeMode == false)
-                    {
-                        mme.memoBoxCaretIndex = Math.Max(0, mme.memoBoxCaretIndex - 1);
-                        mme.UpdateMemoBoxInfo(parent);
-                        parent.ScreenUpdate();
-                        return;
-                    }
-                }
-                else
-                {
-                    // ★ MemoEvent 非編集時に左キーで編集開始
-                    if (inputState == InputState.None && parent.OverwriteMode)
-                    {
-                        mme.memoBoxSwitch = true;
-                        mme.BeginEdit(me, parent.cursor, this);
-                        mme.memoBoxCaretIndex = Math.Max(0, me.Text.Length - 1); // 右端−1
-                        parent.ScreenUpdate();
-                        return;
-                    }
-                }
+                if (mme.MoveCursorLeft(this, me, parent, inputState)) return;
+            }
+
+            if (parent.cursor.EventNode.Value is MIDIMarkerEvent mrk)
+            {
+                MdlMarkerEvent mmrk = (MdlMarkerEvent)parent.eventManager.GetModel(mrk.Type);
+                if (mmrk.MoveCursorLeft(this, mrk, parent, inputState)) return;
             }
 
             MdlEvent m = parent.eventManager.GetModel(parent.cursor.EventNode.Value.Type);
@@ -713,10 +686,10 @@ namespace Remcoposer64.StepEditorPanelControl
         {
             MdlEvent me = parent.eventManager.GetModel(activeEvent.Type);
             me.Commit(activeEvent, parent.cursor, keyPattern);
-            if (activeEvent is MIDIMemoEvent)
-            {
-                ((MdlMemoEvent)me).memoBoxSwitch = false;
-            }
+            
+            if (activeEvent is MIDIMemoEvent) ((MdlMemoEvent)me).memoBoxSwitch = false;
+            if (activeEvent is MIDIMarkerEvent) ((MdlMarkerEvent)me).memoBoxSwitch = false;
+
             CommitAndAdvanceCursor(activeEvent);
             inputState = InputState.None;
             //Event入力確定
@@ -730,17 +703,8 @@ namespace Remcoposer64.StepEditorPanelControl
         private void DeleteEvent(MIDIEvent activeEvent)
         {
             MdlEvent me = parent.eventManager.GetModel(activeEvent.Type);
-            // ★ MemoEvent 編集中なら文字削除にする
-            if (activeEvent is MIDIMemoEvent && activeEvent.editing && ((MdlMemoEvent)me).memoBoxSwitch)
-            {
-                if (((MdlMemoEvent)me).memoBoxCaretIndex < ((MdlMemoEvent)me).memoBoxText.Length)
-                {
-                    ((MdlMemoEvent)me).memoBoxText = ((MdlMemoEvent)me).memoBoxText.Remove(((MdlMemoEvent)me).memoBoxCaretIndex, 1);
-                    ((MIDIMemoEvent)activeEvent).Text = ((MdlMemoEvent)me).memoBoxText;
-                    parent.Invalidate();
-                }
-                return; // ★ イベント削除ロジックに行かせない
-            }
+            if (me is MdlMemoEvent mme && mme.DeleteEvent(activeEvent, parent)) return;
+            if (me is MdlMarkerEvent mre && mre.DeleteEvent(activeEvent, parent)) return;
 
             // ★ まず複数選択されているかチェック
             bool hasRangeSelection =
@@ -797,11 +761,19 @@ namespace Remcoposer64.StepEditorPanelControl
             }
 
             if (parent.OverwriteMode)
+            {
                 // 上書きモード時は、上書き前のイベントに戻す
                 parent.RestoreEventAtCoursor(activeEvent);
+                activeEvent.editing = false;
+
+                MdlEvent me = parent.eventManager.GetModel(activeEvent.Type);
+                if (activeEvent is MIDIMemoEvent) ((MdlMemoEvent)me).memoBoxSwitch = false;
+                if (activeEvent is MIDIMarkerEvent) ((MdlMarkerEvent)me).memoBoxSwitch = false;
+            }
             else
                 // 挿入モード時は、挿入したイベントを消す
                 parent.CancelEventAtCoursor(activeEvent);
+
 
             // 入力状態は"通常"に戻す
             inputState = InputState.None;

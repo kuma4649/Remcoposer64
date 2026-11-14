@@ -9,6 +9,11 @@ rcm2smf
   RCP / G36 ファイル仕様の調査や実装確認に際して参考にさせて頂きました。
   作者: shingo45endo さん
 
+DoldoTeaParty 緑の妖精のお茶会
+  moondoldoさん
+  https://moondoldo.com/wordpress/?p=14483#%E8%B5%B7%E5%8B%95%E3%81%A8%E8%A8%AD%E5%AE%9A
+  YAMAHA独自のポート指定METAについて参考にさせていただきました
+
 Windows 11 標準搭載 Copilot（無料版）
   ちょっと踏み込んだ質問をすると、時々それっぽいことを、それっぽく、しれっと返してくる愛嬌のあるAI。
 

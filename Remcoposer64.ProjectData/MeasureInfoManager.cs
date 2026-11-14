@@ -13,15 +13,49 @@ namespace Remcoposer64.ProjectData
         //private int currentDen = 4;
         //private int currentNum = 4;
         private MIDIProject project = null;
+        private List<TrackStatus> trkStats = new List<TrackStatus>();
+        public class TrackStatus
+        {
+            public bool Played = false;
+            public List<PartStatus> ps = new List<PartStatus>();
+            public Stack<(LinkedListNode<MIDIEvent>, int?)> LoopStack { get; set; } = new Stack<(LinkedListNode<MIDIEvent>, int?)>();
+            public Stack<LinkedListNode<MIDIEvent>> SameMeasStack { get; set; } = new Stack<LinkedListNode<MIDIEvent>>();
 
-        public void Build(MIDIProject project)
+        }
+
+        public class PartStatus
+        {
+            public long CurrentEventFrame { get; set; } = -1;
+            public LinkedListNode<MIDIEvent> CurrentEvent { get; set; }
+        }
+
+        /// <summary>
+        /// 注意:
+        ///  演奏中にClearPlayedFlagをtrueにして本メソッドを実施すると演奏に影響が出る。
+        ///  よって、trueを指定したいときは演奏を停止させておくこと
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="ClearPlayedFlag"></param>
+        public void Build(MIDIProject project, bool ClearPlayedFlag = false)
         {
             this.project = project;
-            Common.ClearPlayedFlag(project);
+            if (ClearPlayedFlag) Common.ClearPlayedFlag(project);
 
             project.Information.Measures.Clear();
             project.Information.Markers.Clear();
             //TimeSignatures.Clear();
+
+            // ダミーのステータス保持インスタンスを用意する(計測向け)
+            trkStats.Clear();
+            LinkedListNode<MIDITrack> nTrk = project.Track.First;
+            while (nTrk != null)
+            {
+                TrackStatus ts = new TrackStatus();
+                for (int i = 0; i < nTrk.Value.Part.Count; i++) ts.ps.Add(new());
+                trkStats.Add(ts);
+                nTrk = nTrk.Next;
+            }
+
             long frameCounter = 0;
             bool isFinished = false;
             //currentNum = project.Information.BeatNum;
@@ -35,78 +69,86 @@ namespace Remcoposer64.ProjectData
                 frameCounter++;
             }
 
-            Common.ClearPlayedFlag(project);
+            if (ClearPlayedFlag) Common.ClearPlayedFlag(project);
         }
 
         public bool ProcessFrame(long frameCounter)
         {
+            int trkStatsIndex = 0;
             LinkedListNode<MIDITrack> nTrk = project.Track.First;
             bool playedAllTracks = true;
             while (nTrk != null)
             {
+                TrackStatus ts = trkStats[trkStatsIndex];
                 MIDITrack trk = nTrk.Value;
-                if (trk.Played)
+                if (ts.Played)
                 {
                     nTrk = nTrk.Next;
+                    trkStatsIndex++;
                     continue;
                 }
 
                 playedAllTracks = false;
+                int prtStatsIndex = 0;
                 LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
                 bool playedAllParts = true;
 
                 while (nPrt != null)
                 {
                     MIDIPart prt = nPrt.Value;
+                    PartStatus ps = ts.ps[prtStatsIndex];
 
                     // 初期化（イベント開始前）
-                    if (prt.CurrentEventFrame == -1)
+                    if (ps.CurrentEventFrame == -1)
                     {
-                        prt.CurrentEventFrame = prt.StartTick;
-                        prt.CurrentEvent = prt.Event.First;
+                        ps.CurrentEventFrame = prt.StartTick;
+                        ps.CurrentEvent = prt.Event.First;
                     }
 
-                    if (prt.CurrentEvent == null)
+                    if (ps.CurrentEvent == null)
                     {
                         nPrt = nPrt.Next;
+                        prtStatsIndex++;
                         continue;
                     }
 
                     playedAllParts = false;
 
-                    if (frameCounter < prt.CurrentEventFrame + trk.St)
+                    if (frameCounter < ps.CurrentEventFrame + trk.St)
                         break;
 
-                    while (prt.CurrentEvent != null)
+                    while (ps.CurrentEvent != null)
                     {
-                        MIDIEvent evt = prt.CurrentEvent.Value;
+                        MIDIEvent evt = ps.CurrentEvent.Value;
 
-                        if (frameCounter < prt.CurrentEventFrame + trk.St)
+                        if (frameCounter < ps.CurrentEventFrame + trk.St)
                             break;
 
-                        prt.CurrentEvent = AnalyzeEvent(frameCounter, trk, nPrt, prt.CurrentEvent);
-                        prt.CurrentEventFrame += evt.ST;
+                        ps.CurrentEvent = AnalyzeEvent(frameCounter, trk, ts, nPrt, ps, ps.CurrentEvent);
+                        ps.CurrentEventFrame += evt.ST;
                     }
 
                     nPrt = nPrt.Next;
+                    prtStatsIndex++;
                 }
 
                 if (playedAllParts)
-                    trk.Played = true;
+                    ts.Played = true;
 
                 nTrk = nTrk.Next;
+                trkStatsIndex++;
             }
 
             if (playedAllTracks)
             {
-                project.Information.Played = true;
+                //project.Information.Played = true;
                 return true;
             }
 
             return false;
         }
 
-        private LinkedListNode<MIDIEvent> AnalyzeEvent(long frameCounter, MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
+        private LinkedListNode<MIDIEvent> AnalyzeEvent(long frameCounter, MIDITrack trk, TrackStatus ts, LinkedListNode<MIDIPart> nPrt, PartStatus ps, LinkedListNode<MIDIEvent> nEvt)
         {
             MIDIPart prt = nPrt.Value;
             MIDIEvent evt = nEvt.Value;
@@ -132,9 +174,9 @@ namespace Remcoposer64.ProjectData
             }
             else if (evt.Type == MIDIEventType.SameMeas)
             {
-                if (trk.SameMeasStack.Count > 0)
+                if (ts.SameMeasStack.Count > 0)
                 {
-                    return trk.SameMeasStack.Pop();
+                    return ts.SameMeasStack.Pop();
                 }
 
                 bool first = true;
@@ -162,7 +204,7 @@ namespace Remcoposer64.ProjectData
                             break;
                         }
 
-                        if (first) trk.SameMeasStack.Push(nEvt.Next);
+                        if (first) ts.SameMeasStack.Push(nEvt.Next);
                         first = false;
 
                         nEvt = jumpNode;
@@ -171,7 +213,7 @@ namespace Remcoposer64.ProjectData
                     }
 
                     // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-                    if (first) trk.SameMeasStack.Push(nEvt.Next);
+                    if (first) ts.SameMeasStack.Push(nEvt.Next);
 
                     return jumpNode;
 
@@ -179,27 +221,27 @@ namespace Remcoposer64.ProjectData
             }
             else if (evt.Type == MIDIEventType.BarLine)
             {
-                if (trk.SameMeasStack.Count > 0)
+                if (ts.SameMeasStack.Count > 0)
                 {
-                    return trk.SameMeasStack.Pop();
+                    return ts.SameMeasStack.Pop();
                 }
             }
             else if (evt.Type == MIDIEventType.MetaEndOfTrack)
             {
-                if (trk.SameMeasStack.Count > 0)
+                if (ts.SameMeasStack.Count > 0)
                 {
-                    return trk.SameMeasStack.Pop();
+                    return ts.SameMeasStack.Pop();
                 }
             }
             else if (evt.Type == MIDIEventType.LoopStart)
             {
-                trk.LoopStack.Push((nEvt.Next, null));
+                ts.LoopStack.Push((nEvt.Next, null));
             }
             else if (evt.Type == MIDIEventType.LoopEnd)
             {
-                if (trk.LoopStack.Count > 0)
+                if (ts.LoopStack.Count > 0)
                 {
-                    var (levt, lcnt) = trk.LoopStack.Pop();
+                    var (levt, lcnt) = ts.LoopStack.Pop();
                     MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
                     if (lcnt == null)
                     {
@@ -210,7 +252,7 @@ namespace Remcoposer64.ProjectData
 
                     if (lcnt > 0)
                     {
-                        trk.LoopStack.Push((levt, lcnt));
+                        ts.LoopStack.Push((levt, lcnt));
                         return levt;
                     }
                 }

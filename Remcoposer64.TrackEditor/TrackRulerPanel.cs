@@ -128,5 +128,10 @@ namespace Remcoposer64.TrackEditor
 
             graph.DrawLine(0, Height - 1, Width, Height - 1, Color.White);
         }
+
+        public void RefreshRuler()
+        {
+            this.Invalidate();
+        }
     }
 }

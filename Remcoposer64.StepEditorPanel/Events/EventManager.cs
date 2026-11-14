@@ -62,7 +62,10 @@ namespace Remcoposer64.StepEditorPanelControl
             mdlProgramChangeEvent = new MdlProgramChangeEvent(this);
             mdlMetaEvent = new MdlMetaEvent(this);
             mdlTempoEvent = new MdlTempoEvent(this);
+
             mdlMemoEvent = new MdlMemoEvent(this);
+            mdlMarkerEvent = new MdlMarkerEvent(this);
+
             mdlPitchBendEvent = new MdlPitchBendEvent(this);
             mdlChannelPressureEvent = new MdlChannelPressureEvent(this);
             mdlPolyphonicKeyPressureEvent = new MdlPolyphonicKeyPressureEvent(this);
@@ -71,7 +74,6 @@ namespace Remcoposer64.StepEditorPanelControl
             mdlSameMeasEvent = new MdlSameMeasEvent(this);
             mdlBarLineEvent = new MdlBarLineEvent(this);
             mdlEndEvent = new MdlEndEvent(this);
-            mdlMarkerEvent = new MdlMarkerEvent(this);
 
             this.parent = parent;
             for (int i = 0; i < tieWork.Length; i++) tieWork[i] = new MIDITieCache();
@@ -155,7 +157,7 @@ namespace Remcoposer64.StepEditorPanelControl
             }
 
             var startNode = FindStartNodeForAdjust(node);
-            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type);
+            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type,1);
 
         }
 
@@ -208,7 +210,8 @@ namespace Remcoposer64.StepEditorPanelControl
             }
 
             var startNode = FindStartNodeForAdjust(node);
-            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type);
+            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type, 
+                (ev.Type == MIDIEventType.SameMeas&& node.Previous.Value.Type != MIDIEventType.BarLine) ? 2 : 1);
         }
 
 
@@ -245,7 +248,7 @@ namespace Remcoposer64.StepEditorPanelControl
             if (ev.Type == MIDIEventType.BarLine || ev.Type == MIDIEventType.SameMeas)
                 barLineList.RemoveAll(info => info.Node == node);
 
-            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type);
+            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type, -1);
         }
 
         // イベント削除（UI用）
@@ -256,7 +259,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
             var node = indexCache[index];
             var ev = node.Value;
-
+            var prevNode = node.Previous;
 
             var startNode = FindStartNodeForAdjust(node, true);
 
@@ -279,7 +282,8 @@ namespace Remcoposer64.StepEditorPanelControl
             if (ev.Type == MIDIEventType.BarLine || ev.Type == MIDIEventType.SameMeas)
                 barLineList.RemoveAll(info => info.Node == node);
 
-            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type);
+            AdjustMeasureAndStepInCurrentEvent(startNode, ev.Type, 
+                (ev.Type == MIDIEventType.SameMeas && prevNode.Value.Type != MIDIEventType.BarLine) ? -2 : -1);
         }
 
 
@@ -558,7 +562,7 @@ namespace Remcoposer64.StepEditorPanelControl
             return returnNode;
         }
 
-        public void AdjustMeasureAndStepInCurrentEvent(LinkedListNode<MIDIEvent> workEvent, MIDIEventType acticonEventType)
+        public void AdjustMeasureAndStepInCurrentEvent(LinkedListNode<MIDIEvent> workEvent, MIDIEventType actionEventType,int add=0)
         {
             if (workEvent == null)
                 return;
@@ -579,8 +583,8 @@ namespace Remcoposer64.StepEditorPanelControl
                 meas = workEvent.Value.Meas;
                 offset = workEvent.Value.Offset;
 
-                if (acticonEventType == MIDIEventType.BarLine
-                    || acticonEventType == MIDIEventType.SameMeas
+                if (actionEventType == MIDIEventType.BarLine
+                    || actionEventType == MIDIEventType.SameMeas
                     || workEvent.Value.Type == MIDIEventType.BarLine
                     || workEvent.Value.Type == MIDIEventType.SameMeas
                         ) meas--;
@@ -633,40 +637,57 @@ namespace Remcoposer64.StepEditorPanelControl
                 workEvent = workEvent.Next;
             }
 
-            // BarLine または SameMeas イベントの追加・削除後に、同じ小節を参照している SameMeas イベントの RepeatMeas を調整する
-            if (acticonEventType == MIDIEventType.BarLine || acticonEventType == MIDIEventType.SameMeas)
-            {
-                foreach (var si in sameMeasList)
-                {
-                    //参照先の BarLine または SameMeas が削除された場合、RepeatMeasBeforeNode を null、RepeatMeasを Ref!(-1)状態 にする
-                    LinkedListNode<MIDIEvent> ev = ((MIDISameMeasEvent)si.Node.Value).RepeatMeasBeforeNode;
-                    if ((ev == null && ((MIDISameMeasEvent)si.Node.Value).RepeatMeas != 0)
-                        || (ev != null && ev.Previous == null && ev.Next == null))
-                    {
-                        ((MIDISameMeasEvent)si.Node.Value).RepeatMeasBeforeNode = null;
-                        ((MIDISameMeasEvent)si.Node.Value).RepeatMeas = -1;
-                        continue;
-                    }
+            //// BarLine または SameMeas イベントの追加・削除後に、同じ小節を参照している SameMeas イベントの RepeatMeas を調整する
+            //if (actionEventType == MIDIEventType.BarLine || actionEventType == MIDIEventType.SameMeas)
+            //{
+            //    foreach (var si in sameMeasList)
+            //    {
+            //        //参照先の BarLine または SameMeas が削除された場合、RepeatMeasBeforeNode を null、RepeatMeasを Ref!(-1)状態 にする
+            //        LinkedListNode<MIDIEvent> ev = ((MIDISameMeasEvent)si.Node.Value).RepeatMeasBeforeNode;
+            //        if ((ev == null && ((MIDISameMeasEvent)si.Node.Value).RepeatMeas != 0)
+            //            || (ev != null && ev.Previous == null && ev.Next == null))
+            //        {
+            //            ((MIDISameMeasEvent)si.Node.Value).RepeatMeasBeforeNode = null;
+            //            ((MIDISameMeasEvent)si.Node.Value).RepeatMeas = -1;
+            //            continue;
+            //        }
 
-                }
-            }
+            //    }
+            //}
 
             // RepeatMeasが1以上のSameMeasEventの調整を行う
             //  RepeatMeasBeforeNodeが繰り返し対象の開始イベントの一つ手前にいるので、そのイベントのMeasに1を足した値をRepeatMeasに設定する
             // 又、参照先が同じ小節値(自分自身)の場合は循環参照を避ける為にRef!(-1)状態にする
-            foreach (var si in sameMeasList)
+            //foreach (var si in sameMeasList)
+            //{
+            //    MIDISameMeasEvent sme = (MIDISameMeasEvent)si.Node.Value;
+            //    int repeatMeas = sme.RepeatMeas;
+
+            //    //if (repeatMeas > 0) sme.RepeatMeas = sme.RepeatMeasBeforeNode.Value.Meas + 1;
+
+            //    // 参照先が同じ小節値(自分自身)の場合はRef!(-1)状態にする
+            //    if (repeatMeas != si.Node.Value.Meas) continue;
+
+            //    sme.RepeatMeasBeforeNode = null;
+            //    sme.RepeatMeas = -1;
+            //}
+
+            if (actionEventType == MIDIEventType.BarLine || actionEventType == MIDIEventType.SameMeas)
             {
-                MIDISameMeasEvent sme = (MIDISameMeasEvent)si.Node.Value;
-                int repeatMeas = sme.RepeatMeas;
+                workEvent = workEvent2;
+                meas = workEvent.Value.Meas;
 
-                if (repeatMeas > 0) sme.RepeatMeas = sme.RepeatMeasBeforeNode.Value.Meas + 1;
+                foreach (var si in sameMeasList)
+                {
+                    MIDISameMeasEvent sme = (MIDISameMeasEvent)si.Node.Value;
+                    int repeatMeas = sme.RepeatMeas;
 
-                // 参照先が同じ小節値(自分自身)の場合はRef!(-1)状態にする
-                if (repeatMeas != si.Node.Value.Meas) continue;
+                    if (repeatMeas <= meas) continue;
 
-                sme.RepeatMeasBeforeNode = null;
-                sme.RepeatMeas = -1;
+                    sme.RepeatMeas+=add;
+                }
             }
+
 
             UpdateTieFlagsDiff(workEvent2);
 
@@ -682,6 +703,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 MIDIEventType.BarLine => new MIDIBarLineEvent(),
                 MIDIEventType.MetaEndOfTrack => new MIDIEndEvent(),
                 MIDIEventType.Memo => new MIDIMemoEvent(),
+                MIDIEventType.MetaMarker => new MIDIMarkerEvent(),
                 MIDIEventType.ProgramChange => new MIDIProgramChangeEvent(),
                 MIDIEventType.ControlChange => new MIDIControlChangeEvent(),
                 MIDIEventType.PitchBend => new MIDIPitchBendEvent(),

@@ -21,6 +21,7 @@ namespace Remcoposer64.ProjectData.Events
                 case MIDIEventType.KeyAfterTouch:
                     return new MIDIPolyphonicKeyPressureEvent();
                 case MIDIEventType.Memo:
+
                 case MIDIEventType.MetaLyric:
                     return new MIDIMemoEvent();
                 case MIDIEventType.MetaTextEvent:
@@ -31,6 +32,9 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIMemoEvent();
                 case MIDIEventType.MetaCopyrightNotice:
                     return new MIDIMemoEvent();
+                case MIDIEventType.MetaMarker:
+                    return new MIDIMarkerEvent();
+
                 case MIDIEventType.Meta:
                     return new MIDIMetaEvent();
                 case MIDIEventType.MetaEndOfTrack:
@@ -69,8 +73,6 @@ namespace Remcoposer64.ProjectData.Events
                     return new MIDIBarLineEvent();
                 case MIDIEventType.MetaSMPTEOffset:
                     return new MIDIMemoEvent();
-                case MIDIEventType.MetaMarker:
-                    return new MIDIMarkerEvent();
                 case MIDIEventType.TempoChange:
                     return new MIDITempoEvent();
                 case MIDIEventType.UserExclusive1:

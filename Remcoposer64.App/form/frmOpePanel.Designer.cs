@@ -43,7 +43,7 @@
             groupBox4 = new GroupBox();
             lblBeat = new Label();
             groupBox5 = new GroupBox();
-            bt10 = new Button();
+            bt0 = new Button();
             bt9 = new Button();
             bt8 = new Button();
             bt7 = new Button();
@@ -182,7 +182,7 @@
             // 
             // groupBox5
             // 
-            groupBox5.Controls.Add(bt10);
+            groupBox5.Controls.Add(bt0);
             groupBox5.Controls.Add(bt9);
             groupBox5.Controls.Add(bt8);
             groupBox5.Controls.Add(bt7);
@@ -199,21 +199,21 @@
             groupBox5.TabStop = false;
             groupBox5.Text = "Maker";
             // 
-            // bt10
+            // bt0
             // 
-            bt10.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt10.Location = new Point(182, 12);
-            bt10.Name = "bt10";
-            bt10.Size = new Size(20, 20);
-            bt10.TabIndex = 8;
-            bt10.Text = "A";
-            bt10.UseVisualStyleBackColor = true;
-            bt10.Click += bt10_Click;
+            bt0.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
+            bt0.Location = new Point(2, 12);
+            bt0.Name = "bt0";
+            bt0.Size = new Size(20, 20);
+            bt0.TabIndex = 8;
+            bt0.Text = "0";
+            bt0.UseVisualStyleBackColor = true;
+            bt0.Click += bt0_Click;
             // 
             // bt9
             // 
             bt9.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt9.Location = new Point(163, 12);
+            bt9.Location = new Point(182, 12);
             bt9.Name = "bt9";
             bt9.Size = new Size(20, 20);
             bt9.TabIndex = 7;
@@ -224,7 +224,7 @@
             // bt8
             // 
             bt8.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt8.Location = new Point(143, 12);
+            bt8.Location = new Point(162, 12);
             bt8.Name = "bt8";
             bt8.Size = new Size(20, 20);
             bt8.TabIndex = 5;
@@ -235,7 +235,7 @@
             // bt7
             // 
             bt7.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt7.Location = new Point(123, 12);
+            bt7.Location = new Point(142, 12);
             bt7.Name = "bt7";
             bt7.Size = new Size(20, 20);
             bt7.TabIndex = 6;
@@ -246,7 +246,7 @@
             // bt6
             // 
             bt6.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt6.Location = new Point(103, 12);
+            bt6.Location = new Point(122, 12);
             bt6.Name = "bt6";
             bt6.Size = new Size(20, 20);
             bt6.TabIndex = 3;
@@ -257,7 +257,7 @@
             // bt5
             // 
             bt5.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt5.Location = new Point(83, 12);
+            bt5.Location = new Point(102, 12);
             bt5.Name = "bt5";
             bt5.Size = new Size(20, 20);
             bt5.TabIndex = 4;
@@ -268,7 +268,7 @@
             // bt4
             // 
             bt4.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt4.Location = new Point(63, 12);
+            bt4.Location = new Point(82, 12);
             bt4.Name = "bt4";
             bt4.Size = new Size(20, 20);
             bt4.TabIndex = 1;
@@ -279,7 +279,7 @@
             // bt3
             // 
             bt3.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt3.Location = new Point(43, 12);
+            bt3.Location = new Point(62, 12);
             bt3.Name = "bt3";
             bt3.Size = new Size(20, 20);
             bt3.TabIndex = 2;
@@ -290,7 +290,7 @@
             // bt2
             // 
             bt2.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt2.Location = new Point(23, 12);
+            bt2.Location = new Point(42, 12);
             bt2.Name = "bt2";
             bt2.Size = new Size(20, 20);
             bt2.TabIndex = 0;
@@ -301,7 +301,7 @@
             // bt1
             // 
             bt1.Font = new Font("Yu Gothic UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-            bt1.Location = new Point(3, 12);
+            bt1.Location = new Point(22, 12);
             bt1.Name = "bt1";
             bt1.Size = new Size(20, 20);
             bt1.TabIndex = 0;
@@ -397,7 +397,7 @@
         private Button bt3;
         private System.Windows.Forms.Timer timerUpdate;
         private CheckBox cbFF;
-        private Button bt10;
+        private Button bt0;
         private Button bt9;
         private CheckBox cbSlow;
     }

@@ -387,6 +387,9 @@ namespace Remcoposer64.ProjectData
                 case MIDIMemoEvent me:
                     return ConvertMemoEvent(me);
 
+                case MIDIMarkerEvent me:
+                    return ConvertMarkerEvent(me);
+
                 case MIDIMetaEvent meta:
                     return ConvertMetaEvent(meta);
 
@@ -419,9 +422,6 @@ namespace Remcoposer64.ProjectData
 
                 case MIDIBankProgramEvent bp:
                     return ConvertBankProgramEvent(bp);
-
-                case MIDIMarkerEvent me:
-                    return ConvertMarkerEvent(me);
 
                 case MIDIUsrExEvent uee:
                     return ConvertUsrExEvent(uee);
@@ -1082,6 +1082,14 @@ namespace Remcoposer64.ProjectData
                     me.Text = ((MIDIMemoEventDto)dto).Text;
                     return me;
 
+                case MIDIEventType.MetaMarker:
+                    var mae = new MIDIMarkerEvent();
+                    mae.Meas = dto.Meas;
+                    mae.Step = dto.Step;
+                    mae.ST = dto.ST;
+                    mae.Text = ((MIDIMarkerEventDto)dto).Text;
+                    return mae;
+
                 case MIDIEventType.Meta:
                     var meta = new MIDIMetaEvent();
                     meta.Meas = dto.Meas;
@@ -1182,14 +1190,6 @@ namespace Remcoposer64.ProjectData
                     bp.ProgramNumber = ((MIDIBankProgramEventDto)dto).ProgramNumber;
                     bp.ControlChange = ((MIDIBankProgramEventDto)dto).ControlChange;
                     return bp;
-
-                case MIDIEventType.MetaMarker:
-                    var mae = new MIDIMarkerEvent();
-                    mae.Meas = dto.Meas;
-                    mae.Step = dto.Step;
-                    mae.ST = dto.ST;
-                    mae.Text = ((MIDIMarkerEventDto)dto).Text;
-                    return mae;
 
                 case MIDIEventType.MetaSMPTEOffset:
                     var smpteEve = new MIDIMetaEvent();

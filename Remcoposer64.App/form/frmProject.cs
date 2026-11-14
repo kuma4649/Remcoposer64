@@ -27,6 +27,17 @@ namespace Remcoposer64.App.form
             this.project = project;
         }
 
+        internal void RefreshTrackEditor()
+        {
+            foreach (var cnt in this.Controls)
+            {
+                if (cnt is TrackEditorControl)
+                {
+                    ((TrackEditorControl)cnt).pnlRuler.RefreshRuler();
+                }
+            }
+        }
+
         internal void SetCanvasScrollX(int v)
         {
             foreach(var cnt in this.Controls)

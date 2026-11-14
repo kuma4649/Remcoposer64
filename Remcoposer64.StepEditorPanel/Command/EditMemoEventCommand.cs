@@ -84,6 +84,11 @@ namespace Remcoposer64.StepEditorPanelControl.Command
             ev.editing = oldEditing;
 
             panel.keyb.inputState = oldEditing ? Keyboard.InputState.EditEvent : Keyboard.InputState.None;
+            //if (oldEditing)
+            //{
+            //    eventManager.parent.backupEvent = ev.Clone();
+            //    eventManager.parent.backupEvent.editing = false;
+            //}
 
             panel.cursor.Index = oldCursorIndex;
             panel.cursor.EventNode = eventManager.GetEventNodeAtIndex(oldCursorIndex);

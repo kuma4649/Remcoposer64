@@ -33,6 +33,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
         public Func<bool> GetScrollLockState;
         public event EventHandler<KeyEventArgs> KeyDownEvent;
+        public event EventHandler RefreashTrackEditorEvent;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -682,11 +683,18 @@ namespace Remcoposer64.StepEditorPanelControl
 
             MIDIMemoEvent me = null;
             MdlMemoEvent mme = null;
+            MIDIMarkerEvent mre = null;
+            MdlMarkerEvent mmre = null;
 
             if (cursor?.EventNode?.Value is MIDIMemoEvent memoEvent)
             {
                 me = memoEvent;
                 mme = (MdlMemoEvent)eventManager.GetModel(me.Type);
+            }
+            if (cursor?.EventNode?.Value is MIDIMarkerEvent markerEvent)
+            {
+                mre = markerEvent;
+                mmre = (MdlMarkerEvent)eventManager.GetModel(mre.Type);
             }
 
             if (msg == WinApi.WM_IME_STARTCOMPOSITION)
@@ -700,6 +708,13 @@ namespace Remcoposer64.StepEditorPanelControl
                     mme.BeginEdit(me,cursor, keyb);
                 }
 
+                // ★ カーソル位置のイベントが MarkerEvent か判定
+                if (mre != null && !mre.editing && OverwriteMode)
+                {
+                    keyb.inputState = InputState.EditEvent;
+                    mmre.BeginEdit(mre, cursor, keyb);
+                }
+
                 IntPtr hIMC = WinApi.ImmGetContext(hWnd);
 
                 // ★ DirectX描画座標 → Win32クライアント座標に変換
@@ -707,8 +722,19 @@ namespace Remcoposer64.StepEditorPanelControl
                 int caretDxY = 0;
                 if (me != null)
                 {
-                    caretDxX = mme.memoBoxDrawX + (string.IsNullOrEmpty(mme.memoBoxText) ? 0 : grp.MeasureStringOSFont(mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex)));
+                    caretDxX = mme.memoBoxDrawX 
+                        + (string.IsNullOrEmpty(mme.memoBoxText) 
+                        ? 0 
+                        : grp.MeasureStringOSFont(mme.memoBoxText.Substring(0, mme.memoBoxCaretIndex)));
                     caretDxY = mme.memoBoxDrawY;
+                }
+                if (mre != null)
+                {
+                    caretDxX = mmre.memoBoxDrawX 
+                        + (string.IsNullOrEmpty(mmre.memoBoxText) 
+                        ? 0 
+                        : grp.MeasureStringOSFont(mmre.memoBoxText.Substring(0, mmre.memoBoxCaretIndex)));
+                    caretDxY = mmre.memoBoxDrawY;
                 }
 
                 // DirectX → Client → Screen
@@ -757,9 +783,12 @@ namespace Remcoposer64.StepEditorPanelControl
                     WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_COMPSTR, buffer, size);
 
                     mme?.memoBoxComposition = Encoding.Unicode.GetString(buffer);
+                    mmre?.memoBoxComposition = Encoding.Unicode.GetString(buffer);
                 }
                 mme?.IMECursorPos = WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_CURSORPOS, null, 0);
-                Debug.WriteLine("cursorPos:{0}", mme?.IMECursorPos);
+                Debug.WriteLine("cursorPos:{0} (memo)", mme?.IMECursorPos);
+                mmre?.IMECursorPos = WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_CURSORPOS, null, 0);
+                Debug.WriteLine("cursorPos:{0} (marker)", mmre?.IMECursorPos);
                 // ★ result string（確定文字列）
                 int resultSize = WinApi.ImmGetCompositionStringW(hIMC, WinApi.GCS_RESULTSTR, null, 0);
                 if (resultSize > 0)
@@ -782,6 +811,18 @@ namespace Remcoposer64.StepEditorPanelControl
                         me.Text = mme.memoBoxText;
                         mme.memoBoxComposition = "";
                     }
+                    // MarkerEvent に反映
+                    if (mre != null)
+                    {
+                        // composition caret の位置を使う
+                        int insertPos = mmre.memoBoxCaretIndex + mmre.IMECursorPos;
+
+                        // 文字を追加
+                        mmre.memoBoxText = mmre.memoBoxText.Insert(insertPos, result);
+                        mmre.memoBoxCaretIndex = insertPos + result.Length;
+                        mre.Text = mmre.memoBoxText;
+                        mmre.memoBoxComposition = "";
+                    }
                 }
 
                 WinApi.ImmReleaseContext(hWnd, hIMC);
@@ -796,6 +837,10 @@ namespace Remcoposer64.StepEditorPanelControl
                 if (me != null)
                 {
                     mme.memoBoxComposition = "";
+                }
+                if (mre != null)
+                {
+                    mmre.memoBoxComposition = "";
                 }
                 Invalidate();
                 return IntPtr.Zero;
@@ -854,6 +899,11 @@ namespace Remcoposer64.StepEditorPanelControl
         public void RefreshView()
         {
             this.Invalidate();
+        }
+
+        public void RefreshTrackEditor()
+        {
+            RefreashTrackEditorEvent?.Invoke(this, System.EventArgs.Empty);
         }
 
         public void StartImeMode()
@@ -1273,8 +1323,9 @@ namespace Remcoposer64.StepEditorPanelControl
         private const string csFF = "$FF Add Meta";
         private const string csXXBarLine = "$xx Add BarLine.";
         private const string csXXSameMeas = "$xx Add Same Meas.";
-        private const string csXXMemo = "$xx Add memo.";
         private const string csXXTempo = "$xx Add Tempo.";
+        private const string csXXMemo = "$xx Add memo.";
+        private const string csXXMarker = "$xx Add marker.";
 
 
         private void InitializeContextMenu()
@@ -1300,11 +1351,12 @@ namespace Remcoposer64.StepEditorPanelControl
 
             eventMenu.Items.Add($"2: {csXXBarLine}.", null, (s, e) => InsertEvent(MIDIEventType.BarLine));
             eventMenu.Items.Add($"3: {csXXSameMeas}.", null, (s, e) => InsertEvent(MIDIEventType.SameMeas));
-            eventMenu.Items.Add($"4: {csXXMemo}.", null, (s, e) => InsertEvent(MIDIEventType.Memo));
-            eventMenu.Items.Add($"5: {csXXTempo}.", null, (s, e) => InsertEvent(MIDIEventType.MetaTempo));
+            eventMenu.Items.Add($"4: {csXXTempo}.", null, (s, e) => InsertEvent(MIDIEventType.MetaTempo));
+            eventMenu.Items.Add($"5: {csXXMemo}.", null, (s, e) => InsertEvent(MIDIEventType.Memo));
+            eventMenu.Items.Add($"6: {csXXMarker}.", null, (s, e) => InsertEvent(MIDIEventType.MetaMarker));
 
-            eventMenu.Items.Add($"6: {csF0}.", null, (s, e) => InsertEvent(MIDIEventType.SysExF0));
-            eventMenu.Items.Add($"7: {csFF}.", null, (s, e) => InsertEvent(MIDIEventType.Meta));
+            eventMenu.Items.Add($"7: {csF0}.", null, (s, e) => InsertEvent(MIDIEventType.SysExF0));
+            eventMenu.Items.Add($"8: {csFF}.", null, (s, e) => InsertEvent(MIDIEventType.Meta));
 
         }
 

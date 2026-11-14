@@ -79,16 +79,22 @@ namespace Remcoposer64.App.form
         public void SetMarker(MIDIProject currentProject)
         {
             List<MarkerPoint> mps = currentProject.Information.Markers;
-            bt1.Tag = (0 <= mps.Count-10) ? mps[mps.Count - 10] : null;
-            bt2.Tag = (1 <= mps.Count-9) ? mps[mps.Count - 9] : null;
-            bt3.Tag = (2 <= mps.Count-8) ? mps[mps.Count - 8] : null;
-            bt4.Tag = (3 <= mps.Count-7) ? mps[mps.Count - 7] : null;
-            bt5.Tag = (4 <= mps.Count-6) ? mps[mps.Count - 6] : null;
-            bt6.Tag = (5 <= mps.Count-5) ? mps[mps.Count - 5] : null;
-            bt7.Tag = (6 <= mps.Count-4) ? mps[mps.Count - 4] : null;
-            bt8.Tag = (7 <= mps.Count-3) ? mps[mps.Count - 3] : null;
-            bt9.Tag = (8 <= mps.Count-2) ? mps[mps.Count - 2] : null;
-            bt10.Tag = (9 <= mps.Count - 1) ? mps[mps.Count-1] : null;
+            Button[] bt = [ bt0, bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9 ];
+
+            for (int i = 0; i < bt.Length; i++)
+            {
+                int j = mps.Count - 10 + i;
+                if (mps.Count < 10) j = i;
+                MarkerPoint mp = j < mps.Count ? mps[j] : null;
+
+                bt[i].Tag = mp;
+                bt[i].Enabled = (mp != null);
+            }
+        }
+
+        private void bt0_Click(object sender, EventArgs e)
+        {
+            main.Play((MarkerPoint)bt0.Tag);
         }
 
         private void bt1_Click(object sender, EventArgs e)
@@ -137,9 +143,5 @@ namespace Remcoposer64.App.form
             main.Play((MarkerPoint)bt9.Tag);
         }
 
-        private void bt10_Click(object sender, EventArgs e)
-        {
-            main.Play((MarkerPoint)bt10.Tag);
-        }
     }
 }

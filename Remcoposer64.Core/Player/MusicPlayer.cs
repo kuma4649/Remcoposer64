@@ -678,6 +678,23 @@ namespace Remcoposer64.Core.Player
                 MIDIPortPrefixEvent pfe = (MIDIPortPrefixEvent)evt;
                 trk.OutDevice = pfe.PortNumber;
             }
+            else if (evt.Type == MIDIEventType.MetaSequencerSpecific)
+            {
+                //参考URL: https://moondoldo.com/wordpress/?p=14483#%E8%B5%B7%E5%8B%95%E3%81%A8%E8%A8%AD%E5%AE%9A
+                if (evt.MIDIMessage.Length > 5
+                    && evt.MIDIMessage[1] == 0x04
+                    && evt.MIDIMessage[2] == 0x43
+                    && evt.MIDIMessage[3] == 0x00
+                    && evt.MIDIMessage[4] == 0x01)
+                {
+                    //YAMAHA独自のMIDIポート指定
+                    trk.OutDevice = evt.MIDIMessage[5];
+                }
+                else
+                {
+                    Common.Log.Write(LogLevel.Warning, $" MusicPlayer.cs : Unknown MetaSequencerSpecific");
+                }
+            }
             else
             {
                 //T.B.D.

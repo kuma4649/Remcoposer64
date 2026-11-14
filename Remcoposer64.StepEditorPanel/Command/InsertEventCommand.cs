@@ -30,13 +30,13 @@ namespace Remcoposer64.StepEditorPanelControl.Command
             panel.cursor.Index = newCursorIndex;
             panel.cursor.EventNode = eventManager.GetEventNodeAtIndex(newCursorIndex);
 
-            var startNode = eventManager.FindStartNodeForAdjust(
-                panel.cursor.EventNode
-            );
-            eventManager.AdjustMeasureAndStepInCurrentEvent(
-                startNode,
-                panel.cursor.EventNode.Value.Type
-            );
+            //var startNode = eventManager.FindStartNodeForAdjust(
+            //    panel.cursor.EventNode
+            //);
+            //eventManager.AdjustMeasureAndStepInCurrentEvent(
+            //    startNode,
+            //    panel.cursor.EventNode.Value.Type
+            //);
 
             panel.RefreshView();
         }
@@ -48,13 +48,13 @@ namespace Remcoposer64.StepEditorPanelControl.Command
             panel.cursor.EventNode = eventManager.GetEventNodeAtIndex(oldCursorIndex);
             panel.keyb.inputState = Keyboard.InputState.None;
 
-            var startNode = eventManager.FindStartNodeForAdjust(
-                panel.cursor.EventNode
-            );
-            eventManager.AdjustMeasureAndStepInCurrentEvent(
-                startNode,
-                panel.cursor.EventNode.Value.Type
-            );
+            //var startNode = eventManager.FindStartNodeForAdjust(
+            //    panel.cursor.EventNode
+            //);
+            //eventManager.AdjustMeasureAndStepInCurrentEvent(
+            //    startNode,
+            //    panel.cursor.EventNode.Value.Type
+            //);
 
             panel.RefreshView();
         }
