@@ -308,6 +308,7 @@ namespace Remcoposer64.TrackEditor
             trackCanvasPanel.tickZoom = ((TrackBar)sender).Value * 0.0002;
             UpdateScrollRange();
             trackCanvasPanel.Invalidate();
+            pnlRuler.Invalidate();
 
         }
 

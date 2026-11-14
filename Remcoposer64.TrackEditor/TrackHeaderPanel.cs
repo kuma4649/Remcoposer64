@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Remcoposer64.Common.WinApi;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Remcoposer64.TrackEditor.Internal
 {

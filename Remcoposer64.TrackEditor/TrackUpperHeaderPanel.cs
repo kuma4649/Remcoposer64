@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Remcoposer64.TrackEditor
 {
@@ -55,5 +56,63 @@ namespace Remcoposer64.TrackEditor
 
             graph.DrawLine(0, Height - 1, Width, Height - 1, EdgeColor);
         }
+
+        private Rectangle GetMuteRect()
+        {
+            return new Rectangle(
+                pxFontHeight * 3,
+                0,
+                pxFontHeight,
+                pxFontHeight);
+        }
+        private Rectangle GetSoloRect()
+        {
+            return new Rectangle(
+                pxFontHeight * 4,
+                0,
+                pxFontHeight,
+                pxFontHeight);
+        }
+        
+        //protected override void OnMouseMove(MouseEventArgs e)
+        //{
+        //    base.OnMouseMove(e);
+
+        //    Cursor =
+        //        GetMuteRect().Contains(e.Location)
+        //        || GetSoloRect().Contains(e.Location)
+        //            ? Cursors.Hand
+        //            : Cursors.Default;
+        //}
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            bool hasSolo = Project.Track.Any(t => t.Solo);
+            bool hasMute = Project.Track.Any(t => t.Mute);
+
+            if (GetMuteRect().Contains(e.Location))
+            {
+                if (!hasSolo && hasMute)
+                {
+                    foreach (var trk in Project.Track) trk.Mute = false;
+                    TrackEditorControl.Refresh();
+                }
+                return;
+            }
+
+            if (GetSoloRect().Contains(e.Location))
+            {
+                if (hasSolo)
+                {
+                    foreach (var trk in Project.Track) trk.Solo = false;
+                    TrackEditorControl.Refresh();
+                }
+                return;
+            }
+        }
+
+
     }
 }
