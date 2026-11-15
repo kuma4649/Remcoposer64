@@ -101,18 +101,19 @@ namespace Remcoposer64.TrackEditor
                     graph.DrawImage(0, (int)RulerSprite.Tick1, x, Height - 9);
                 }
 
-                foreach (var marker in currentProject.Information.Markers)
-                {
-                    x = (int)trackEditorControl.trackCanvasPanel.TickToX((int)marker.Tick);
 
-                    if (x < -32 || x > Width + 32)
-                        continue;
+            }
 
-                    graph.DrawImage(0, (int)RulerSprite.Marker2, x - 2, 0);
-                    Point pos = new Point(x + 4, 0);
-                    graph.DrawStringOSFont(marker.Text, ref pos, Color.LightGreen, Color.Transparent);
-                }
+            foreach (var marker in currentProject.Information.Markers)
+            {
+                int x = (int)trackEditorControl.trackCanvasPanel.TickToX((int)marker.Tick);
 
+                if (x < -32 || x > Width + 32)
+                    continue;
+
+                graph.DrawImage(0, (int)RulerSprite.Marker2, x - 2, 0);
+                Point pos = new Point(x + 4, 0);
+                graph.DrawStringOSFont(marker.Text, ref pos, Color.LightGreen, Color.Transparent);
             }
 
             if (Project == Player.GetPlayingProject())

@@ -38,13 +38,11 @@ namespace Remcoposer64.TrackEditor.Internal
 
         protected override void Render()
         {
+            if (Player?.GetSkipCounter() > 0) return;
 
             graph.BackColor = backColor;
             graph.FillRectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
 
-            //int firstTrack =    Math.Max(0,        TrackEditorControl.pxScrollY / pxTrackHeight);
-            //int visibleTracks =                ClientSize.Height / pxTrackHeight + 2;
-            //int lastTrack =                Math.Min(                    Project.Track.Count,                    firstTrack + visibleTracks);
             LinkedListNode<MIDITrack> trk = Project.Track.First;
             for (int i = 0; i < TrackEditorControl.FirstVisibleTrack; i++)
             {

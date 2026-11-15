@@ -37,7 +37,7 @@ namespace Remcoposer64.Core.Player
         // 44100Hz刻みのカウンター
         public long timerCounter=0;
         public double timerCounterD = 0.0;
-        private Dictionary<int, long>[][] dicNoteOnTable = null;
+        private int[][][] aryNoteOnTable = null;
         private ThrottledMidiOut[] midiOutDevice;
         private NAudio.Midi.MidiIn[] midiInDevice;
         
@@ -47,7 +47,7 @@ namespace Remcoposer64.Core.Player
         private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
         private Setting _setting;
         private bool hasSolo = false;
-        private long SkipFrameCount;
+        public long SkipFrameCount;
         private int SkipModeType = 2;
 
         public void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, ThrottledMidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
@@ -83,13 +83,13 @@ namespace Remcoposer64.Core.Player
             }
             project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
 
-            dicNoteOnTable = new Dictionary<int, long>[project.Information.MaxLengthMIDIOut][];
+            aryNoteOnTable = new int[project.Information.MaxLengthMIDIOut][][];
             for (int i = 0; i < project.Information.MaxLengthMIDIOut; i++)
             {
-                dicNoteOnTable[i] = new Dictionary<int, long>[16];
+                aryNoteOnTable[i] = new int[16][];
                 for (int j = 0; j < 16; j++)
                 {
-                    dicNoteOnTable[i][j] = new Dictionary<int, long>();
+                    aryNoteOnTable[i][j] = new int[128];
                 }
             }
 
@@ -294,7 +294,7 @@ namespace Remcoposer64.Core.Player
         {
             foreach (var midiout in midiOutDevice)
             {
-                midiout.Init();
+                midiout?.Init();
             }
         }
 
@@ -302,14 +302,14 @@ namespace Remcoposer64.Core.Player
         {
             foreach (var midiout in midiOutDevice)
             {
-                midiout.SkipModeOn();
+                midiout?.SkipModeOn();
             }
         }
         private void SkipModeOFFMIDI()
         {
             foreach (var midiout in midiOutDevice)
             {
-                midiout.SkipModeOff();
+                midiout?.SkipModeOff();
             }
         }
 
@@ -317,7 +317,7 @@ namespace Remcoposer64.Core.Player
         {
             foreach(var midiout in midiOutDevice)
             {
-                midiout.FlushMIDI();
+                midiout?.FlushMIDI();
             }
         }
 
@@ -354,8 +354,8 @@ namespace Remcoposer64.Core.Player
                               + (key << 8)
                               + (nevt.Vel << 16);
 
-                    if (dicNoteOnTable.Length > trk.OutDevice
-                        && !dicNoteOnTable[trk.OutDevice][ch].ContainsKey(key)
+                    if (aryNoteOnTable.Length > trk.OutDevice
+                        && aryNoteOnTable[trk.OutDevice][ch][key] == 0
                         && send1
                         && nevt.GT > 0
                         && SkipFrameCount < 1)
@@ -796,60 +796,53 @@ namespace Remcoposer64.Core.Player
 
         private void SetNoteTable(int device, int channel, int key, long gate)
         {
-            if (device >= dicNoteOnTable.Length) return;
+            if (device >= aryNoteOnTable.Length) return;
 
-            if (dicNoteOnTable[device][channel].ContainsKey(key))
-            {
-                dicNoteOnTable[device][channel][key] = gate;
-                return;
-            }
-
-            dicNoteOnTable[device][channel].Add(key, gate);
+            aryNoteOnTable[device][channel][key] = (int)gate;
         }
+
+        private const int MidiNoteCount = 128;
 
         private bool ProcessNoteOff()
         {
-            if (dicNoteOnTable == null) return false;
+            if (aryNoteOnTable == null) return false;
             if (midiOutDevice == null) return false;
 
             bool ret = false;
-            for (int device = 0; device < dicNoteOnTable.Length; device++)
+
+            for (int device = 0; device < aryNoteOnTable.Length; device++)
             {
-                for (int ch = 0; ch < dicNoteOnTable[device].Length; ch++)
+                if (device >= midiOutDevice.Length)
+                    continue;
+
+                var midiOut = midiOutDevice[device];
+                if (midiOut == null)
+                    continue;
+
+                var deviceTable = aryNoteOnTable[device];
+
+                for (int ch = 0; ch < deviceTable.Length; ch++)
                 {
-                    var table = dicNoteOnTable[device][ch];
-                    var keysToRemove = new List<int>();
+                    var table = deviceTable[ch];
+                    int status = 0x80 | ch;
 
-                    foreach (var kv in table)
+                    for (int note = 0; note < MidiNoteCount; note++)
                     {
-                        int key = kv.Key;
-                        long gateRemaining = kv.Value - 1; // 1frame 経過
+                        int gate = table[note];
+                        if (gate <= 0)
+                            continue;
 
-                        if (gateRemaining <= 0)
+                        gate--;
+                        table[note] = gate;
+
+                        if (gate > 0)
                         {
-                            // NoteOff を送る
-                            if (midiOutDevice.Length > device)
-                            {
-                                ThrottledMidiOut midiOut = midiOutDevice[device];
-                                int status = 0x80 | ch;
-                                int msg = status + (key << 8);
-
-                                midiOut?.Send(msg);
-                            }
-
-                            keysToRemove.Add(key);
-                        }
-                        else
-                        {
-                            // 残りGateを更新
-                            table[key] = gateRemaining;
                             ret = true;
+                            continue;
                         }
-                    }
 
-                    // Gateが0になったノートを削除
-                    foreach (int key in keysToRemove)
-                        table.Remove(key);
+                        midiOut.Send(status | (note << 8));
+                    }
                 }
             }
 

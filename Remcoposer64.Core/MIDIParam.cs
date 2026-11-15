@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace Remcoposer64.Core
 {
@@ -75,7 +73,7 @@ namespace Remcoposer64.Core
         private int msgInd = 0;
         private bool NowSystemMsg = false;
 
-        private readonly int[] tblRevTypeXG = new int[] {
+        private static readonly int[] tblRevTypeXG = new int[] {
             0x0000
             ,0x0100,0x0101,0x0106,0x0107
             ,0x0200,0x0201,0x0202,0x0205,0x0206,0x0207
@@ -87,7 +85,7 @@ namespace Remcoposer64.Core
             ,0x1300
         };
 
-        private readonly int[] tblChoTypeXG = new int[] {
+        private static readonly int[] tblChoTypeXG = new int[] {
             0x0000
             ,0x4100,0x4101,0x4102,0x4103,0x4104,0x4105,0x4106,0x4107,0x4108
             ,0x4200,0x4201,0x4202,0x4208
@@ -97,7 +95,7 @@ namespace Remcoposer64.Core
             ,0x5700
         };
 
-        private readonly int[] tblVarInsTypeXG = new int[] {
+        private static readonly int[] tblVarInsTypeXG = new int[] {
 0x0000
 ,0x0100,0x0101,0x0106,0x0107
 ,0x0200,0x0201,0x0202,0x0205,0x0206,0x0207
@@ -147,7 +145,7 @@ namespace Remcoposer64.Core
 ,0x6300,0x6301
         };
 
-        private readonly int[] tblIns1TypeFromEFX = new int[] {
+        private static readonly int[] tblIns1TypeFromEFX = new int[] {
             0x0000,0x0100,0x0101,0x0102,0x0103,0x0110,0x0111,0x0120
             ,0x0121,0x0122,0x0123,0x0124,0x0125,0x0126,0x0130,0x0131
             ,0x0140,0x0141,0x0142,0x0143,0x0144,0x0150,0x0151,0x0152
@@ -158,17 +156,48 @@ namespace Remcoposer64.Core
             ,0x1100,0x1101,0x1102,0x1103,0x1104,0x1105,0x1106,0x1107,0x1108
         };
 
-        private bool IsRPN = false;
+        private readonly bool[] isRPN = new bool[16];
         public Dictionary<ushort, ushort>[] dicRPN = new Dictionary<ushort, ushort>[16];
         public Dictionary<ushort, byte>[] dicNRPN = new Dictionary<ushort, byte>[16];
 
+        private static readonly Dictionary<int, int> revTypeXGMap
+            = CreateMap(tblRevTypeXG);
+
+        private static readonly Dictionary<int, int> choTypeXGMap
+            = CreateMap(tblChoTypeXG);
+
+        private static readonly Dictionary<int, int> varTypeXGMap
+            = CreateMap(tblVarInsTypeXG);
+
+        private static readonly Dictionary<int, int> ins1TypeFromEFXMap
+            = CreateMap(tblIns1TypeFromEFX);
+
+        private static Dictionary<int, int> CreateMap(int[] table)
+        {
+            var dic = new Dictionary<int, int>(table.Length);
+
+            for (int i = 0; i < table.Length; i++)
+                dic[table[i]] = i;
+
+            return dic;
+        }
+
+        //static MIDIParam()
+        //{
+        //    revTypeXGMap = new Dictionary<int, int>(tblRevTypeXG.Length);
+        //    for (int i = 0; i < tblRevTypeXG.Length; i++)
+        //    {
+        //        revTypeXGMap[tblRevTypeXG[i]] = i;
+        //    }
+        //}
 
         public MIDIParam()
         {
-            note = [new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256], new byte[256]];
+
+            note = [new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128], new byte[128]];
             notes = new string[16];
-            keyPress = [new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256]];
-            cc = new byte?[16][] { new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256], new byte?[256] };
+            keyPress = [new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128]];
+            cc = new byte?[16][] { new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128], new byte?[128] };
             pc = new byte?[16];
             cPress = new byte?[16];
             bend = new short?[16];
@@ -202,10 +231,10 @@ namespace Remcoposer64.Core
 
             for (int ch = 0; ch < 16; ch++)
             {
-                for (int n = 0; n < 256; n++)
-                {
-                    note[ch][n] = 0;
-                }
+                //for (int n = 0; n < 256; n++)
+                //{
+                //    note[ch][n] = 0;
+                //}
                 cc[ch][7] = 110;
                 cc[ch][10] = 64;
                 cc[ch][11] = 110;
@@ -230,7 +259,7 @@ namespace Remcoposer64.Core
             Lyric = "";
             latestCmd = 0;
 
-            IsRPN = false;
+            //isRPN = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
             dicRPN = new Dictionary<ushort, ushort>[16];
             dicNRPN = new Dictionary<ushort, byte>[16];
             for (int i = 0; i < 16; i++) { dicRPN[i] = new(); dicNRPN[i] = new(); }
@@ -276,23 +305,195 @@ namespace Remcoposer64.Core
 
         public void Send(int msg)
         {
-            if ((msg & 0xf0) == 0xc0|| (msg & 0xf0) == 0xd0)
-            {
-                byte[] dat = new byte[2];
-                dat[0] = (byte)(msg & 0xff);
-                dat[1] = (byte)((msg >> 8) & 0xff);
-                SendBuffer(dat);
+            byte status = (byte)msg;
+            byte d1 = (byte)(msg >> 8);
+            byte d2 = (byte)(msg >> 16);
 
-            }
-            else
+            AnalyzeShortMessageFast(status, d1, d2);
+        }
+
+        private void AnalyzeShortMessageFast(byte status, byte d1, byte d2)
+        {
+            byte cmd = (byte)(status & 0xF0);
+            byte ch = (byte)(status & 0x0F);
+
+            switch (cmd)
             {
-                byte[] dat = new byte[3];
-                dat[0] = (byte)(msg & 0xff);
-                dat[1] = (byte)((msg >> 8) & 0xff);
-                dat[2] = (byte)((msg >> 16) & 0xff);
-                SendBuffer(dat);
+                case 0x80:
+                    note[ch][d1] = 0;
+                    break;
+
+                case 0x90:
+                    note[ch][d1] = d2;
+                    UpdateLevel(ch, d2);
+                    break;
+
+                case 0xA0:
+                    keyPress[ch][d1] = d2;
+                    break;
+
+                case 0xB0:
+                    cc[ch][d1] = d2;
+                    AnalyzeControlChangeFast(ch, d1);
+                    break;
+
+                case 0xC0:
+                    pc[ch] = d1;
+                    break;
+
+                case 0xD0:
+                    cPress[ch] = d1;
+                    break;
+
+                case 0xE0:
+                    bend[ch] = (short)((d2 << 7) | d1);
+                    break;
             }
-        }   
+        }
+
+        private void UpdateLevel(byte ch, byte d2)
+        {
+            if (d2 != 0)//NOTE OFF の代用の場合は液晶パラメータの更新を行わない
+            {
+                int? lv = cc[ch][7] * cc[ch][11] * d2 >> (7 + 7);
+                int? lvl = (lv * (cc[ch][10] > 64 ? ((127 - cc[ch][10]) * 2) : 127)) >> (7); //65->124 127->0
+                int? lvr = (lv * (cc[ch][10] < 64 ? (cc[ch][10] * 2) : 127)) >> (7); // 63->126 0->0
+                if (lvl != null) level[ch][0] = (byte)lvl;
+                if (lv != null) level[ch][1] = (byte)lv;
+                if (lvr != null) level[ch][2] = (byte)lvr;
+                if (level[ch][3] < lv)
+                {
+                    level[ch][3] = (byte)lv;
+                    level[ch][4] = 100;
+                }
+            }
+        }
+
+        //private readonly byte[,] ccb = new byte[16, 128];
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private void AnalyzeControlChangeFast(    byte status,    byte controller,    byte value)
+        //{
+        //    ccb[status & 0x0f, controller] = value;
+        //}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AnalyzeControlChangeFast(byte ch, byte controller)
+        {
+            switch (controller)
+            {
+                case 0x06: // Data Entry MSB
+                    AnalyzeDataEntryMSBFast(ch);
+
+                    if (isRPN[ch])
+                        AnalyzeRPN(ch);
+                    else
+                        AnalyzeNRPN(ch);
+
+                    break;
+
+                case 0x26: // Data Entry LSB
+                    if (isRPN[ch])
+                        AnalyzeRPN(ch);
+
+                    break;
+
+                case 0x65:
+                case 0x64:
+                    isRPN[ch] = true;
+                    break;
+
+                case 0x63:
+                case 0x62:
+                    isRPN[ch] = false;
+                    break;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AnalyzeDataEntryMSBFast(byte ch)
+        {
+            var ccCh = cc[ch];
+
+            byte nrpnMsb = ccCh[0x63] ?? 0;
+            byte nrpnLsb = ccCh[0x62] ?? 0;
+            byte dataMsb = ccCh[0x06] ?? 0;
+
+            if (nrpnMsb != 0x01)
+                return;
+
+            switch (nrpnLsb)
+            {
+                case 0x08: nrpnVibRate[ch] = dataMsb; break;
+                case 0x09: nrpnVibDepth[ch] = dataMsb; break;
+                case 0x0A: nrpnVibDelay[ch] = dataMsb; break;
+
+                case 0x20: nrpnLPF[ch] = dataMsb; break;
+                case 0x21: nrpnLPFRsn[ch] = dataMsb; break;
+                case 0x24: nrpnHPF[ch] = dataMsb; break;
+
+                case 0x30: nrpnEQBaseGain[ch] = dataMsb; break;
+                case 0x31: nrpnEQTrebleGain[ch] = dataMsb; break;
+                case 0x34: nrpnEQBaseFrq[ch] = dataMsb; break;
+                case 0x35: nrpnEQTrebleFrq[ch] = dataMsb; break;
+
+                case 0x63: nrpnEGAttack[ch] = dataMsb; break;
+                case 0x64: nrpnEGDecay[ch] = dataMsb; break;
+                case 0x66: nrpnEGRls[ch] = dataMsb; break;
+            }
+        }
+
+
+        public void AnalyzeShortMessage(byte cmd, byte v1, byte v2)
+        {
+            switch (cmd & 0xF0)
+            {
+                case 0xC0:
+                case 0xD0:
+                    AnalyzeOneByte(cmd);
+                    AnalyzeOneByte(v1);
+                    break;
+
+                default:
+                    AnalyzeOneByte(cmd);
+                    AnalyzeOneByte(v1);
+                    AnalyzeOneByte(v2);
+                    break;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AnalyzeOneByte(byte d)
+        {
+            bool isStatusByte = (d & 0x80) != 0;
+
+            if (isStatusByte)
+            {
+                latestCmd = d;
+
+                NowSystemMsg = (d & 0xf0) == 0xf0;
+
+                if (d == 0xf7 && NowSystemMsg)
+                {
+                    if (msgInd < msg.Length)
+                        msg[msgInd] = 0xf7;
+
+                    AnalyzeSystemMsg();
+                    NowSystemMsg = false;
+                }
+
+                msgInd = 0;
+            }
+
+            if (msgInd < msg.Length)
+            {
+                msg[msgInd] = d;
+                msgInd++;
+            }
+
+            Analyze(d);
+        }
+
 
         private void Analyze(byte d)
         {
@@ -343,22 +544,7 @@ namespace Remcoposer64.Core
                     break;
                 case 0x90://Note ON
                     note[ch][msg[i + 0]] = msg[i + 1];
-
-                    if (msg[i + 1] != 0)//NOTE OFF の代用の場合は液晶パラメータの更新を行わない
-                    {
-
-                        int? lv = cc[ch][7] * cc[ch][11] * msg[i + 1] >> (7 + 7);
-                        int? lvl = (lv * (cc[ch][10] > 64 ? ((127 - cc[ch][10]) * 2) : 127)) >> (7); //65->124 127->0
-                        int? lvr = (lv * (cc[ch][10] < 64 ? (cc[ch][10] * 2) : 127)) >> (7); // 63->126 0->0
-                        if (lvl != null) level[ch][0] = (byte)lvl;
-                        if (lv != null) level[ch][1] = (byte)lv;
-                        if (lvr != null) level[ch][2] = (byte)lvr;
-                        if (level[ch][3] < lv)
-                        {
-                            level[ch][3] = (byte)lv;
-                            level[ch][4] = 100;
-                        }
-                    }
+                    UpdateLevel(ch, msg[i + 1]);
                     msgInd = 0;
                     break;
                 case 0xa0://Key Press
@@ -380,54 +566,60 @@ namespace Remcoposer64.Core
 
         private void AnalyzeControlChange(byte ch)
         {
-            switch (msg[1])
+            byte ccno = msg[1];
+            switch (ccno)
             {
                 case 0x06://Data Entry MSB
                     AnalyzeDataEntryMSB(ch);
-                    if (!IsRPN) AnalyzeNRPN(ch);
+                    if (!isRPN[ch]) AnalyzeNRPN(ch);
                     else AnalyzeRPN(ch);
                     break;
                 case 0x26://Data Entry LSB
-                    if (IsRPN) AnalyzeRPN(ch);
+                    if (isRPN[ch]) AnalyzeRPN(ch);
                     break;
                 case 0x65:
                 case 0x64:
-                    IsRPN = true;
+                    isRPN[ch] = true;
                     break;
                 case 0x63:
                 case 0x62:
-                    IsRPN = false;
+                    isRPN[ch] = false;
                     break;
             }
         }
 
         private void AnalyzeRPN(byte ch)
         {
-            byte RPN_MSB = 0; if (cc[ch][0x65] != null) RPN_MSB = (byte)cc[ch][0x65];
-            byte RPN_LSB = 0; if (cc[ch][0x64] != null) RPN_LSB = (byte)cc[ch][0x64];
-            byte Dat_MSB = 0; if (cc[ch][0x06] != null) Dat_MSB = (byte)cc[ch][0x06];
-            byte Dat_LSB = 0; if (cc[ch][0x26] != null) Dat_LSB = (byte)cc[ch][0x26];
+            var ccCh = cc[ch];
 
-            ushort key = (ushort)((RPN_MSB << 8) | RPN_LSB);
-            ushort val = (ushort)((Dat_MSB << 8) | Dat_LSB);
-            if (dicRPN[ch].ContainsKey(key))
-                dicRPN[ch][key] = val;
-            else
-                dicRPN[ch].Add(key, val);
+            byte rpnMsb = ccCh[0x65] ?? 0;
+            byte rpnLsb = ccCh[0x64] ?? 0;
+            byte datMsb = ccCh[0x06] ?? 0;
+            byte datLsb = ccCh[0x26] ?? 0;
+
+            ushort key = (ushort)((rpnMsb << 8) | rpnLsb);
+            ushort val = (ushort)((datMsb << 8) | datLsb);
+
+            //if (dicRPN[ch].ContainsKey(key))
+            dicRPN[ch][key] = val;
+            //else
+            //    dicRPN[ch].Add(key, val);
         }
 
         private void AnalyzeNRPN(byte ch)
         {
-            byte NRPN_MSB = 0; if (cc[ch][0x63] != null) NRPN_MSB = (byte)cc[ch][0x63];
-            byte NRPN_LSB = 0; if (cc[ch][0x62] != null) NRPN_LSB = (byte)cc[ch][0x62];
-            byte Dat_MSB = 0; if (cc[ch][0x06] != null) Dat_MSB = (byte)cc[ch][0x06];
+            var ccCh = cc[ch];
+
+            byte NRPN_MSB = ccCh[0x63] ?? 0;
+            byte NRPN_LSB = ccCh[0x62] ?? 0;
+            byte Dat_MSB = ccCh[0x06] ?? 0;
 
             ushort key = (ushort)((NRPN_MSB << 8) | NRPN_LSB);
             byte val = Dat_MSB;
-            if (dicNRPN[ch].ContainsKey(key))
-                dicNRPN[ch][key] = val;
-            else
-                dicNRPN[ch].Add(key, val);
+            //if (dicNRPN[ch].ContainsKey(key))
+            dicNRPN[ch][key] = val;
+            //else
+            //    dicNRPN[ch].Add(key, val);
         }
 
         private void AnalyzeDataEntryMSB(byte ch)
@@ -514,7 +706,7 @@ namespace Remcoposer64.Core
                 return;
             }
 
-            while (ptr < msg.Length && msg[ptr] != 0xf7)
+            while (ptr < msgInd && msg[ptr] != 0xf7)
             {
                 byte dat = msg[ptr];
 
@@ -660,135 +852,46 @@ namespace Remcoposer64.Core
 
         }
 
-        private int GetRevTypeXG()
+        private int GetRevTypeXG() => LookupXGType(revTypeXGMap, RevType_MSB, RevType_LSB);
+
+        private int GetChoTypeXG() => LookupXGType(choTypeXGMap, ChoType_MSB, ChoType_LSB);
+
+        private int GetVarTypeXG() => LookupXGType(varTypeXGMap, VarType_MSB, VarType_LSB);
+
+        private int GetIns1TypeXG() => LookupXGType(varTypeXGMap, Ins1Type_MSB, Ins1Type_LSB);
+
+        private int GetIns2TypeXG() => LookupXGType(varTypeXGMap, Ins2Type_MSB, Ins2Type_LSB);
+
+        private int GetIns3TypeXG() => LookupXGType(varTypeXGMap, Ins3Type_MSB, Ins3Type_LSB);
+
+        private int GetIns4TypeXG() => LookupXGType(varTypeXGMap, Ins4Type_MSB, Ins4Type_LSB);
+
+        private static int LookupXGType(
+            Dictionary<int, int> map,
+            int msb,
+            int lsb)
         {
-            int ret = 0;
+            int key = (msb << 8) | lsb;
 
-            for (int i = 0; i < tblRevTypeXG.Length; i++)
-            {
-                if (RevType_MSB * 0x100 + RevType_LSB == tblRevTypeXG[i]) return i;
-            }
+            if (map.TryGetValue(key, out int v))
+                return v;
 
-            for (int i = 0; i < tblRevTypeXG.Length; i++)
-            {
-                if (RevType_MSB * 0x100 == tblRevTypeXG[i]) return i;
-            }
+            key = msb << 8;
 
-            return ret;
+            if (map.TryGetValue(key, out v))
+                return v;
+
+            return 0;
         }
 
-        private int GetChoTypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblChoTypeXG.Length; i++)
-            {
-                if (ChoType_MSB * 0x100 + ChoType_LSB == tblChoTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblChoTypeXG.Length; i++)
-            {
-                if (ChoType_MSB * 0x100 == tblChoTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
-
-        private int GetVarTypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (VarType_MSB * 0x100 + VarType_LSB == tblVarInsTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (VarType_MSB * 0x100 == tblVarInsTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
-
-        private int GetIns1TypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins1Type_MSB * 0x100 + Ins1Type_LSB == tblVarInsTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins1Type_MSB * 0x100 == tblVarInsTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
-
-        private int GetIns2TypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins2Type_MSB * 0x100 + Ins2Type_LSB == tblVarInsTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins2Type_MSB * 0x100 == tblVarInsTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
-
-        private int GetIns3TypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins3Type_MSB * 0x100 + Ins3Type_LSB == tblVarInsTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins3Type_MSB * 0x100 == tblVarInsTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
-
-        private int GetIns4TypeXG()
-        {
-            int ret = 0;
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins4Type_MSB * 0x100 + Ins4Type_LSB == tblVarInsTypeXG[i]) return i;
-            }
-
-            for (int i = 0; i < tblVarInsTypeXG.Length; i++)
-            {
-                if (Ins4Type_MSB * 0x100 == tblVarInsTypeXG[i]) return i;
-            }
-
-            return ret;
-        }
 
         private int GetIns1TypeFromEFX()
         {
-            int ret = 0;
-
-            for (int i = 0; i < tblIns1TypeFromEFX.Length; i++)
-            {
-                if (EFXType_MSB * 0x100 + EFXType_LSB == tblIns1TypeFromEFX[i]) return i;
-            }
-
-            return ret;
+            return ins1TypeFromEFXMap.TryGetValue(
+                (EFXType_MSB << 8) | EFXType_LSB,
+                out int v)
+                ? v
+                : 0;
         }
 
     }

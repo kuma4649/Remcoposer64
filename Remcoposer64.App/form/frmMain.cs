@@ -940,6 +940,9 @@ namespace Remcoposer64.App
         {
 
             if (player == null || player.GetMusicState() != RmPlayer.PlayerState.Processing) return;
+            
+            if (player.GetSkipCounter() > 0) timerScreen.Interval = 100;
+            else timerScreen.Interval = 20;
 
             // Update StepEditor 
             foreach (var stepeditor in stepEditors)

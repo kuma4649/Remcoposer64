@@ -9,6 +9,8 @@ namespace Remcoposer64.TrackEditor
     {
         protected override void Render()
         {
+            if (Player?.GetSkipCounter() > 0) return;
+
             bool hasSolo = Project.Track.Any(t => t.Solo);
             bool hasMute = Project.Track.Any(t => t.Mute);
 

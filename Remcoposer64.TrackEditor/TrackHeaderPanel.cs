@@ -52,6 +52,8 @@ namespace Remcoposer64.TrackEditor.Internal
 
         protected override void Render()
         {
+            if (Player?.GetSkipCounter() > 0) return;
+
             bool hasSolo = Project.Track.Any(t => t.Solo);
 
             LinkedListNode<MIDITrack> trk = Project.Track.First;

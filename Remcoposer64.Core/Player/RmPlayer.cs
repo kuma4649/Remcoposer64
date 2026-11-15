@@ -301,6 +301,11 @@ namespace Remcoposer64.Core.Player
             return musicPlayer.GetFrameCounter();
         }
 
+        public long GetSkipCounter()
+        {
+            return musicPlayer.SkipFrameCount;
+        }
+
         public PlayerState GetMusicState()
         {
             return musicPlayer.GetState();
@@ -319,7 +324,7 @@ namespace Remcoposer64.Core.Player
         public MIDIParam GetMIDIParam(int devNo)
         {
             
-            return midiOutDev[devNo].midiParam;
+            return midiOutDev[devNo]?.midiParam;
         }
     }
 }
