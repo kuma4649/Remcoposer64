@@ -42,8 +42,9 @@ namespace Remcomposer64.Core
             }
         }
 
-        public ThrottledMidiOut GetMIDIOutDevice(string deviceName)
+        public ThrottledMidiOut GetMIDIOutDevice(Remcoposer64.Common.Setting.midiOutInfo midioutinfo)
         {
+            string deviceName = midioutinfo.name;
             if (openedOutDevices.TryGetValue(deviceName, out var existing))
                 return existing;
 
@@ -52,7 +53,7 @@ namespace Remcomposer64.Core
                 //throw new Exception($"Not found MIDI OUT '{deviceName}'.");
 
             var dev = new MidiOut(index);
-            var midi = new ThrottledMidiOut(dev, 30);
+            var midi = new ThrottledMidiOut(dev, midioutinfo, 30);
             openedOutDevices[deviceName] = midi;
             return midi;
         }

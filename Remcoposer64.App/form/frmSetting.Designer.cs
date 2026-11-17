@@ -1,4 +1,10 @@
-﻿namespace Remcoposer64.App.form
+﻿//using System.Reflection.Emit;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+
+//using Remcoposer64.App.Properties;
+//using System.Reflection.Emit;
+
+namespace Remcoposer64.App.form
 {
     partial class frmSetting
     {
@@ -47,8 +53,8 @@
             clmFileName = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
             clmAka = new DataGridViewTextBoxColumn();
-            clmType = new DataGridViewComboBoxColumn();
-            ClmBeforeSend = new DataGridViewComboBoxColumn();
+            clmTypeA = new DataGridViewComboBoxColumn();
+            clmBeforeSendA = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
             btnUPMIDIOut_A = new Button();
@@ -62,8 +68,8 @@
             dataGridViewTextBoxColumn15 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn16 = new DataGridViewTextBoxColumn();
             clmAkaB = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn2 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn3 = new DataGridViewComboBoxColumn();
+            clmTypeB = new DataGridViewComboBoxColumn();
+            clmBeforeSendB = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn17 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn18 = new DataGridViewTextBoxColumn();
             tpC = new TabPage();
@@ -75,8 +81,8 @@
             dataGridViewTextBoxColumn20 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn21 = new DataGridViewTextBoxColumn();
             clmAkaC = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn4 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn5 = new DataGridViewComboBoxColumn();
+            clmTypeC = new DataGridViewComboBoxColumn();
+            clmBeforeSendC = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn22 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn23 = new DataGridViewTextBoxColumn();
             tpD = new TabPage();
@@ -88,8 +94,8 @@
             dataGridViewTextBoxColumn25 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn26 = new DataGridViewTextBoxColumn();
             clmAkaD = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn6 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn7 = new DataGridViewComboBoxColumn();
+            clmTypeD = new DataGridViewComboBoxColumn();
+            clmBeforeSendD = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn27 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn28 = new DataGridViewTextBoxColumn();
             tpE = new TabPage();
@@ -101,8 +107,8 @@
             dataGridViewTextBoxColumn30 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn31 = new DataGridViewTextBoxColumn();
             clmAkaE = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn8 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn9 = new DataGridViewComboBoxColumn();
+            clmTypeE = new DataGridViewComboBoxColumn();
+            clmBeforeSendE = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn32 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn33 = new DataGridViewTextBoxColumn();
             tpF = new TabPage();
@@ -114,8 +120,8 @@
             dataGridViewTextBoxColumn35 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn36 = new DataGridViewTextBoxColumn();
             clmAkaF = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn10 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn11 = new DataGridViewComboBoxColumn();
+            clmTypeF = new DataGridViewComboBoxColumn();
+            clmBeforeSendF = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn37 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn38 = new DataGridViewTextBoxColumn();
             tpG = new TabPage();
@@ -127,8 +133,8 @@
             dataGridViewTextBoxColumn40 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn41 = new DataGridViewTextBoxColumn();
             clmAkaG = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn12 = new DataGridViewComboBoxColumn();
-            dataGridViewComboBoxColumn13 = new DataGridViewComboBoxColumn();
+            clmTypeG = new DataGridViewComboBoxColumn();
+            clmBeforeSendG = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn42 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn43 = new DataGridViewTextBoxColumn();
             btnAddMIDIout = new Button();
@@ -151,7 +157,7 @@
             dataGridViewTextBoxColumn10 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn11 = new DataGridViewTextBoxColumn();
             clmAkaIn = new DataGridViewTextBoxColumn();
-            dataGridViewComboBoxColumn1 = new DataGridViewComboBoxColumn();
+            clmTypeInA = new DataGridViewComboBoxColumn();
             dataGridViewTextBoxColumn12 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn13 = new DataGridViewTextBoxColumn();
             btnUPMIDIin_A = new Button();
@@ -161,13 +167,25 @@
             btnAddMIDIin = new Button();
             btnSubMIDIin = new Button();
             tpPlayer = new TabPage();
+            groupBox1 = new GroupBox();
+            rbSlow = new RadioButton();
+            rbMiddle = new RadioButton();
+            rbFast = new RadioButton();
             cbRCPMuteMode = new CheckBox();
+            tpReset = new TabPage();
+            groupBox2 = new GroupBox();
+            btnBeforeSend_Default = new Button();
+            tbBeforeSend_Custom = new TextBox();
+            tbBeforeSend_XGReset = new TextBox();
+            label35 = new Label();
+            label34 = new Label();
+            label32 = new Label();
+            tbBeforeSend_GSReset = new TextBox();
+            label33 = new Label();
+            tbBeforeSend_GMReset = new TextBox();
+            label31 = new Label();
             btnOK = new Button();
             btnCancel = new Button();
-            groupBox1 = new GroupBox();
-            rbFast = new RadioButton();
-            rbMiddle = new RadioButton();
-            rbSlow = new RadioButton();
             tcSetting.SuspendLayout();
             tpOutput.SuspendLayout();
             tbcDeviceCategory.SuspendLayout();
@@ -203,6 +221,8 @@
             ((System.ComponentModel.ISupportInitialize)dgvMIDIinListA).BeginInit();
             tpPlayer.SuspendLayout();
             groupBox1.SuspendLayout();
+            tpReset.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // tcSetting
@@ -210,6 +230,7 @@
             tcSetting.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tcSetting.Controls.Add(tpOutput);
             tcSetting.Controls.Add(tpPlayer);
+            tcSetting.Controls.Add(tpReset);
             tcSetting.Location = new Point(12, 12);
             tcSetting.Name = "tcSetting";
             tcSetting.SelectedIndex = 0;
@@ -224,7 +245,7 @@
             tpOutput.Padding = new Padding(3);
             tpOutput.Size = new Size(512, 520);
             tpOutput.TabIndex = 0;
-            tpOutput.Text = "Output";
+            tpOutput.Text = "Port";
             tpOutput.UseVisualStyleBackColor = true;
             // 
             // tbcDeviceCategory
@@ -351,7 +372,7 @@
             tbcMIDIOutList.Margin = new Padding(4);
             tbcMIDIOutList.Name = "tbcMIDIOutList";
             tbcMIDIOutList.SelectedIndex = 0;
-            tbcMIDIOutList.Size = new Size(478, 214);
+            tbcMIDIOutList.Size = new Size(478, 205);
             tbcMIDIOutList.TabIndex = 4;
             // 
             // tpA
@@ -363,7 +384,7 @@
             tpA.Margin = new Padding(4);
             tpA.Name = "tpA";
             tpA.Padding = new Padding(4);
-            tpA.Size = new Size(470, 186);
+            tpA.Size = new Size(470, 177);
             tpA.TabIndex = 0;
             tpA.Tag = "0";
             tpA.Text = "A";
@@ -376,7 +397,7 @@
             dgvMIDIoutListA.AllowUserToResizeRows = false;
             dgvMIDIoutListA.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListA.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListA.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, clmIsVST, clmFileName, dataGridViewTextBoxColumn2, clmAka, clmType, ClmBeforeSend, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4 });
+            dgvMIDIoutListA.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, clmIsVST, clmFileName, dataGridViewTextBoxColumn2, clmAka, clmTypeA, clmBeforeSendA, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4 });
             dgvMIDIoutListA.Location = new Point(4, 4);
             dgvMIDIoutListA.Margin = new Padding(4);
             dgvMIDIoutListA.MultiSelect = false;
@@ -384,7 +405,7 @@
             dgvMIDIoutListA.RowHeadersVisible = false;
             dgvMIDIoutListA.RowTemplate.Height = 21;
             dgvMIDIoutListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListA.Size = new Size(428, 178);
+            dgvMIDIoutListA.Size = new Size(428, 169);
             dgvMIDIoutListA.TabIndex = 1;
             dgvMIDIoutListA.CellMouseDoubleClick += dgvMIDIoutListA_CellMouseDoubleClick;
             // 
@@ -425,21 +446,21 @@
             clmAka.HeaderText = "Alias";
             clmAka.Name = "clmAka";
             // 
-            // clmType
+            // clmTypeA
             // 
-            clmType.HeaderText = "Type";
-            clmType.Items.AddRange(new object[] { "GM" });
-            clmType.Name = "clmType";
-            clmType.Resizable = DataGridViewTriState.True;
-            clmType.Width = 70;
+            clmTypeA.HeaderText = "Type";
+            clmTypeA.Items.AddRange(new object[] { "GM" });
+            clmTypeA.Name = "clmTypeA";
+            clmTypeA.Resizable = DataGridViewTriState.True;
+            clmTypeA.Width = 70;
             // 
-            // ClmBeforeSend
+            // clmBeforeSendA
             // 
-            ClmBeforeSend.HeaderText = "Before Send";
-            ClmBeforeSend.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            ClmBeforeSend.Name = "ClmBeforeSend";
-            ClmBeforeSend.Resizable = DataGridViewTriState.True;
-            ClmBeforeSend.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendA.HeaderText = "Before Send";
+            clmBeforeSendA.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendA.Name = "clmBeforeSendA";
+            clmBeforeSendA.Resizable = DataGridViewTriState.True;
+            clmBeforeSendA.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -471,7 +492,7 @@
             // btnDownMIDIOut_A
             // 
             btnDownMIDIOut_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_A.Location = new Point(440, 110);
+            btnDownMIDIOut_A.Location = new Point(440, 101);
             btnDownMIDIOut_A.Margin = new Padding(4);
             btnDownMIDIOut_A.Name = "btnDownMIDIOut_A";
             btnDownMIDIOut_A.Size = new Size(26, 72);
@@ -487,7 +508,7 @@
             tpB.Controls.Add(dgvMIDIoutListB);
             tpB.Location = new Point(4, 24);
             tpB.Name = "tpB";
-            tpB.Size = new Size(470, 186);
+            tpB.Size = new Size(470, 177);
             tpB.TabIndex = 1;
             tpB.Text = "B";
             tpB.UseVisualStyleBackColor = true;
@@ -507,7 +528,7 @@
             // btnDownMIDIOut_B
             // 
             btnDownMIDIOut_B.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_B.Location = new Point(440, 110);
+            btnDownMIDIOut_B.Location = new Point(440, 101);
             btnDownMIDIOut_B.Margin = new Padding(4);
             btnDownMIDIOut_B.Name = "btnDownMIDIOut_B";
             btnDownMIDIOut_B.Size = new Size(26, 72);
@@ -523,7 +544,7 @@
             dgvMIDIoutListB.AllowUserToResizeRows = false;
             dgvMIDIoutListB.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListB.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListB.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn14, dataGridViewCheckBoxColumn2, dataGridViewTextBoxColumn15, dataGridViewTextBoxColumn16, clmAkaB, dataGridViewComboBoxColumn2, dataGridViewComboBoxColumn3, dataGridViewTextBoxColumn17, dataGridViewTextBoxColumn18 });
+            dgvMIDIoutListB.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn14, dataGridViewCheckBoxColumn2, dataGridViewTextBoxColumn15, dataGridViewTextBoxColumn16, clmAkaB, clmTypeB, clmBeforeSendB, dataGridViewTextBoxColumn17, dataGridViewTextBoxColumn18 });
             dgvMIDIoutListB.Location = new Point(4, 4);
             dgvMIDIoutListB.Margin = new Padding(4);
             dgvMIDIoutListB.MultiSelect = false;
@@ -531,7 +552,7 @@
             dgvMIDIoutListB.RowHeadersVisible = false;
             dgvMIDIoutListB.RowTemplate.Height = 21;
             dgvMIDIoutListB.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListB.Size = new Size(428, 178);
+            dgvMIDIoutListB.Size = new Size(428, 169);
             dgvMIDIoutListB.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn14
@@ -571,21 +592,21 @@
             clmAkaB.HeaderText = "Alias";
             clmAkaB.Name = "clmAkaB";
             // 
-            // dataGridViewComboBoxColumn2
+            // clmTypeB
             // 
-            dataGridViewComboBoxColumn2.HeaderText = "Type";
-            dataGridViewComboBoxColumn2.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn2.Name = "dataGridViewComboBoxColumn2";
-            dataGridViewComboBoxColumn2.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn2.Width = 70;
+            clmTypeB.HeaderText = "Type";
+            clmTypeB.Items.AddRange(new object[] { "GM" });
+            clmTypeB.Name = "clmTypeB";
+            clmTypeB.Resizable = DataGridViewTriState.True;
+            clmTypeB.Width = 70;
             // 
-            // dataGridViewComboBoxColumn3
+            // clmBeforeSendB
             // 
-            dataGridViewComboBoxColumn3.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn3.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn3.Name = "dataGridViewComboBoxColumn3";
-            dataGridViewComboBoxColumn3.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn3.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendB.HeaderText = "Before Send";
+            clmBeforeSendB.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendB.Name = "clmBeforeSendB";
+            clmBeforeSendB.Resizable = DataGridViewTriState.True;
+            clmBeforeSendB.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn17
             // 
@@ -609,7 +630,7 @@
             tpC.Controls.Add(dgvMIDIoutListC);
             tpC.Location = new Point(4, 24);
             tpC.Name = "tpC";
-            tpC.Size = new Size(470, 186);
+            tpC.Size = new Size(470, 177);
             tpC.TabIndex = 2;
             tpC.Text = "C";
             tpC.UseVisualStyleBackColor = true;
@@ -629,7 +650,7 @@
             // btnDownMIDIOut_C
             // 
             btnDownMIDIOut_C.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_C.Location = new Point(440, 110);
+            btnDownMIDIOut_C.Location = new Point(440, 101);
             btnDownMIDIOut_C.Margin = new Padding(4);
             btnDownMIDIOut_C.Name = "btnDownMIDIOut_C";
             btnDownMIDIOut_C.Size = new Size(26, 72);
@@ -645,7 +666,7 @@
             dgvMIDIoutListC.AllowUserToResizeRows = false;
             dgvMIDIoutListC.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListC.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListC.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn19, dataGridViewCheckBoxColumn3, dataGridViewTextBoxColumn20, dataGridViewTextBoxColumn21, clmAkaC, dataGridViewComboBoxColumn4, dataGridViewComboBoxColumn5, dataGridViewTextBoxColumn22, dataGridViewTextBoxColumn23 });
+            dgvMIDIoutListC.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn19, dataGridViewCheckBoxColumn3, dataGridViewTextBoxColumn20, dataGridViewTextBoxColumn21, clmAkaC, clmTypeC, clmBeforeSendC, dataGridViewTextBoxColumn22, dataGridViewTextBoxColumn23 });
             dgvMIDIoutListC.Location = new Point(4, 4);
             dgvMIDIoutListC.Margin = new Padding(4);
             dgvMIDIoutListC.MultiSelect = false;
@@ -653,7 +674,7 @@
             dgvMIDIoutListC.RowHeadersVisible = false;
             dgvMIDIoutListC.RowTemplate.Height = 21;
             dgvMIDIoutListC.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListC.Size = new Size(428, 178);
+            dgvMIDIoutListC.Size = new Size(428, 169);
             dgvMIDIoutListC.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn19
@@ -693,21 +714,21 @@
             clmAkaC.HeaderText = "Alias";
             clmAkaC.Name = "clmAkaC";
             // 
-            // dataGridViewComboBoxColumn4
+            // clmTypeC
             // 
-            dataGridViewComboBoxColumn4.HeaderText = "Type";
-            dataGridViewComboBoxColumn4.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn4.Name = "dataGridViewComboBoxColumn4";
-            dataGridViewComboBoxColumn4.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn4.Width = 70;
+            clmTypeC.HeaderText = "Type";
+            clmTypeC.Items.AddRange(new object[] { "GM" });
+            clmTypeC.Name = "clmTypeC";
+            clmTypeC.Resizable = DataGridViewTriState.True;
+            clmTypeC.Width = 70;
             // 
-            // dataGridViewComboBoxColumn5
+            // clmBeforeSendC
             // 
-            dataGridViewComboBoxColumn5.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn5.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn5.Name = "dataGridViewComboBoxColumn5";
-            dataGridViewComboBoxColumn5.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn5.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendC.HeaderText = "Before Send";
+            clmBeforeSendC.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendC.Name = "clmBeforeSendC";
+            clmBeforeSendC.Resizable = DataGridViewTriState.True;
+            clmBeforeSendC.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn22
             // 
@@ -731,7 +752,7 @@
             tpD.Controls.Add(dgvMIDIoutListD);
             tpD.Location = new Point(4, 24);
             tpD.Name = "tpD";
-            tpD.Size = new Size(470, 186);
+            tpD.Size = new Size(470, 177);
             tpD.TabIndex = 3;
             tpD.Text = "D";
             tpD.UseVisualStyleBackColor = true;
@@ -751,7 +772,7 @@
             // btnDownMIDIOut_D
             // 
             btnDownMIDIOut_D.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_D.Location = new Point(440, 110);
+            btnDownMIDIOut_D.Location = new Point(440, 101);
             btnDownMIDIOut_D.Margin = new Padding(4);
             btnDownMIDIOut_D.Name = "btnDownMIDIOut_D";
             btnDownMIDIOut_D.Size = new Size(26, 72);
@@ -767,7 +788,7 @@
             dgvMIDIoutListD.AllowUserToResizeRows = false;
             dgvMIDIoutListD.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListD.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListD.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn24, dataGridViewCheckBoxColumn4, dataGridViewTextBoxColumn25, dataGridViewTextBoxColumn26, clmAkaD, dataGridViewComboBoxColumn6, dataGridViewComboBoxColumn7, dataGridViewTextBoxColumn27, dataGridViewTextBoxColumn28 });
+            dgvMIDIoutListD.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn24, dataGridViewCheckBoxColumn4, dataGridViewTextBoxColumn25, dataGridViewTextBoxColumn26, clmAkaD, clmTypeD, clmBeforeSendD, dataGridViewTextBoxColumn27, dataGridViewTextBoxColumn28 });
             dgvMIDIoutListD.Location = new Point(4, 4);
             dgvMIDIoutListD.Margin = new Padding(4);
             dgvMIDIoutListD.MultiSelect = false;
@@ -775,7 +796,7 @@
             dgvMIDIoutListD.RowHeadersVisible = false;
             dgvMIDIoutListD.RowTemplate.Height = 21;
             dgvMIDIoutListD.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListD.Size = new Size(428, 178);
+            dgvMIDIoutListD.Size = new Size(428, 169);
             dgvMIDIoutListD.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn24
@@ -815,21 +836,21 @@
             clmAkaD.HeaderText = "Alias";
             clmAkaD.Name = "clmAkaD";
             // 
-            // dataGridViewComboBoxColumn6
+            // clmTypeD
             // 
-            dataGridViewComboBoxColumn6.HeaderText = "Type";
-            dataGridViewComboBoxColumn6.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn6.Name = "dataGridViewComboBoxColumn6";
-            dataGridViewComboBoxColumn6.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn6.Width = 70;
+            clmTypeD.HeaderText = "Type";
+            clmTypeD.Items.AddRange(new object[] { "GM" });
+            clmTypeD.Name = "clmTypeD";
+            clmTypeD.Resizable = DataGridViewTriState.True;
+            clmTypeD.Width = 70;
             // 
-            // dataGridViewComboBoxColumn7
+            // clmBeforeSendD
             // 
-            dataGridViewComboBoxColumn7.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn7.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn7.Name = "dataGridViewComboBoxColumn7";
-            dataGridViewComboBoxColumn7.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn7.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendD.HeaderText = "Before Send";
+            clmBeforeSendD.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendD.Name = "clmBeforeSendD";
+            clmBeforeSendD.Resizable = DataGridViewTriState.True;
+            clmBeforeSendD.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn27
             // 
@@ -853,7 +874,7 @@
             tpE.Controls.Add(dgvMIDIoutListE);
             tpE.Location = new Point(4, 24);
             tpE.Name = "tpE";
-            tpE.Size = new Size(470, 186);
+            tpE.Size = new Size(470, 177);
             tpE.TabIndex = 4;
             tpE.Text = "E";
             tpE.UseVisualStyleBackColor = true;
@@ -873,7 +894,7 @@
             // btnDownMIDIOut_E
             // 
             btnDownMIDIOut_E.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_E.Location = new Point(440, 110);
+            btnDownMIDIOut_E.Location = new Point(440, 101);
             btnDownMIDIOut_E.Margin = new Padding(4);
             btnDownMIDIOut_E.Name = "btnDownMIDIOut_E";
             btnDownMIDIOut_E.Size = new Size(26, 72);
@@ -889,7 +910,7 @@
             dgvMIDIoutListE.AllowUserToResizeRows = false;
             dgvMIDIoutListE.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListE.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListE.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn29, dataGridViewCheckBoxColumn5, dataGridViewTextBoxColumn30, dataGridViewTextBoxColumn31, clmAkaE, dataGridViewComboBoxColumn8, dataGridViewComboBoxColumn9, dataGridViewTextBoxColumn32, dataGridViewTextBoxColumn33 });
+            dgvMIDIoutListE.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn29, dataGridViewCheckBoxColumn5, dataGridViewTextBoxColumn30, dataGridViewTextBoxColumn31, clmAkaE, clmTypeE, clmBeforeSendE, dataGridViewTextBoxColumn32, dataGridViewTextBoxColumn33 });
             dgvMIDIoutListE.Location = new Point(4, 4);
             dgvMIDIoutListE.Margin = new Padding(4);
             dgvMIDIoutListE.MultiSelect = false;
@@ -897,7 +918,7 @@
             dgvMIDIoutListE.RowHeadersVisible = false;
             dgvMIDIoutListE.RowTemplate.Height = 21;
             dgvMIDIoutListE.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListE.Size = new Size(428, 178);
+            dgvMIDIoutListE.Size = new Size(428, 169);
             dgvMIDIoutListE.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn29
@@ -937,21 +958,21 @@
             clmAkaE.HeaderText = "Alias";
             clmAkaE.Name = "clmAkaE";
             // 
-            // dataGridViewComboBoxColumn8
+            // clmTypeE
             // 
-            dataGridViewComboBoxColumn8.HeaderText = "Type";
-            dataGridViewComboBoxColumn8.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn8.Name = "dataGridViewComboBoxColumn8";
-            dataGridViewComboBoxColumn8.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn8.Width = 70;
+            clmTypeE.HeaderText = "Type";
+            clmTypeE.Items.AddRange(new object[] { "GM" });
+            clmTypeE.Name = "clmTypeE";
+            clmTypeE.Resizable = DataGridViewTriState.True;
+            clmTypeE.Width = 70;
             // 
-            // dataGridViewComboBoxColumn9
+            // clmBeforeSendE
             // 
-            dataGridViewComboBoxColumn9.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn9.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn9.Name = "dataGridViewComboBoxColumn9";
-            dataGridViewComboBoxColumn9.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn9.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendE.HeaderText = "Before Send";
+            clmBeforeSendE.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendE.Name = "clmBeforeSendE";
+            clmBeforeSendE.Resizable = DataGridViewTriState.True;
+            clmBeforeSendE.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn32
             // 
@@ -975,7 +996,7 @@
             tpF.Controls.Add(dgvMIDIoutListF);
             tpF.Location = new Point(4, 24);
             tpF.Name = "tpF";
-            tpF.Size = new Size(470, 186);
+            tpF.Size = new Size(470, 177);
             tpF.TabIndex = 5;
             tpF.Text = "F";
             tpF.UseVisualStyleBackColor = true;
@@ -995,7 +1016,7 @@
             // btnDownMIDIOut_F
             // 
             btnDownMIDIOut_F.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_F.Location = new Point(440, 110);
+            btnDownMIDIOut_F.Location = new Point(440, 101);
             btnDownMIDIOut_F.Margin = new Padding(4);
             btnDownMIDIOut_F.Name = "btnDownMIDIOut_F";
             btnDownMIDIOut_F.Size = new Size(26, 72);
@@ -1011,7 +1032,7 @@
             dgvMIDIoutListF.AllowUserToResizeRows = false;
             dgvMIDIoutListF.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListF.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListF.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn34, dataGridViewCheckBoxColumn6, dataGridViewTextBoxColumn35, dataGridViewTextBoxColumn36, clmAkaF, dataGridViewComboBoxColumn10, dataGridViewComboBoxColumn11, dataGridViewTextBoxColumn37, dataGridViewTextBoxColumn38 });
+            dgvMIDIoutListF.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn34, dataGridViewCheckBoxColumn6, dataGridViewTextBoxColumn35, dataGridViewTextBoxColumn36, clmAkaF, clmTypeF, clmBeforeSendF, dataGridViewTextBoxColumn37, dataGridViewTextBoxColumn38 });
             dgvMIDIoutListF.Location = new Point(4, 4);
             dgvMIDIoutListF.Margin = new Padding(4);
             dgvMIDIoutListF.MultiSelect = false;
@@ -1019,7 +1040,7 @@
             dgvMIDIoutListF.RowHeadersVisible = false;
             dgvMIDIoutListF.RowTemplate.Height = 21;
             dgvMIDIoutListF.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListF.Size = new Size(428, 178);
+            dgvMIDIoutListF.Size = new Size(428, 169);
             dgvMIDIoutListF.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn34
@@ -1059,21 +1080,21 @@
             clmAkaF.HeaderText = "Alias";
             clmAkaF.Name = "clmAkaF";
             // 
-            // dataGridViewComboBoxColumn10
+            // clmTypeF
             // 
-            dataGridViewComboBoxColumn10.HeaderText = "Type";
-            dataGridViewComboBoxColumn10.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn10.Name = "dataGridViewComboBoxColumn10";
-            dataGridViewComboBoxColumn10.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn10.Width = 70;
+            clmTypeF.HeaderText = "Type";
+            clmTypeF.Items.AddRange(new object[] { "GM" });
+            clmTypeF.Name = "clmTypeF";
+            clmTypeF.Resizable = DataGridViewTriState.True;
+            clmTypeF.Width = 70;
             // 
-            // dataGridViewComboBoxColumn11
+            // clmBeforeSendF
             // 
-            dataGridViewComboBoxColumn11.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn11.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn11.Name = "dataGridViewComboBoxColumn11";
-            dataGridViewComboBoxColumn11.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn11.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendF.HeaderText = "Before Send";
+            clmBeforeSendF.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendF.Name = "clmBeforeSendF";
+            clmBeforeSendF.Resizable = DataGridViewTriState.True;
+            clmBeforeSendF.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn37
             // 
@@ -1097,7 +1118,7 @@
             tpG.Controls.Add(dgvMIDIoutListG);
             tpG.Location = new Point(4, 24);
             tpG.Name = "tpG";
-            tpG.Size = new Size(470, 186);
+            tpG.Size = new Size(470, 177);
             tpG.TabIndex = 6;
             tpG.Text = "G";
             tpG.UseVisualStyleBackColor = true;
@@ -1117,7 +1138,7 @@
             // btnDownMIDIOut_G
             // 
             btnDownMIDIOut_G.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_G.Location = new Point(440, 110);
+            btnDownMIDIOut_G.Location = new Point(440, 101);
             btnDownMIDIOut_G.Margin = new Padding(4);
             btnDownMIDIOut_G.Name = "btnDownMIDIOut_G";
             btnDownMIDIOut_G.Size = new Size(26, 72);
@@ -1133,7 +1154,7 @@
             dgvMIDIoutListG.AllowUserToResizeRows = false;
             dgvMIDIoutListG.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIoutListG.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIoutListG.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn39, dataGridViewCheckBoxColumn7, dataGridViewTextBoxColumn40, dataGridViewTextBoxColumn41, clmAkaG, dataGridViewComboBoxColumn12, dataGridViewComboBoxColumn13, dataGridViewTextBoxColumn42, dataGridViewTextBoxColumn43 });
+            dgvMIDIoutListG.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn39, dataGridViewCheckBoxColumn7, dataGridViewTextBoxColumn40, dataGridViewTextBoxColumn41, clmAkaG, clmTypeG, clmBeforeSendG, dataGridViewTextBoxColumn42, dataGridViewTextBoxColumn43 });
             dgvMIDIoutListG.Location = new Point(4, 4);
             dgvMIDIoutListG.Margin = new Padding(4);
             dgvMIDIoutListG.MultiSelect = false;
@@ -1141,7 +1162,7 @@
             dgvMIDIoutListG.RowHeadersVisible = false;
             dgvMIDIoutListG.RowTemplate.Height = 21;
             dgvMIDIoutListG.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListG.Size = new Size(428, 178);
+            dgvMIDIoutListG.Size = new Size(428, 169);
             dgvMIDIoutListG.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn39
@@ -1181,21 +1202,21 @@
             clmAkaG.HeaderText = "Alias";
             clmAkaG.Name = "clmAkaG";
             // 
-            // dataGridViewComboBoxColumn12
+            // clmTypeG
             // 
-            dataGridViewComboBoxColumn12.HeaderText = "Type";
-            dataGridViewComboBoxColumn12.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn12.Name = "dataGridViewComboBoxColumn12";
-            dataGridViewComboBoxColumn12.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn12.Width = 70;
+            clmTypeG.HeaderText = "Type";
+            clmTypeG.Items.AddRange(new object[] { "GM" });
+            clmTypeG.Name = "clmTypeG";
+            clmTypeG.Resizable = DataGridViewTriState.True;
+            clmTypeG.Width = 70;
             // 
-            // dataGridViewComboBoxColumn13
+            // clmBeforeSendG
             // 
-            dataGridViewComboBoxColumn13.HeaderText = "Before Send";
-            dataGridViewComboBoxColumn13.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
-            dataGridViewComboBoxColumn13.Name = "dataGridViewComboBoxColumn13";
-            dataGridViewComboBoxColumn13.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn13.SortMode = DataGridViewColumnSortMode.Automatic;
+            clmBeforeSendG.HeaderText = "Before Send";
+            clmBeforeSendG.Items.AddRange(new object[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" });
+            clmBeforeSendG.Name = "clmBeforeSendG";
+            clmBeforeSendG.Resizable = DataGridViewTriState.True;
+            clmBeforeSendG.SortMode = DataGridViewColumnSortMode.Automatic;
             // 
             // dataGridViewTextBoxColumn42
             // 
@@ -1363,7 +1384,7 @@
             tbcMIDIinList.Margin = new Padding(4);
             tbcMIDIinList.Name = "tbcMIDIinList";
             tbcMIDIinList.SelectedIndex = 0;
-            tbcMIDIinList.Size = new Size(478, 214);
+            tbcMIDIinList.Size = new Size(478, 205);
             tbcMIDIinList.TabIndex = 4;
             // 
             // tabPage3
@@ -1375,7 +1396,7 @@
             tabPage3.Margin = new Padding(4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(4);
-            tabPage3.Size = new Size(470, 186);
+            tabPage3.Size = new Size(470, 177);
             tabPage3.TabIndex = 0;
             tabPage3.Tag = "0";
             tabPage3.Text = "...";
@@ -1388,7 +1409,7 @@
             dgvMIDIinListA.AllowUserToResizeRows = false;
             dgvMIDIinListA.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvMIDIinListA.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMIDIinListA.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn9, dataGridViewCheckBoxColumn1, dataGridViewTextBoxColumn10, dataGridViewTextBoxColumn11, clmAkaIn, dataGridViewComboBoxColumn1, dataGridViewTextBoxColumn12, dataGridViewTextBoxColumn13 });
+            dgvMIDIinListA.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn9, dataGridViewCheckBoxColumn1, dataGridViewTextBoxColumn10, dataGridViewTextBoxColumn11, clmAkaIn, clmTypeInA, dataGridViewTextBoxColumn12, dataGridViewTextBoxColumn13 });
             dgvMIDIinListA.Location = new Point(4, 4);
             dgvMIDIinListA.Margin = new Padding(4);
             dgvMIDIinListA.MultiSelect = false;
@@ -1396,7 +1417,7 @@
             dgvMIDIinListA.RowHeadersVisible = false;
             dgvMIDIinListA.RowTemplate.Height = 21;
             dgvMIDIinListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIinListA.Size = new Size(428, 178);
+            dgvMIDIinListA.Size = new Size(428, 169);
             dgvMIDIinListA.TabIndex = 1;
             dgvMIDIinListA.CellMouseDoubleClick += dgvMIDIinListA_CellMouseDoubleClick;
             // 
@@ -1437,13 +1458,13 @@
             clmAkaIn.HeaderText = "Alias";
             clmAkaIn.Name = "clmAkaIn";
             // 
-            // dataGridViewComboBoxColumn1
+            // clmTypeInA
             // 
-            dataGridViewComboBoxColumn1.HeaderText = "Type";
-            dataGridViewComboBoxColumn1.Items.AddRange(new object[] { "GM" });
-            dataGridViewComboBoxColumn1.Name = "dataGridViewComboBoxColumn1";
-            dataGridViewComboBoxColumn1.Resizable = DataGridViewTriState.True;
-            dataGridViewComboBoxColumn1.Width = 70;
+            clmTypeInA.HeaderText = "Type";
+            clmTypeInA.Items.AddRange(new object[] { "GM" });
+            clmTypeInA.Name = "clmTypeInA";
+            clmTypeInA.Resizable = DataGridViewTriState.True;
+            clmTypeInA.Width = 70;
             // 
             // dataGridViewTextBoxColumn12
             // 
@@ -1475,7 +1496,7 @@
             // btnDownMIDIin_A
             // 
             btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIin_A.Location = new Point(440, 110);
+            btnDownMIDIin_A.Location = new Point(440, 101);
             btnDownMIDIin_A.Margin = new Padding(4);
             btnDownMIDIin_A.Name = "btnDownMIDIin_A";
             btnDownMIDIin_A.Size = new Size(26, 72);
@@ -1539,6 +1560,51 @@
             tpPlayer.Text = "Player";
             tpPlayer.UseVisualStyleBackColor = true;
             // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(rbSlow);
+            groupBox1.Controls.Add(rbMiddle);
+            groupBox1.Controls.Add(rbFast);
+            groupBox1.Location = new Point(3, 48);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(496, 104);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Skip mode Type";
+            // 
+            // rbSlow
+            // 
+            rbSlow.AutoSize = true;
+            rbSlow.Location = new Point(6, 72);
+            rbSlow.Name = "rbSlow";
+            rbSlow.Size = new Size(283, 19);
+            rbSlow.TabIndex = 2;
+            rbSlow.TabStop = true;
+            rbSlow.Text = "Slow(Send controls incrementally while skipping)";
+            rbSlow.UseVisualStyleBackColor = true;
+            // 
+            // rbMiddle
+            // 
+            rbMiddle.AutoSize = true;
+            rbMiddle.Location = new Point(6, 47);
+            rbMiddle.Name = "rbMiddle";
+            rbMiddle.Size = new Size(225, 19);
+            rbMiddle.TabIndex = 1;
+            rbMiddle.TabStop = true;
+            rbMiddle.Text = "Middle(Send Controls While Skipping)";
+            rbMiddle.UseVisualStyleBackColor = true;
+            // 
+            // rbFast
+            // 
+            rbFast.AutoSize = true;
+            rbFast.Location = new Point(6, 22);
+            rbFast.Name = "rbFast";
+            rbFast.Size = new Size(310, 19);
+            rbFast.TabIndex = 0;
+            rbFast.TabStop = true;
+            rbFast.Text = "Fast (Send controls in bulk when skipping is complete)";
+            rbFast.UseVisualStyleBackColor = true;
+            // 
             // cbRCPMuteMode
             // 
             cbRCPMuteMode.AutoSize = true;
@@ -1548,6 +1614,119 @@
             cbRCPMuteMode.TabIndex = 0;
             cbRCPMuteMode.Text = "RCP-compatible-style mute mode";
             cbRCPMuteMode.UseVisualStyleBackColor = true;
+            // 
+            // tpReset
+            // 
+            tpReset.Controls.Add(groupBox2);
+            tpReset.Location = new Point(4, 24);
+            tpReset.Name = "tpReset";
+            tpReset.Size = new Size(512, 520);
+            tpReset.TabIndex = 2;
+            tpReset.Text = "ResetCommand";
+            tpReset.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(btnBeforeSend_Default);
+            groupBox2.Controls.Add(tbBeforeSend_Custom);
+            groupBox2.Controls.Add(tbBeforeSend_XGReset);
+            groupBox2.Controls.Add(label35);
+            groupBox2.Controls.Add(label34);
+            groupBox2.Controls.Add(label32);
+            groupBox2.Controls.Add(tbBeforeSend_GSReset);
+            groupBox2.Controls.Add(label33);
+            groupBox2.Controls.Add(tbBeforeSend_GMReset);
+            groupBox2.Controls.Add(label31);
+            groupBox2.Location = new Point(3, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(506, 249);
+            groupBox2.TabIndex = 0;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Before Send";
+            // 
+            // btnBeforeSend_Default
+            // 
+            btnBeforeSend_Default.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBeforeSend_Default.Location = new Point(425, 151);
+            btnBeforeSend_Default.Name = "btnBeforeSend_Default";
+            btnBeforeSend_Default.Size = new Size(75, 23);
+            btnBeforeSend_Default.TabIndex = 0;
+            btnBeforeSend_Default.Text = "Reset";
+            btnBeforeSend_Default.UseVisualStyleBackColor = true;
+            btnBeforeSend_Default.Click += btnBeforeSend_Default_Click;
+            // 
+            // tbBeforeSend_Custom
+            // 
+            tbBeforeSend_Custom.Location = new Point(105, 122);
+            tbBeforeSend_Custom.Name = "tbBeforeSend_Custom";
+            tbBeforeSend_Custom.Size = new Size(395, 23);
+            tbBeforeSend_Custom.TabIndex = 1;
+            // 
+            // tbBeforeSend_XGReset
+            // 
+            tbBeforeSend_XGReset.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbBeforeSend_XGReset.Location = new Point(105, 60);
+            tbBeforeSend_XGReset.Name = "tbBeforeSend_XGReset";
+            tbBeforeSend_XGReset.Size = new Size(395, 23);
+            tbBeforeSend_XGReset.TabIndex = 2;
+            // 
+            // label35
+            // 
+            label35.AutoSize = true;
+            label35.Location = new Point(7, 160);
+            label35.Name = "label35";
+            label35.Size = new Size(151, 30);
+            label35.TabIndex = 3;
+            label35.Text = "Format:\r\n  (command data(hex)),...;...\r\n";
+            // 
+            // label34
+            // 
+            label34.Location = new Point(7, 126);
+            label34.Name = "label34";
+            label34.Size = new Size(100, 23);
+            label34.TabIndex = 4;
+            label34.Text = "Custom";
+            // 
+            // label32
+            // 
+            label32.Location = new Point(7, 64);
+            label32.Name = "label32";
+            label32.Size = new Size(100, 23);
+            label32.TabIndex = 5;
+            label32.Text = "XG SystemOn";
+            // 
+            // tbBeforeSend_GSReset
+            // 
+            tbBeforeSend_GSReset.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbBeforeSend_GSReset.Location = new Point(105, 91);
+            tbBeforeSend_GSReset.Name = "tbBeforeSend_GSReset";
+            tbBeforeSend_GSReset.Size = new Size(395, 23);
+            tbBeforeSend_GSReset.TabIndex = 6;
+            // 
+            // label33
+            // 
+            label33.Location = new Point(7, 95);
+            label33.Name = "label33";
+            label33.Size = new Size(100, 23);
+            label33.TabIndex = 7;
+            label33.Text = "GS Reset";
+            // 
+            // tbBeforeSend_GMReset
+            // 
+            tbBeforeSend_GMReset.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbBeforeSend_GMReset.Location = new Point(105, 29);
+            tbBeforeSend_GMReset.Name = "tbBeforeSend_GMReset";
+            tbBeforeSend_GMReset.Size = new Size(395, 23);
+            tbBeforeSend_GMReset.TabIndex = 8;
+            // 
+            // label31
+            // 
+            label31.Location = new Point(7, 32);
+            label31.Name = "label31";
+            label31.Size = new Size(100, 23);
+            label31.TabIndex = 9;
+            label31.Text = "GM SystemOn";
             // 
             // btnOK
             // 
@@ -1570,51 +1749,6 @@
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
-            // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(rbSlow);
-            groupBox1.Controls.Add(rbMiddle);
-            groupBox1.Controls.Add(rbFast);
-            groupBox1.Location = new Point(3, 48);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(496, 104);
-            groupBox1.TabIndex = 1;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Skip mode Type";
-            // 
-            // rbFast
-            // 
-            rbFast.AutoSize = true;
-            rbFast.Location = new Point(6, 22);
-            rbFast.Name = "rbFast";
-            rbFast.Size = new Size(310, 19);
-            rbFast.TabIndex = 0;
-            rbFast.TabStop = true;
-            rbFast.Text = "Fast (Send controls in bulk when skipping is complete)";
-            rbFast.UseVisualStyleBackColor = true;
-            // 
-            // rbMiddle
-            // 
-            rbMiddle.AutoSize = true;
-            rbMiddle.Location = new Point(6, 47);
-            rbMiddle.Name = "rbMiddle";
-            rbMiddle.Size = new Size(225, 19);
-            rbMiddle.TabIndex = 1;
-            rbMiddle.TabStop = true;
-            rbMiddle.Text = "Middle(Send Controls While Skipping)";
-            rbMiddle.UseVisualStyleBackColor = true;
-            // 
-            // rbSlow
-            // 
-            rbSlow.AutoSize = true;
-            rbSlow.Location = new Point(6, 72);
-            rbSlow.Name = "rbSlow";
-            rbSlow.Size = new Size(283, 19);
-            rbSlow.TabIndex = 2;
-            rbSlow.TabStop = true;
-            rbSlow.Text = "Slow(Send controls incrementally while skipping)";
-            rbSlow.UseVisualStyleBackColor = true;
             // 
             // frmSetting
             // 
@@ -1670,6 +1804,9 @@
             tpPlayer.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            tpReset.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -1738,13 +1875,19 @@
         private Button btnDownMIDIOut_F;
         private Button btnUPMIDIOut_G;
         private Button btnDownMIDIOut_G;
+        private TabPage tpPlayer;
+        private CheckBox cbRCPMuteMode;
+        private GroupBox groupBox1;
+        private RadioButton rbSlow;
+        private RadioButton rbMiddle;
+        private RadioButton rbFast;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewCheckBoxColumn clmIsVST;
         private DataGridViewTextBoxColumn clmFileName;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private DataGridViewTextBoxColumn clmAka;
-        private DataGridViewComboBoxColumn clmType;
-        private DataGridViewComboBoxColumn ClmBeforeSend;
+        private DataGridViewComboBoxColumn clmTypeA;
+        private DataGridViewComboBoxColumn clmBeforeSendA;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn14;
@@ -1752,8 +1895,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn15;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
         private DataGridViewTextBoxColumn clmAkaB;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn2;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn3;
+        private DataGridViewComboBoxColumn clmTypeB;
+        private DataGridViewComboBoxColumn clmBeforeSendB;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn17;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn18;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn19;
@@ -1761,8 +1904,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn20;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn21;
         private DataGridViewTextBoxColumn clmAkaC;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn4;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn5;
+        private DataGridViewComboBoxColumn clmTypeC;
+        private DataGridViewComboBoxColumn clmBeforeSendC;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn22;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn23;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn24;
@@ -1770,8 +1913,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn25;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn26;
         private DataGridViewTextBoxColumn clmAkaD;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn6;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn7;
+        private DataGridViewComboBoxColumn clmTypeD;
+        private DataGridViewComboBoxColumn clmBeforeSendD;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn27;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn28;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn29;
@@ -1779,8 +1922,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn30;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn31;
         private DataGridViewTextBoxColumn clmAkaE;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn8;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn9;
+        private DataGridViewComboBoxColumn clmTypeE;
+        private DataGridViewComboBoxColumn clmBeforeSendE;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn32;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn33;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn34;
@@ -1788,8 +1931,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn35;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn36;
         private DataGridViewTextBoxColumn clmAkaF;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn10;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn11;
+        private DataGridViewComboBoxColumn clmTypeF;
+        private DataGridViewComboBoxColumn clmBeforeSendF;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn37;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn38;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn39;
@@ -1797,8 +1940,8 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn40;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn41;
         private DataGridViewTextBoxColumn clmAkaG;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn12;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn13;
+        private DataGridViewComboBoxColumn clmTypeG;
+        private DataGridViewComboBoxColumn clmBeforeSendG;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn42;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn43;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
@@ -1806,14 +1949,20 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
         private DataGridViewTextBoxColumn clmAkaIn;
-        private DataGridViewComboBoxColumn dataGridViewComboBoxColumn1;
+        private DataGridViewComboBoxColumn clmTypeInA;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
-        private TabPage tpPlayer;
-        private CheckBox cbRCPMuteMode;
-        private GroupBox groupBox1;
-        private RadioButton rbSlow;
-        private RadioButton rbMiddle;
-        private RadioButton rbFast;
+        private TabPage tpReset;
+        private GroupBox groupBox2;
+        private Button btnBeforeSend_Default;
+        private TextBox tbBeforeSend_Custom;
+        private TextBox tbBeforeSend_XGReset;
+        private Label label34;
+        private Label label35;
+        private Label label32;
+        private TextBox tbBeforeSend_GSReset;
+        private Label label33;
+        private TextBox tbBeforeSend_GMReset;
+        private Label label31;
     }
 }

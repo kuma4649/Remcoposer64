@@ -85,7 +85,7 @@ namespace Remcoposer64.Core.Player
                 {
                     try
                     {
-                        midiOutDev[i] = _deviceManager.GetMIDIOutDevice(currentMidiOut[i].name);
+                        midiOutDev[i] = _deviceManager.GetMIDIOutDevice(currentMidiOut[i]);
                     }
                     catch
                     {
@@ -142,15 +142,14 @@ namespace Remcoposer64.Core.Player
             if (project == null) return;
 
             // MusicPlayer にプロジェクトのイベントを渡す
+            SendBeforeReset();
             musicPlayer.PlayMusic(project, mp);
-
         }
 
         public void StartPlayback()
         {
+            SendBeforeReset();
             musicPlayer.StartPlayback();
-            //musicPlayer.FireFrameProcess = true;
-            //musicPlayer.IsFinished = false;
         }
 
         public void StopPlayback()
@@ -159,11 +158,10 @@ namespace Remcoposer64.Core.Player
             SendAllSoundOff();
         }
 
-        public void FirePreview(List<MIDIEvent> ev)
+        public void FirePreview(List<(int, int, MIDIEvent)> ev)
         {
-            //previewPlayer.Enqueue(ev);
-            //previewPlayer.FireFrameProcess = true;
-            //previewPlayer.IsFinished = false;
+            previewPlayer.Enqueue(ev);
+            previewPlayer.IsFinished = false;
         }
 
         public void FireMidiKeyboard(List<MIDIEvent> ev)
@@ -237,6 +235,35 @@ namespace Remcoposer64.Core.Player
                 finally
                 {
                     //try { midiOut?.Close(); } catch { }
+                }
+            }
+        }
+
+        public void SendBeforeReset()
+        {
+            if (currentMidiOut == null || currentMidiOut.Length < 1) return;
+            if (midiOutDev == null) return;
+            foreach (var midiOut in midiOutDev)
+            {
+                if (midiOut == null) continue;
+
+                try
+                {
+                    List<byte> buf = MakeBeforeSendCommand(midiOut.midiOutInfo.beforeSendType);
+                    if (buf == null) continue;
+                    midiOut.SendSysEx(buf.ToArray());
+                    midiOut.Flush2();
+                }
+                catch (NAudio.MmException)
+                {
+                    ;//この例外は無視する
+                }
+                catch (Exception ex)
+                {
+                    Common.Log.ForcedWrite($"Error SendBeforeReset to MIDI Out {midiOut}: {ex.Message}");
+                }
+                finally
+                {
                 }
             }
         }
@@ -326,5 +353,54 @@ namespace Remcoposer64.Core.Player
             
             return midiOutDev[devNo]?.midiParam;
         }
+
+        private List<byte> MakeBeforeSendCommand(int beforeSendType)
+        {
+            try
+            {
+                List<byte> buf = null;
+
+                switch (beforeSendType)
+                {
+                    case 0://None
+                        break;
+                    case 1://GM Reset
+                        buf = GetCtlSysexFromText(setting.midiOut.GMReset);
+                        break;
+                    case 2://XG Reset
+                        buf = GetCtlSysexFromText(setting.midiOut.XGReset);
+                        break;
+                    case 3://GS Reset
+                        buf = GetCtlSysexFromText(setting.midiOut.GSReset);
+                        break;
+                    case 4://Custom
+                        buf = GetCtlSysexFromText(setting.midiOut.Custom);
+                        break;
+                }
+
+                return buf;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private List<byte> GetCtlSysexFromText(string text)
+        {
+            if (text == null || text.Length < 1) return null;
+
+            List<byte> buf = new List<byte>();
+            string[] cmds = text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string cmd in cmds)
+            {
+                byte dat = (byte)Convert.ToInt16(cmd, 16);
+                buf.Add(dat);
+            }
+
+            return buf;
+        }
+
     }
 }

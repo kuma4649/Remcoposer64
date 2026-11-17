@@ -7,8 +7,6 @@ namespace Remcoposer64.Common
 {
     public class Setting
     {
-        //public List<MIDIDeviceList> MIDIOutDeviceList { get; set; } = new();
-        //public List<MIDIDeviceList> MIDIInDeviceList { get; set; } = new();
 
         public Log log = new Log();
         public Player player = new Player();
@@ -20,15 +18,7 @@ namespace Remcoposer64.Common
 
         public Setting()
         {
-            //MIDIOutDeviceList.Add(new MIDIDeviceList());
-            //MIDIOutDeviceList.Add(new MIDIDeviceList());
-            //MIDIOutDeviceList.Add(new MIDIDeviceList());
-            //MIDIOutDeviceList.Add(new MIDIDeviceList());
 
-            //MIDIInDeviceList.Add(new MIDIDeviceList());
-            //MIDIInDeviceList.Add(new MIDIDeviceList());
-            //MIDIInDeviceList.Add(new MIDIDeviceList());
-            //MIDIInDeviceList.Add(new MIDIDeviceList());
         }
 
         public Setting Copy()
@@ -121,9 +111,9 @@ namespace Remcoposer64.Common
         [Serializable]
         public class MidiOut
         {
-            public string GMReset { get; set; } = "30:F0,7E,7F,09,01,F7";
-            public string XGReset { get; set; } = "30:F0,43,10,4C,00,00,7E,00,F7";
-            public string GSReset { get; set; } = "30:F0,41,10,42,12,40,00,7F,00,41,F7";
+            public string GMReset { get; set; } = "F0,7E,7F,09,01,F7";
+            public string XGReset { get; set; } = "F0,43,10,4C,00,00,7E,00,F7";
+            public string GSReset { get; set; } = "F0,41,10,42,12,40,00,7F,00,41,F7";
             public string Custom { get; set; } = "";
             public int CurrentDev { get; set; } = 0;
 

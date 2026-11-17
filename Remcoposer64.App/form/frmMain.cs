@@ -1,8 +1,10 @@
+using NAudio.Midi;
 using Remcoposer64.App.form;
 using Remcoposer64.Common;
 using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.TrackEditor;
 using System.Security.Cryptography;
 using System.Text;
@@ -56,7 +58,7 @@ namespace Remcoposer64.App
 
             Stop();
 
-            player.InitialPlay();
+            //player.InitialPlay();
             player.PlayMusic(currentProject);
         }
 
@@ -225,7 +227,7 @@ namespace Remcoposer64.App
         {
             MIDIProject prj = currentProject;
             string fn = prj.Information.FileFullName;
-            if(string.IsNullOrEmpty(fn))
+            if (string.IsNullOrEmpty(fn))
             {
                 fn = $"NewSequence_{DateTime.Now:yyMMddHHmmss}";
             }
@@ -467,6 +469,7 @@ namespace Remcoposer64.App
             measInfoMng = new MeasureInfoManager();
 
             player = new RmPlayer(setting);
+            player.InitialPlay();
 
             switch (setting.midiOut.CurrentDev)
             {
@@ -940,7 +943,7 @@ namespace Remcoposer64.App
         {
 
             if (player == null || player.GetMusicState() != RmPlayer.PlayerState.Processing) return;
-            
+
             if (player.GetSkipCounter() > 0) timerScreen.Interval = 100;
             else timerScreen.Interval = 20;
 
@@ -1156,7 +1159,7 @@ namespace Remcoposer64.App
 
             Stop();
 
-            player.InitialPlay();
+            //player.InitialPlay();
             player.PlayMusic(currentProject, mp);
         }
 
@@ -1188,6 +1191,7 @@ namespace Remcoposer64.App
 
             // MIDIデバイスをオープンする
             player = new RmPlayer(setting);
+            player.InitialPlay();
 
         }
 
@@ -1223,5 +1227,52 @@ namespace Remcoposer64.App
 
         }
 
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //List<ProjectData.Events.MIDIEvent> lst = new();
+            //ProjectData.Events.MIDINoteEvent evt = new ProjectData.Events.MIDINoteEvent
+            //{
+            //    KeyNumber = 60,
+            //    ST = 48,
+            //    GT = 48,
+            //    Vel = 110
+            //};
+            //lst.Add(evt);
+
+            //evt = new ProjectData.Events.MIDINoteEvent
+            //{
+            //    KeyNumber = 62,
+            //    ST = 48,
+            //    GT = 24,
+            //    Vel = 110
+            //};
+            //lst.Add(evt);
+
+            //evt = new ProjectData.Events.MIDINoteEvent
+            //{
+            //    KeyNumber = 64,
+            //    ST = 48,
+            //    GT = 48,
+            //    Vel = 110
+            //};
+            //lst.Add(evt);
+
+            //player.FirePreview(lst);
+        }
+
+        internal void NotePreview(PlayNoteEventArgs e)
+        {
+            List<(int, int, ProjectData.Events.MIDIEvent)> lst = new();
+            ProjectData.Events.MIDINoteEvent evt = new ProjectData.Events.MIDINoteEvent
+            {
+                KeyNumber = e.KeyNumber,
+                ST = 48,
+                GT = 48,
+                Vel = 110
+            };
+            lst.Add((e.DeviceNumber, e.Channel, evt));
+
+            player.FirePreview(lst);
+        }
     }
 }

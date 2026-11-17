@@ -1402,19 +1402,28 @@ namespace Remcoposer64.StepEditorPanelControl
         public void ShowEventContextMenu()
         {
             // カーソル行の描画位置にメニューを出す
-            int rowY = (cursor.Index + 1) * lineHeight;
+            int rowY = (cursor.Index + 1 + 1) * lineHeight;// 1 + 1は「ヘッダ + 1行下」の高さ
             // カーソル列の X 座標を計算
             int colX = iconMergin + (6 + 6) * charWidth;// 6 + 6 は「小節番号 + ステップ番号」の幅
             // メニューを少し右にずらす
             int menuX = colX + charWidth;
+            
+            Debug.WriteLine($"ShowEventContextMenu Pos:{menuX},{rowY}");
 
             if (eventMenu == null) InitializeContextMenu();
             eventMenu.Show(this, new Point(menuX, rowY));
         }
 
+        private MIDITrack track = null;
+
         public void RequestPlayNote(int keyNumber)
         {
-            PlayNoteRequested?.Invoke(this, new PlayNoteEventArgs(keyNumber));
+            if (track == null || track.OutChannel == null) return;
+
+            int deviceNumber = track.OutDevice;
+            int channel = (int)track.OutChannel;
+
+            PlayNoteRequested?.Invoke(this, new PlayNoteEventArgs(deviceNumber, channel, keyNumber));
         }
 
         internal Point PointToScreenFromCursorInfo(CursorInfo ci)
@@ -1471,6 +1480,11 @@ namespace Remcoposer64.StepEditorPanelControl
                 mev.MoveNext_ProgramNumber(ev, cursor, newCursorInfo, programNumber, false, MoveNextCursorAction.NextEvent);
 
             ScreenUpdate();
+        }
+
+        public void SetTrackData(MIDITrack trk)
+        {
+            this.track = trk;
         }
 
         public void SetPartData(MIDIPart prt)

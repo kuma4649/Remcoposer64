@@ -27,6 +27,7 @@ namespace Remcoposer64.App.form
             this.trk = trk;
             this.prt = prt;
 
+            stepEditorPanel1.SetTrackData(trk);
             stepEditorPanel1.SetPartData(prt);
             stepEditorPanel1.Init(mng);
             stepEditorPanel1.InputModeChanged += stepEditorPanel1_InputModeChanged;
@@ -105,8 +106,9 @@ namespace Remcoposer64.App.form
 
         private void StepEditorPanel1_PlayNoteRequested(object sender, PlayNoteEventArgs e)
         {
-            double freq = 440.0 * Math.Pow(2.0, (e.KeyNumber - 69) / 12.0);
-            Beep((int)freq, 200);
+            parent.NotePreview(e);
+            //double freq = 440.0 * Math.Pow(2.0, (e.KeyNumber - 69) / 12.0);
+            //Beep((int)freq, 200);
         }
 
         private void frmStepEditor_Shown(object sender, EventArgs e)

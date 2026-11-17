@@ -66,17 +66,24 @@ namespace Remcoposer64.ProjectData
             while (!isFinished)
             {
                 isFinished = ProcessFrame(frameCounter);
-                frameCounter++;
+                //frameCounter++;
+                frameCounter = nextFrame;
             }
 
             if (ClearPlayedFlag) Common.ClearPlayedFlag(project);
         }
+
+        long eventCount = 0;
+        long nextFrame = long.MaxValue;
 
         public bool ProcessFrame(long frameCounter)
         {
             int trkStatsIndex = 0;
             LinkedListNode<MIDITrack> nTrk = project.Track.First;
             bool playedAllTracks = true;
+
+            nextFrame = long.MaxValue;
+
             while (nTrk != null)
             {
                 TrackStatus ts = trkStats[trkStatsIndex];
@@ -114,18 +121,37 @@ namespace Remcoposer64.ProjectData
 
                     playedAllParts = false;
 
-                    if (frameCounter < ps.CurrentEventFrame + trk.St)
-                        break;
+                    //nextFrame = Math.Min(nextFrame, ps.CurrentEventFrame + trk.St);
+
+                    //if (frameCounter < ps.CurrentEventFrame + trk.St)
+                    //    break;
 
                     while (ps.CurrentEvent != null)
                     {
+                        long eventTick = ps.CurrentEventFrame + trk.St;
+
+                        // まだ未来のイベント
+                        if (frameCounter < eventTick)
+                        {
+                            nextFrame = Math.Min(nextFrame, eventTick);
+                            break;
+                        }
+
                         MIDIEvent evt = ps.CurrentEvent.Value;
 
-                        if (frameCounter < ps.CurrentEventFrame + trk.St)
-                            break;
+                        //if (frameCounter < ps.CurrentEventFrame + trk.St)
+                        //    break;
 
                         ps.CurrentEvent = AnalyzeEvent(frameCounter, trk, ts, nPrt, ps, ps.CurrentEvent);
                         ps.CurrentEventFrame += evt.ST;
+                    }
+
+                    // 次イベントの時刻を収集
+                    if (ps.CurrentEvent != null)
+                    {
+                        nextFrame = Math.Min(
+                            nextFrame,
+                            ps.CurrentEventFrame + trk.St);
                     }
 
                     nPrt = nPrt.Next;
@@ -148,118 +174,245 @@ namespace Remcoposer64.ProjectData
             return false;
         }
 
-        private LinkedListNode<MIDIEvent> AnalyzeEvent(long frameCounter, MIDITrack trk, TrackStatus ts, LinkedListNode<MIDIPart> nPrt, PartStatus ps, LinkedListNode<MIDIEvent> nEvt)
+        private LinkedListNode<MIDIEvent> AnalyzeEvent(
+    long frameCounter,
+    MIDITrack trk,
+    TrackStatus ts,
+    LinkedListNode<MIDIPart> nPrt,
+    PartStatus ps,
+    LinkedListNode<MIDIEvent> nEvt)
         {
             MIDIPart prt = nPrt.Value;
             MIDIEvent evt = nEvt.Value;
 
-            if (evt.Type == MIDIEventType.TempoChange)
+            eventCount++;
+
+            switch (evt.Type)
             {
+                case MIDIEventType.TempoChange:
+                    break;
 
-            }
-            else if (evt.Type == MIDIEventType.MetaMarker)
-            {
-                var mevt = (MIDIMarkerEvent)evt;
-
-                project.Information.Markers.Add(new MarkerPoint()
-                {
-                    Tick = frameCounter,
-                    Text = mevt.Text
-                });
-            }
-            else if (evt.Type == MIDIEventType.MetaTimeSignature)
-            {
-                // rcp形式はBarLineに拍子情報が存在する筈なのでMetaTimeSignatureはない
-                throw new NotSupportedException();
-            }
-            else if (evt.Type == MIDIEventType.SameMeas)
-            {
-                if (ts.SameMeasStack.Count > 0)
-                {
-                    return ts.SameMeasStack.Pop();
-                }
-
-                bool first = true;
-                while (evt.Type == MIDIEventType.SameMeas)
-                {
-                    var sevt = (MIDISameMeasEvent)evt;
-                    int target = sevt.RepeatMeas;
-
-                    var key = (trk.Number, prt.Number, target);
-
-                    if (!measureStartNode.TryGetValue(key, out var jumpNode))
-                        break;
-
-                    if (jumpNode.Value.Type == MIDIEventType.BarLine)
+                case MIDIEventType.MetaMarker:
                     {
-                        return nEvt.Next;
+                        var mevt = (MIDIMarkerEvent)evt;
 
+                        project.Information.Markers.Add(new MarkerPoint()
+                        {
+                            Tick = frameCounter,
+                            Text = mevt.Text
+                        });
+                        break;
                     }
 
-                    if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+                case MIDIEventType.MetaTimeSignature:
+                    throw new NotSupportedException();
+
+                case MIDIEventType.SameMeas:
                     {
-                        if (nEvt == jumpNode)
+                        if (ts.SameMeasStack.Count > 0)
+                            return ts.SameMeasStack.Pop();
+
+                        bool first = true;
+
+                        while (evt.Type == MIDIEventType.SameMeas)
                         {
-                            Log.Write(LogLevel.Error, $"MeasueInfoManager.cs: same measureEvent: Self-reference Case 4 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
-                            break;
+                            var sevt = (MIDISameMeasEvent)evt;
+                            int target = sevt.RepeatMeas;
+
+                            var key = (trk.Number, prt.Number, target);
+
+                            if (!measureStartNode.TryGetValue(key, out var jumpNode))
+                                break;
+
+                            MIDIEvent jumpEvt = jumpNode.Value;
+
+                            if (jumpEvt.Type == MIDIEventType.BarLine)
+                                return nEvt.Next;
+
+                            if (jumpEvt.Type == MIDIEventType.SameMeas)
+                            {
+                                if (nEvt == jumpNode)
+                                {
+                                    Log.Write(
+                                        LogLevel.Error,
+                                        $"MeasueInfoManager.cs: same measureEvent: Self-reference Case 4 : Part Name:{prt.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+
+                                    break;
+                                }
+
+                                if (first)
+                                    ts.SameMeasStack.Push(nEvt.Next);
+
+                                first = false;
+
+                                nEvt = jumpNode;
+                                evt = jumpEvt;
+                                continue;
+                            }
+
+                            if (first)
+                                ts.SameMeasStack.Push(nEvt.Next);
+
+                            return jumpNode;
                         }
 
-                        if (first) ts.SameMeasStack.Push(nEvt.Next);
-                        first = false;
-
-                        nEvt = jumpNode;
-                        evt = jumpNode.Value;
-                        continue;
+                        break;
                     }
 
-                    // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-                    if (first) ts.SameMeasStack.Push(nEvt.Next);
+                case MIDIEventType.BarLine:
+                    if (ts.SameMeasStack.Count > 0)
+                        return ts.SameMeasStack.Pop();
+                    break;
 
-                    return jumpNode;
+                case MIDIEventType.MetaEndOfTrack:
+                    if (ts.SameMeasStack.Count > 0)
+                        return ts.SameMeasStack.Pop();
+                    break;
 
-                }
-            }
-            else if (evt.Type == MIDIEventType.BarLine)
-            {
-                if (ts.SameMeasStack.Count > 0)
-                {
-                    return ts.SameMeasStack.Pop();
-                }
-            }
-            else if (evt.Type == MIDIEventType.MetaEndOfTrack)
-            {
-                if (ts.SameMeasStack.Count > 0)
-                {
-                    return ts.SameMeasStack.Pop();
-                }
-            }
-            else if (evt.Type == MIDIEventType.LoopStart)
-            {
-                ts.LoopStack.Push((nEvt.Next, null));
-            }
-            else if (evt.Type == MIDIEventType.LoopEnd)
-            {
-                if (ts.LoopStack.Count > 0)
-                {
-                    var (levt, lcnt) = ts.LoopStack.Pop();
-                    MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
-                    if (lcnt == null)
+                case MIDIEventType.LoopStart:
+                    ts.LoopStack.Push((nEvt.Next, null));
+                    break;
+
+                case MIDIEventType.LoopEnd:
                     {
-                        lcnt = leEvt.LoopCounter;
-                    }
+                        if (ts.LoopStack.Count > 0)
+                        {
+                            var (levt, lcnt) = ts.LoopStack.Pop();
 
-                    lcnt--;
+                            var leEvt = (MIDILoopEndEvent)evt;
 
-                    if (lcnt > 0)
-                    {
-                        ts.LoopStack.Push((levt, lcnt));
-                        return levt;
+                            if (lcnt == null)
+                                lcnt = leEvt.LoopCounter;
+
+                            lcnt--;
+
+                            if (lcnt > 0)
+                            {
+                                ts.LoopStack.Push((levt, lcnt));
+                                return levt;
+                            }
+                        }
+                        break;
                     }
-                }
             }
 
             return nEvt.Next;
         }
+
+        //private LinkedListNode<MIDIEvent> AnalyzeEvent(long frameCounter, MIDITrack trk, TrackStatus ts, LinkedListNode<MIDIPart> nPrt, PartStatus ps, LinkedListNode<MIDIEvent> nEvt)
+        //{
+        //    MIDIPart prt = nPrt.Value;
+        //    MIDIEvent evt = nEvt.Value;
+            
+        //    eventCount++;
+
+        //    if (evt.Type == MIDIEventType.TempoChange)
+        //    {
+
+        //    }
+        //    else if (evt.Type == MIDIEventType.MetaMarker)
+        //    {
+        //        var mevt = (MIDIMarkerEvent)evt;
+
+        //        project.Information.Markers.Add(new MarkerPoint()
+        //        {
+        //            Tick = frameCounter,
+        //            Text = mevt.Text
+        //        });
+        //    }
+        //    else if (evt.Type == MIDIEventType.MetaTimeSignature)
+        //    {
+        //        // rcp形式はBarLineに拍子情報が存在する筈なのでMetaTimeSignatureはない
+        //        throw new NotSupportedException();
+        //    }
+        //    else if (evt.Type == MIDIEventType.SameMeas)
+        //    {
+        //        if (ts.SameMeasStack.Count > 0)
+        //        {
+        //            return ts.SameMeasStack.Pop();
+        //        }
+
+        //        bool first = true;
+        //        while (evt.Type == MIDIEventType.SameMeas)
+        //        {
+        //            var sevt = (MIDISameMeasEvent)evt;
+        //            int target = sevt.RepeatMeas;
+
+        //            var key = (trk.Number, prt.Number, target);
+
+        //            if (!measureStartNode.TryGetValue(key, out var jumpNode))
+        //                break;
+
+        //            if (jumpNode.Value.Type == MIDIEventType.BarLine)
+        //            {
+        //                return nEvt.Next;
+
+        //            }
+
+        //            if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+        //            {
+        //                if (nEvt == jumpNode)
+        //                {
+        //                    Log.Write(LogLevel.Error, $"MeasueInfoManager.cs: same measureEvent: Self-reference Case 4 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+        //                    break;
+        //                }
+
+        //                if (first) ts.SameMeasStack.Push(nEvt.Next);
+        //                first = false;
+
+        //                nEvt = jumpNode;
+        //                evt = jumpNode.Value;
+        //                continue;
+        //            }
+
+        //            // ★ 戻り位置をスタックに積む（元の位置の次イベント）
+        //            if (first) ts.SameMeasStack.Push(nEvt.Next);
+
+        //            return jumpNode;
+
+        //        }
+        //    }
+        //    else if (evt.Type == MIDIEventType.BarLine)
+        //    {
+        //        if (ts.SameMeasStack.Count > 0)
+        //        {
+        //            return ts.SameMeasStack.Pop();
+        //        }
+        //    }
+        //    else if (evt.Type == MIDIEventType.MetaEndOfTrack)
+        //    {
+        //        if (ts.SameMeasStack.Count > 0)
+        //        {
+        //            return ts.SameMeasStack.Pop();
+        //        }
+        //    }
+        //    else if (evt.Type == MIDIEventType.LoopStart)
+        //    {
+        //        ts.LoopStack.Push((nEvt.Next, null));
+        //    }
+        //    else if (evt.Type == MIDIEventType.LoopEnd)
+        //    {
+        //        if (ts.LoopStack.Count > 0)
+        //        {
+        //            var (levt, lcnt) = ts.LoopStack.Pop();
+        //            MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
+        //            if (lcnt == null)
+        //            {
+        //                lcnt = leEvt.LoopCounter;
+        //            }
+
+        //            lcnt--;
+
+        //            if (lcnt > 0)
+        //            {
+        //                ts.LoopStack.Push((levt, lcnt));
+        //                return levt;
+        //            }
+        //        }
+        //    }
+
+        //    return nEvt.Next;
+        //}
 
         public MeasureInfo GetMeasure(int measureNo)
         {

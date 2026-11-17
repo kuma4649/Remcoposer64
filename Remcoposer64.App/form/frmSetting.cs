@@ -1,4 +1,5 @@
-﻿using Remcoposer64.Common;
+﻿using Microsoft.VisualBasic;
+using Remcoposer64.Common;
 using static Remcoposer64.Common.Setting;
 
 namespace Remcoposer64.App.form
@@ -6,14 +7,15 @@ namespace Remcoposer64.App.form
     public partial class frmSetting : Form
     {
         private Setting setting = null;
-        private DataGridView[] dgv = null;
-        private DataGridView[] dgvIn = null;
-        private string[] midiOutTypeList = new string[] { "GM", "XG", "GS", "LA", "GS(SC-55_1)", "GS(SC-55_2)" };
+        private string[] midiTypeList = new string[] { "GM", "XG", "GS", "LA", "GS(SC-55_1)", "GS(SC-55_2)" };
         private string[] midiOutBeforeSendList = new string[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" };
+        private DataGridView[] dgvMIDIOutList;
+        private DataGridView[] dgvMIDIInList;
 
         public frmSetting()
         {
             InitializeComponent();
+
         }
 
         public frmSetting(Setting setting)
@@ -30,12 +32,38 @@ namespace Remcoposer64.App.form
             Close();
         }
 
+
         private void Init()
         {
-            dgv = [dgvMIDIoutListA, dgvMIDIoutListB, dgvMIDIoutListC, dgvMIDIoutListD, dgvMIDIoutListE, dgvMIDIoutListF, dgvMIDIoutListG];
-            dgvIn = [dgvMIDIinListA];
+
+            // コンボボックス列の設定候補を設定する
+
+            dgvMIDIOutList = [
+                dgvMIDIoutListA, dgvMIDIoutListB, dgvMIDIoutListC, dgvMIDIoutListD,
+                dgvMIDIoutListE, dgvMIDIoutListF, dgvMIDIoutListG
+                ];
+            dgvMIDIInList = [
+                dgvMIDIinListA
+                ];
+            for (int i = 0; i < dgvMIDIOutList.Length; i++)
+            {
+                var dgv = dgvMIDIOutList[i];
+                DataGridViewComboBoxColumn clmType = ((DataGridViewComboBoxColumn)dgv.Columns["clmType" + ((char)('A' + i)).ToString()]);
+                clmType.Items.Clear(); foreach (string midiOutType in midiTypeList) { clmType.Items.Add(midiOutType); }
+                DataGridViewComboBoxColumn clmBeforeSend = ((DataGridViewComboBoxColumn)dgv.Columns["clmBeforeSend" + ((char)('A' + i)).ToString()]);
+                clmBeforeSend.Items.Clear(); foreach (string midiOutBeforeSend in midiOutBeforeSendList) { clmBeforeSend.Items.Add(midiOutBeforeSend); }
+            }
+            for (int i = 0; i < dgvMIDIOutList.Length; i++)
+            {
+                var dgvIn = dgvMIDIinListA;
+                DataGridViewComboBoxColumn clmTypeIn = ((DataGridViewComboBoxColumn)dgvIn.Columns["clmTypeIn" + ((char)('A' + 0)).ToString()]);
+                clmTypeIn.Items.Clear(); foreach (string midiOutType in midiTypeList) { clmTypeIn.Items.Add(midiOutType); }
+            }
+
+
 
             // 認識しているMIDI デバイスをDataGridViewに列挙する
+
             dgvMIDIoutPallet.Rows.Clear();
             for (int i = 0; i < NAudio.Midi.MidiOut.NumberOfDevices; i++)
             {
@@ -49,12 +77,15 @@ namespace Remcoposer64.App.form
                 dgvMIDIinPallet.Rows.Add(i, moc.ProductName, moc.Manufacturer.ToString() != "-1" ? moc.Manufacturer.ToString() : "Unknown");
             }
 
+
+
             // 設定ファイルに保存されているMIDI出力設定をDataGridViewに列挙する
+
             if (setting.midiOut.lstMidiOutInfo != null && setting.midiOut.lstMidiOutInfo.Count > 0)
             {
                 for (int i = 0; i < setting.midiOut.lstMidiOutInfo.Count; i++)
                 {
-                    dgv[i].Rows.Clear();
+                    dgvMIDIOutList[i].Rows.Clear();
                     HashSet<int> midioutNotFound = new HashSet<int>();
                     if (setting.midiOut.lstMidiOutInfo[i] == null || setting.midiOut.lstMidiOutInfo[i].Length <= 0)
                         continue;
@@ -74,10 +105,10 @@ namespace Remcoposer64.App.form
                         }
 
                         moi.id = found;
-                        string stype = midiOutTypeList[moi.type];
+                        string stype = midiTypeList[moi.type];
                         string sbeforeSend = midiOutBeforeSendList[moi.beforeSendType];
 
-                        dgv[i].Rows.Add(
+                        dgvMIDIOutList[i].Rows.Add(
                             moi.id
                             , moi.isVST
                             , moi.fileName
@@ -92,12 +123,14 @@ namespace Remcoposer64.App.form
                 }
             }
 
+
             // 設定ファイルに保存されているMIDI入力設定をDataGridViewに列挙する
+
             if (setting.midiIn.lstMidiInInfo != null && setting.midiIn.lstMidiInInfo.Count > 0)
             {
                 for (int i = 0; i < setting.midiIn.lstMidiInInfo.Count; i++)
                 {
-                    dgvIn[i].Rows.Clear();
+                    dgvMIDIInList[i].Rows.Clear();
                     HashSet<int> midiinNotFound = new HashSet<int>();
                     if (setting.midiIn.lstMidiInInfo[i] == null || setting.midiIn.lstMidiInInfo[i].Length <= 0)
                         continue;
@@ -115,8 +148,8 @@ namespace Remcoposer64.App.form
                             break;
                         }
                         mii.id = found;
-                        string stype = midiOutTypeList[mii.type];
-                        dgvIn[i].Rows.Add(
+                        string stype = midiTypeList[mii.type];
+                        dgvMIDIInList[i].Rows.Add(
                             mii.id
                             , mii.isVST
                             , mii.fileName
@@ -129,12 +162,21 @@ namespace Remcoposer64.App.form
                 }
             }
 
+
             // Playerのオプション
+
             cbRCPMuteMode.Checked = setting.player.RCPMuteMode;
 
             rbFast.Checked = setting.player.SkipModeType == 0;
             rbMiddle.Checked = setting.player.SkipModeType == 1;
             rbSlow.Checked = setting.player.SkipModeType == 2;
+
+            // Reset
+            tbBeforeSend_GMReset.Text = setting.midiOut.GMReset;
+            tbBeforeSend_XGReset.Text = setting.midiOut.XGReset;
+            tbBeforeSend_GSReset.Text = setting.midiOut.GSReset;
+            tbBeforeSend_Custom.Text = setting.midiOut.Custom;
+
         }
 
         private void btnAddMIDIout_Click(object sender, EventArgs e)
@@ -146,7 +188,7 @@ namespace Remcoposer64.App.form
             foreach (DataGridViewRow row in dgvMIDIoutPallet.SelectedRows)
             {
                 bool found = false;
-                foreach (DataGridViewRow r in dgv[p].Rows)
+                foreach (DataGridViewRow r in dgvMIDIOutList[p].Rows)
                 {
                     if (r.Cells[3].Value.ToString() == row.Cells[1].Value.ToString())
                     {
@@ -155,7 +197,7 @@ namespace Remcoposer64.App.form
                     }
                 }
 
-                if (!found) dgv[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", "None", row.Cells[2].Value);
+                if (!found) dgvMIDIOutList[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", "None", row.Cells[2].Value);
             }
         }
 
@@ -163,35 +205,35 @@ namespace Remcoposer64.App.form
         {
             int p = tbcMIDIOutList.SelectedIndex;
 
-            if (dgv[p].SelectedRows == null || dgv[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIOutList[p].SelectedRows == null || dgvMIDIOutList[p].SelectedRows.Count < 1) return;
 
             // 消した後に選択する位置を予め覚えておく
-            int selectedIndex = (dgv[p].SelectedRows.Count > 0) ? (dgv[p].SelectedRows[0].Index - 1) : -1;
+            int selectedIndex = (dgvMIDIOutList[p].SelectedRows.Count > 0) ? (dgvMIDIOutList[p].SelectedRows[0].Index - 1) : -1;
 
             // 消す
-            foreach (DataGridViewRow row in dgv[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIOutList[p].SelectedRows)
             {
-                dgv[p].Rows.Remove(row);
+                dgvMIDIOutList[p].Rows.Remove(row);
             }
 
             // 覚えておいた選択位置を設定する
-            if (selectedIndex > -1) dgv[p].Rows[selectedIndex].Selected = true;
+            if (selectedIndex > -1) dgvMIDIOutList[p].Rows[selectedIndex].Selected = true;
         }
 
         private void btnUPMIDIOut_A_Click(object sender, EventArgs e)
         {
             int p = tbcMIDIOutList.SelectedIndex;
 
-            if (dgv[p].SelectedRows == null || dgv[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIOutList[p].SelectedRows == null || dgvMIDIOutList[p].SelectedRows.Count < 1) return;
 
-            foreach (DataGridViewRow row in dgv[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIOutList[p].SelectedRows)
             {
                 if (row.Index < 1) continue;
 
                 int i = row.Index - 1;
-                dgv[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
-                dgv[p].Rows.Remove(row);
-                dgv[p].Rows[i].Selected = true;
+                dgvMIDIOutList[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
+                dgvMIDIOutList[p].Rows.Remove(row);
+                dgvMIDIOutList[p].Rows[i].Selected = true;
             }
         }
 
@@ -199,16 +241,16 @@ namespace Remcoposer64.App.form
         {
             int p = tbcMIDIOutList.SelectedIndex;
 
-            if (dgv[p].SelectedRows == null || dgv[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIOutList[p].SelectedRows == null || dgvMIDIOutList[p].SelectedRows.Count < 1) return;
 
-            foreach (DataGridViewRow row in dgv[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIOutList[p].SelectedRows)
             {
-                if (row.Index > dgv[p].Rows.Count - 2) continue;
+                if (row.Index > dgvMIDIOutList[p].Rows.Count - 2) continue;
 
                 int i = row.Index + 1;
-                dgv[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
-                dgv[p].Rows.Remove(row);
-                dgv[p].Rows[i].Selected = true;
+                dgvMIDIOutList[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value);
+                dgvMIDIOutList[p].Rows.Remove(row);
+                dgvMIDIOutList[p].Rows[i].Selected = true;
             }
         }
 
@@ -222,7 +264,7 @@ namespace Remcoposer64.App.form
             foreach (DataGridViewRow row in dgvMIDIinPallet.SelectedRows)
             {
                 bool found = false;
-                foreach (DataGridViewRow r in dgv[p].Rows)
+                foreach (DataGridViewRow r in dgvMIDIInList[p].Rows)
                 {
                     if (r.Cells[1].Value.ToString() == row.Cells[1].Value.ToString())
                     {
@@ -231,7 +273,7 @@ namespace Remcoposer64.App.form
                     }
                 }
 
-                if (!found) dgvIn[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", row.Cells[2].Value);
+                if (!found) dgvMIDIInList[p].Rows.Add(row.Cells[0].Value, false, "", row.Cells[1].Value, row.Cells[1].Value, "GM", row.Cells[2].Value);
             }
 
         }
@@ -240,35 +282,35 @@ namespace Remcoposer64.App.form
         {
             int p = tbcMIDIinList.SelectedIndex;
 
-            if (dgvIn[p].SelectedRows == null || dgvIn[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIInList[p].SelectedRows == null || dgvMIDIInList[p].SelectedRows.Count < 1) return;
 
             // 消した後に選択する位置を予め覚えておく
-            int selectedIndex = (dgvIn[p].SelectedRows.Count > 0) ? (dgvIn[p].SelectedRows[0].Index - 1) : -1;
+            int selectedIndex = (dgvMIDIInList[p].SelectedRows.Count > 0) ? (dgvMIDIInList[p].SelectedRows[0].Index - 1) : -1;
 
             // 消す
-            foreach (DataGridViewRow row in dgvIn[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIInList[p].SelectedRows)
             {
-                dgvIn[p].Rows.Remove(row);
+                dgvMIDIInList[p].Rows.Remove(row);
             }
 
             // 覚えておいた選択位置を設定する
-            if (selectedIndex > -1) dgv[p].Rows[selectedIndex].Selected = true;
+            if (selectedIndex > -1) dgvMIDIInList[p].Rows[selectedIndex].Selected = true;
         }
 
         private void btnUPMIDIin_A_Click(object sender, EventArgs e)
         {
             int p = tbcMIDIinList.SelectedIndex;
 
-            if (dgvIn[p].SelectedRows == null || dgvIn[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIInList[p].SelectedRows == null || dgvMIDIInList[p].SelectedRows.Count < 1) return;
 
-            foreach (DataGridViewRow row in dgvIn[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIInList[p].SelectedRows)
             {
                 if (row.Index < 1) continue;
 
                 int i = row.Index - 1;
-                dgvIn[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
-                dgvIn[p].Rows.Remove(row);
-                dgvIn[p].Rows[i].Selected = true;
+                dgvMIDIInList[p].Rows.Insert(i, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
+                dgvMIDIInList[p].Rows.Remove(row);
+                dgvMIDIInList[p].Rows[i].Selected = true;
             }
         }
 
@@ -276,16 +318,16 @@ namespace Remcoposer64.App.form
         {
             int p = tbcMIDIinList.SelectedIndex;
 
-            if (dgvIn[p].SelectedRows == null || dgvIn[p].SelectedRows.Count < 1) return;
+            if (dgvMIDIInList[p].SelectedRows == null || dgvMIDIInList[p].SelectedRows.Count < 1) return;
 
-            foreach (DataGridViewRow row in dgvIn[p].SelectedRows)
+            foreach (DataGridViewRow row in dgvMIDIInList[p].SelectedRows)
             {
-                if (row.Index > dgvIn[p].Rows.Count - 2) continue;
+                if (row.Index > dgvMIDIInList[p].Rows.Count - 2) continue;
 
                 int i = row.Index + 1;
-                dgvIn[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
-                dgvIn[p].Rows.Remove(row);
-                dgvIn[p].Rows[i].Selected = true;
+                dgvMIDIInList[p].Rows.Insert(row.Index + 2, row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value);
+                dgvMIDIInList[p].Rows.Remove(row);
+                dgvMIDIInList[p].Rows[i].Selected = true;
             }
 
         }
@@ -301,7 +343,7 @@ namespace Remcoposer64.App.form
         {
             if (e.RowIndex < 0) return;
             int p = tbcMIDIOutList.SelectedIndex;
-            dgv[p].Rows[e.RowIndex].Selected = true;
+            dgvMIDIOutList[p].Rows[e.RowIndex].Selected = true;
             btnSubMIDIout_Click(null, null);
         }
 
@@ -316,7 +358,7 @@ namespace Remcoposer64.App.form
         {
             if (e.RowIndex < 0) return;
             int p = tbcMIDIinList.SelectedIndex;
-            dgvIn[p].Rows[e.RowIndex].Selected = true;
+            dgvMIDIInList[p].Rows[e.RowIndex].Selected = true;
             btnSubMIDIin_Click(null, null);
         }
 
@@ -327,7 +369,7 @@ namespace Remcoposer64.App.form
             // 設定ファイルに保存するために、MIDIデバイスの設定内容をSettingクラスに格納する
 
             setting.midiOut.lstMidiOutInfo = new List<Setting.midiOutInfo[]>();
-            foreach (DataGridView d in dgv)
+            foreach (DataGridView d in dgvMIDIOutList)
             {
                 if (d.Rows.Count < 1)
                 {
@@ -376,7 +418,7 @@ namespace Remcoposer64.App.form
             }
 
             setting.midiIn.lstMidiInInfo = new List<Setting.midiInInfo[]>();
-            foreach (DataGridView d in dgvIn)
+            foreach (DataGridView d in dgvMIDIInList)
             {
                 if (d.Rows.Count < 1)
                 {
@@ -419,6 +461,12 @@ namespace Remcoposer64.App.form
 
             setting.player.RCPMuteMode = cbRCPMuteMode.Checked;
             setting.player.SkipModeType = rbFast.Checked ? 0 : (rbMiddle.Checked ? 1 : 2);
+
+            setting.midiOut.GMReset = tbBeforeSend_GMReset.Text;
+            setting.midiOut.XGReset = tbBeforeSend_XGReset.Text;
+            setting.midiOut.GSReset = tbBeforeSend_GSReset.Text;
+            setting.midiOut.Custom = tbBeforeSend_Custom.Text;
+
             this.DialogResult = DialogResult.OK;
             this.Close();
 
@@ -429,5 +477,13 @@ namespace Remcoposer64.App.form
             return setting;
         }
 
+        private void btnBeforeSend_Default_Click(object sender, EventArgs e)
+        {
+            Setting.MidiOut mo = new Setting.MidiOut();
+            tbBeforeSend_GMReset.Text = mo.GMReset;
+            tbBeforeSend_XGReset.Text = mo.XGReset;
+            tbBeforeSend_GSReset.Text = mo.GSReset;
+            tbBeforeSend_Custom.Text = mo.Custom;
+        }
     }
 }

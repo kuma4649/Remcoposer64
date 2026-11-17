@@ -1,4 +1,5 @@
 ﻿using NAudio.Midi;
+using Remcoposer64.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -17,6 +18,7 @@ namespace Remcoposer64.Core
         }
 
         private readonly MidiOut midiOut;
+        public readonly Setting.midiOutInfo midiOutInfo;
         public MIDIParam midiParam;
 
         private readonly ConcurrentQueue<MidiPacket> queue = new();
@@ -38,9 +40,10 @@ namespace Remcoposer64.Core
 
         public int QueueCount => queue.Count;
 
-        public ThrottledMidiOut(MidiOut midiOut, double bytesPerMs = 30.0)
+        public ThrottledMidiOut(MidiOut midiOut,Setting.midiOutInfo midiOutInfo, double bytesPerMs = 30.0)
         {
             this.midiOut = midiOut;
+            this.midiOutInfo = midiOutInfo;
             this.bytesPerMs = bytesPerMs;
             tokens = bytesPerMs;
 

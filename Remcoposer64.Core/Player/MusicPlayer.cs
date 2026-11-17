@@ -190,7 +190,12 @@ namespace Remcoposer64.Core.Player
 
         public void ProcessFrame(long seqCounter)
         {
-            if (SkipFrameCount > 0) { SkipFrameCount--; if (SkipFrameCount == 0 && SkipModeType == 0) FlushMIDI(); }
+            if (SkipFrameCount > 0)
+            {
+                SkipFrameCount--;
+                if (SkipFrameCount == 0 && SkipModeType == 0) FlushMIDI();
+            }
+
             hasSolo = _project.Track.Any(t => t.Solo);
 
             if (RelativeTempoChangeSW)
@@ -341,388 +346,456 @@ namespace Remcoposer64.Core.Player
                 send2 = hasSolo ? trk.Solo : !trk.Mute;
             }
 
-            if (evt.Type == MIDIEventType.NoteON)
+            switch (evt.Type)
             {
-                if (channel != null)
-                {
-                    MIDINoteEvent nevt = (MIDINoteEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0x90 | ch; // NoteOn
-                    byte key = (byte)Math.Clamp((nevt.KeyNumber + transpose), 0, 127);
-                    int msg = status
-                              + (key << 8)
-                              + (nevt.Vel << 16);
-
-                    if (aryNoteOnTable.Length > trk.OutDevice
-                        && aryNoteOnTable[trk.OutDevice][ch][key] == 0
-                        && send1
-                        && nevt.GT > 0
-                        && SkipFrameCount < 1)
+                case MIDIEventType.NoteON:
                     {
-                        midiOut?.Send(msg);
-                    }
-
-                    // Gate（持続時間）を NoteOff のために記録
-                    if (nevt.GT != 0 && nevt.Vel != 0)
-                        SetNoteTable(trk.OutDevice, ch, key, nevt.GT);
-                }
-            }
-            else if (evt.Type == MIDIEventType.NoteOff)
-            {
-                if (channel != null)
-                {
-                    MIDINoteEvent nevt = (MIDINoteEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0x80 | ch; // NoteOff
-                    byte key = (byte)Math.Clamp((nevt.KeyNumber + transpose), 0, 127);
-                    int msg = status
-                              + (key << 8)
-                              + (nevt.Vel << 16);
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.MetaTempo)
-            {
-                MIDITempoEvent tevt = (MIDITempoEvent)evt;
-
-                if (!tevt.RelativeTempoChange)
-                {
-                    double bpm = tevt.TempoValue;
-
-                    _bpm = bpm;   // ← UpdateTimer() に反映される
-
-                    // デバッグ用
-                    Common.Log.Write(LogLevel.Debug, $"Tempo Change: {bpm} BPM");
-                }
-                else
-                {
-                    int Tempo = (int)((double)_bpm * tevt.TempoValue);
-                    if (Tempo < 10) Tempo = 10;
-                    double s = (double)(Tempo - _bpm) * 256.0 / ((256.0 - tevt.RelativeTempoChangeValue) * _ppq);
-
-                    RelativeTempoChangeTargetTempo = Tempo;
-                    RelativeTempoChangeTickSlice = (_bpm < Tempo) ? s : -s;
-                    RelativeTempoChangeSW = true;
-
-                    Common.Log.Write(LogLevel.Debug, $"Tempo Change ( Relative ) : {Tempo} BPM   TickSlice : {RelativeTempoChangeTickSlice}");
-                }
-            }
-            else if (evt.Type == MIDIEventType.ControlChange)
-            {
-                if (channel != null)
-                {
-                    MIDIControlChangeEvent cevt = (MIDIControlChangeEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0xB0 | ch; // CC
-                    int msg = status
-                              + (cevt.ControllerNumber << 8)
-                              + (cevt.ControllerValue << 16);
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.ProgramChange)
-            {
-                if (channel != null)
-                {
-                    MIDIProgramChangeEvent cevt = (MIDIProgramChangeEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0xC0 | ch; // ProgramChange
-                    int msg = status
-                              + (cevt.ProgramNumber << 8);
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.PitchBend)
-            {
-                if (channel != null)
-                {
-                    MIDIPitchBendEvent pevt = (MIDIPitchBendEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int raw = pevt.PitchValue;   // 0〜16383
-
-                    int lsb = raw & 0x7F;
-                    int msb = (raw >> 7) & 0x7F;
-
-                    int status = 0xE0 | ch; // PitchBend
-                    int msg = status
-                              + (lsb << 8)
-                              + (msb << 16);
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.KeyAfterTouch)
-            {
-                if (channel != null)
-                {
-                    MIDIPolyphonicKeyPressureEvent aevt = (MIDIPolyphonicKeyPressureEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0xA0 | ch; // Polyphonic Key Pressure
-                    int msg = status
-                              + (aevt.KeyNumber << 8)
-                              + (aevt.PressureValue << 16);
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.ChannelAfterTouch)
-            {
-                if (channel != null)
-                {
-                    MIDIChannelPressureEvent cevt = (MIDIChannelPressureEvent)evt;
-                    int ch = (int)(channel & 0x0F);
-
-                    int status = 0xD0 | ch; // Channel Pressure
-                    int msg = status
-                              + (cevt.PressureValue << 8); // data2 は使わないので 0
-
-                    if (send2)
-                    {
-                        midiOut?.Send(msg);
-                    }
-                }
-            }
-            else if (evt.Type == MIDIEventType.SysExF0)
-            {
-                MIDISysExEvent sevt = (MIDISysExEvent)evt;
-                if (send2) SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
-            }
-            else if (evt.Type == MIDIEventType.RolandDevice)
-            {
-                MIDIRolandDeviceEvent sevt = (MIDIRolandDeviceEvent)evt;
-
-                trk.RolandDev_gt = sevt.RolandDev_gt;
-                trk.RolandDev_vel = sevt.RolandDev_vel;
-            }
-            else if (evt.Type == MIDIEventType.RolandBase)
-            {
-                MIDIRolandBaseEvent sevt = (MIDIRolandBaseEvent)evt;
-
-                trk.RolandBase_gt = sevt.RolandBase_gt;
-                trk.RolandBase_vel = sevt.RolandBase_vel;
-            }
-            else if (evt.Type == MIDIEventType.RolandPara)
-            {
-                MIDIRolandParaEvent sevt = (MIDIRolandParaEvent)evt;
-
-                trk.RolandPara_gt = sevt.RolandPara_gt;
-                trk.RolandPara_vel = sevt.RolandPara_vel;
-
-                RolEx[0] = 0xF0;
-                RolEx[1] = 0x41;
-                RolEx[2] = trk.RolandDev_gt;
-                RolEx[3] = trk.RolandDev_vel;
-                RolEx[4] = 0x12;
-                RolEx[5] = trk.RolandBase_gt;
-                RolEx[6] = trk.RolandBase_vel;
-                RolEx[7] = trk.RolandPara_gt;
-                RolEx[8] = trk.RolandPara_vel;
-                RolEx[9] = (byte)((128 - ((trk.RolandBase_gt + trk.RolandBase_vel + trk.RolandPara_gt + trk.RolandPara_vel) % 128)) & 0x7f);
-                RolEx[10] = 0xF7;
-                if (send2)
-                {
-                    midiOut?.SendSysEx(RolEx);
-                }
-
-            }
-            else if (evt.Type == MIDIEventType.SameMeas)
-            {
-                if (trk.SameMeasStack.Count > 0)
-                {
-                    return trk.SameMeasStack.Pop();
-                }
-
-                bool first = true;
-                while (evt.Type == MIDIEventType.SameMeas)
-                {
-                    var sevt = (MIDISameMeasEvent)evt;
-                    int target = sevt.RepeatMeas;
-
-                    var key = (trk.Number, prt.Number, target);
-
-                    if (!measureStartNode.TryGetValue(key, out var jumpNode))
-                        break;
-
-                    if (jumpNode.Value.Type == MIDIEventType.BarLine)
-                    {
-                        return nEvt.Next;
-
-                    }
-
-                    if (jumpNode.Value.Type == MIDIEventType.SameMeas)
-                    {
-                        if (nEvt == jumpNode)
+                        if (channel != null)
                         {
-                            Log.Write(LogLevel.Error, $"MusicPlayer.cs: same measureEvent: Self-reference Case 4 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
-                            break;
+                            MIDINoteEvent nevt = (MIDINoteEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status = 0x90 | ch;
+                            byte key = (byte)Math.Clamp((nevt.KeyNumber + transpose), 0, 127);
+
+                            int msg = status
+                                + (key << 8)
+                                + (nevt.Vel << 16);
+
+                            if (aryNoteOnTable.Length > trk.OutDevice
+                                && aryNoteOnTable[trk.OutDevice][ch][key] == 0
+                                && send1
+                                && nevt.GT > 0
+                                && SkipFrameCount < 1)
+                            {
+                                midiOut?.Send(msg);
+                            }
+
+                            if (nevt.GT != 0 && nevt.Vel != 0)
+                                SetNoteTable(trk.OutDevice, ch, key, nevt.GT);
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.NoteOff:
+                    {
+                        if (channel != null)
+                        {
+                            MIDINoteEvent nevt = (MIDINoteEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status = 0x80 | ch;
+
+                            byte key = (byte)Math.Clamp(
+                                nevt.KeyNumber + transpose,
+                                0,
+                                127);
+
+                            int msg = status
+                                + (key << 8)
+                                + (nevt.Vel << 16);
+
+                            if (send2)
+                                midiOut?.Send(msg);
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.MetaTempo:
+                    {
+                        MIDITempoEvent tevt = (MIDITempoEvent)evt;
+
+                        if (!tevt.RelativeTempoChange)
+                        {
+                            double bpm = tevt.TempoValue;
+                            _bpm = bpm;
+
+                            Common.Log.Write(
+                                LogLevel.Debug,
+                                $"Tempo Change: {bpm} BPM");
+                        }
+                        else
+                        {
+                            int Tempo = (int)(_bpm * tevt.TempoValue);
+
+                            if (Tempo < 10)
+                                Tempo = 10;
+
+                            double s =
+                                (Tempo - _bpm)
+                                * 256.0
+                                / ((256.0 - tevt.RelativeTempoChangeValue) * _ppq);
+
+                            RelativeTempoChangeTargetTempo = Tempo;
+                            RelativeTempoChangeTickSlice = (_bpm < Tempo)
+                                ? s
+                                : -s;
+
+                            RelativeTempoChangeSW = true;
+                            Common.Log.Write(LogLevel.Debug, $"Tempo Change ( Relative ) : {Tempo} BPM   TickSlice : {RelativeTempoChangeTickSlice}");
                         }
 
-                        if (first) trk.SameMeasStack.Push(nEvt.Next);
-                        first = false;
-
-                        nEvt = jumpNode;
-                        evt = jumpNode.Value;
-                        continue;
+                        break;
                     }
 
-                    // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-                    if (first) trk.SameMeasStack.Push(nEvt.Next);
-
-                    return jumpNode;
-
-                }
-            }
-            else if (evt.Type == MIDIEventType.BarLine)
-            {
-                if (trk.SameMeasStack.Count > 0)
-                {
-                    //evt.Played = false;
-                    return trk.SameMeasStack.Pop();
-                }
-                //MIDIBarLineEvent ble = (MIDIBarLineEvent)evt;
-                //if(ble.BeatNum!=0 || ble.BeatDen != 0)
-                //{
-                //    _mol = ble.BeatNum;//分子
-                //    _den = ble.BeatDen;//分母
-                //}
-            }
-            else if (evt.Type == MIDIEventType.MetaEndOfTrack)
-            {
-                if (trk.SameMeasStack.Count > 0)
-                {
-                    return trk.SameMeasStack.Pop();
-                }
-            }
-            else if (evt.Type == MIDIEventType.LoopStart)
-            {
-                trk.LoopStack.Push((nEvt.Next, null));
-            }
-            else if (evt.Type == MIDIEventType.LoopEnd)
-            {
-                if (trk.LoopStack.Count > 0)
-                {
-                    var (levt, lcnt) = trk.LoopStack.Pop();
-                    MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
-                    if (lcnt == null)
+                case MIDIEventType.ControlChange:
                     {
-                        lcnt = leEvt.LoopCounter;
+                        if (channel != null)
+                        {
+                            MIDIControlChangeEvent cevt = (MIDIControlChangeEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status = 0xB0 | ch; // CC
+                            int msg = status
+                                      + (cevt.ControllerNumber << 8)
+                                      + (cevt.ControllerValue << 16);
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+                        }
+                        break;
                     }
 
-                    lcnt--;
-
-                    if (lcnt > 0)
+                case MIDIEventType.ProgramChange:
                     {
-                        trk.LoopStack.Push((levt, lcnt));
-                        return levt;
+                        if (channel != null)
+                        {
+                            MIDIProgramChangeEvent cevt = (MIDIProgramChangeEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status = 0xC0 | ch; // ProgramChange
+                            int msg = status
+                                      + (cevt.ProgramNumber << 8);
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+                        }
+                        break;
                     }
-                }
-            }
-            else if (evt.Type == MIDIEventType.BankProgram)
-            {
-                if (channel != null)
-                {
-                    MIDIBankProgramEvent bevt = (MIDIBankProgramEvent)evt;
-                    int ch = (int)(channel & 0x0F);
 
-                    int status;
-                    int msg;
-
-                    status = 0xB0 | ch; // CC
-                    msg = status
-                              + (0 << 8)
-                              + (bevt.ControlChange << 16);
-
-                    if (send2)
+                case MIDIEventType.PitchBend:
                     {
-                        midiOut?.Send(msg);
+                        if (channel != null)
+                        {
+                            MIDIPitchBendEvent pevt = (MIDIPitchBendEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int raw = pevt.PitchValue;   // 0〜16383
+
+                            int lsb = raw & 0x7F;
+                            int msb = (raw >> 7) & 0x7F;
+
+                            int status = 0xE0 | ch; // PitchBend
+                            int msg = status
+                                      + (lsb << 8)
+                                      + (msb << 16);
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+                        }
+                        break;
                     }
 
-                    status = 0xC0 | ch; // ProgramChange
-                    msg = status
-                              + (bevt.ProgramNumber << 8);
-                    if (send2)
+                case MIDIEventType.KeyAfterTouch:
                     {
-                        midiOut?.Send(msg);
+                        if (channel != null)
+                        {
+                            MIDIPolyphonicKeyPressureEvent aevt = (MIDIPolyphonicKeyPressureEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status = 0xA0 | ch; // Polyphonic Key Pressure
+                            int msg = status
+                                      + (aevt.KeyNumber << 8)
+                                      + (aevt.PressureValue << 16);
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+                        }
+                        break;
                     }
 
-                }
-            }
-            else if (evt.Type == MIDIEventType.Memo)
-            {
-                trk.Memo = ((MIDIMemoEvent)evt).Text;
-                trk.MemoWait = 60;
-                Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
-            }
-            else if (evt.Type == MIDIEventType.MetaLyric)
-            {
-                //trk.Memo = ((MIDIMemoEvent)evt).Text;
-                //trk.MemoWait = 60;
-                //Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
-            }
-            else if (evt.Type == MIDIEventType.MetaMarker)
-            {
-                ;//演奏中のMetaMarkerは 何もしない
-            }
-            else if (evt.Type == MIDIEventType.UserExclusive1)
-            {
-                MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
-                byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
-                if (send2) SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
+                case MIDIEventType.ChannelAfterTouch:
+                    {
+                        if (channel != null)
+                        {
+                            MIDIChannelPressureEvent cevt = (MIDIChannelPressureEvent)evt;
+                            int ch = (int)(channel & 0x0F);
 
-            }
-            else if (evt.Type == MIDIEventType.MetaPortPrefix)
-            {
-                MIDIPortPrefixEvent pfe = (MIDIPortPrefixEvent)evt;
-                trk.OutDevice = pfe.PortNumber;
-            }
-            else if (evt.Type == MIDIEventType.MetaSequencerSpecific)
-            {
-                //参考URL: https://moondoldo.com/wordpress/?p=14483#%E8%B5%B7%E5%8B%95%E3%81%A8%E8%A8%AD%E5%AE%9A
-                if (evt.MIDIMessage.Length > 5
-                    && evt.MIDIMessage[1] == 0x04
-                    && evt.MIDIMessage[2] == 0x43
-                    && evt.MIDIMessage[3] == 0x00
-                    && evt.MIDIMessage[4] == 0x01)
-                {
-                    //YAMAHA独自のMIDIポート指定
-                    trk.OutDevice = evt.MIDIMessage[5];
-                }
-                else
-                {
-                    Common.Log.Write(LogLevel.Warning, $" MusicPlayer.cs : Unknown MetaSequencerSpecific");
-                }
-            }
-            else
-            {
-                //T.B.D.
-                Common.Log.Write(LogLevel.Warning, $" MusicPlayer.cs : TBD {evt.Type}");
+                            int status = 0xD0 | ch; // Channel Pressure
+                            int msg = status
+                                      + (cevt.PressureValue << 8); // data2 は使わないので 0
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.SysExF0:
+                    {
+                        MIDISysExEvent sevt = (MIDISysExEvent)evt;
+                        if (send2) SendSysEx(midiOut, sevt.Data, sevt.GT, sevt.VEL, channel);
+                        break;
+                    }
+
+                case MIDIEventType.RolandDevice:
+                    {
+                        MIDIRolandDeviceEvent sevt = (MIDIRolandDeviceEvent)evt;
+
+                        trk.RolandDev_gt = sevt.RolandDev_gt;
+                        trk.RolandDev_vel = sevt.RolandDev_vel;
+                        break;
+                    }
+
+                case MIDIEventType.RolandBase:
+                    {
+                        MIDIRolandBaseEvent sevt = (MIDIRolandBaseEvent)evt;
+
+                        trk.RolandBase_gt = sevt.RolandBase_gt;
+                        trk.RolandBase_vel = sevt.RolandBase_vel;
+                        break;
+                    }
+
+                case MIDIEventType.RolandPara:
+                    {
+                        MIDIRolandParaEvent sevt = (MIDIRolandParaEvent)evt;
+
+                        trk.RolandPara_gt = sevt.RolandPara_gt;
+                        trk.RolandPara_vel = sevt.RolandPara_vel;
+
+                        RolEx[0] = 0xF0;
+                        RolEx[1] = 0x41;
+                        RolEx[2] = trk.RolandDev_gt;
+                        RolEx[3] = trk.RolandDev_vel;
+                        RolEx[4] = 0x12;
+                        RolEx[5] = trk.RolandBase_gt;
+                        RolEx[6] = trk.RolandBase_vel;
+                        RolEx[7] = trk.RolandPara_gt;
+                        RolEx[8] = trk.RolandPara_vel;
+                        RolEx[9] = (byte)((128 - ((trk.RolandBase_gt + trk.RolandBase_vel + trk.RolandPara_gt + trk.RolandPara_vel) % 128)) & 0x7f);
+                        RolEx[10] = 0xF7;
+                        if (send2)
+                        {
+                            midiOut?.SendSysEx(RolEx);
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.SameMeas:
+                    {
+                        if (trk.SameMeasStack.Count > 0)
+                        {
+                            return trk.SameMeasStack.Pop();
+                        }
+
+                        bool first = true;
+
+                        while (evt.Type == MIDIEventType.SameMeas)
+                        {
+                            var sevt = (MIDISameMeasEvent)evt;
+                            int target = sevt.RepeatMeas;
+
+                            var key = (trk.Number, prt.Number, target);
+
+                            if (!measureStartNode.TryGetValue(key, out var jumpNode))
+                                break;
+
+                            if (jumpNode.Value.Type == MIDIEventType.BarLine)
+                            {
+                                return nEvt.Next;
+                            }
+
+                            if (jumpNode.Value.Type == MIDIEventType.SameMeas)
+                            {
+                                if (nEvt == jumpNode)
+                                {
+                                    Log.Write(
+                                        LogLevel.Error,
+                                        $"MusicPlayer.cs: same measureEvent: Self-reference Case 4 : Part Name:{prt.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
+
+                                    break;
+                                }
+
+                                if (first)
+                                    trk.SameMeasStack.Push(nEvt.Next);
+
+                                first = false;
+
+                                nEvt = jumpNode;
+                                evt = jumpNode.Value;
+                                continue;
+                            }
+
+                            if (first)
+                                trk.SameMeasStack.Push(nEvt.Next);
+
+                            return jumpNode;
+                        }
+
+                        break;
+                    }
+                case MIDIEventType.BarLine:
+                    {
+                        if (trk.SameMeasStack.Count > 0)
+                        {
+                            return trk.SameMeasStack.Pop();
+                        }
+
+                        //MIDIBarLineEvent ble = (MIDIBarLineEvent)evt;
+                        //if (ble.BeatNum != 0 || ble.BeatDen != 0)
+                        //{
+                        //    _mol = ble.BeatNum;
+                        //    _den = ble.BeatDen;
+                        //}
+
+                        break;
+                    }
+                case MIDIEventType.MetaEndOfTrack:
+                    {
+                        if (trk.SameMeasStack.Count > 0)
+                        {
+                            return trk.SameMeasStack.Pop();
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.LoopStart:
+                    {
+                        trk.LoopStack.Push((nEvt.Next, null));
+                        break;
+                    }
+
+                case MIDIEventType.LoopEnd:
+                    {
+                        if (trk.LoopStack.Count > 0)
+                        {
+                            var (levt, lcnt) = trk.LoopStack.Pop();
+                            MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
+                            if (lcnt == null)
+                            {
+                                lcnt = leEvt.LoopCounter;
+                            }
+
+                            lcnt--;
+
+                            if (lcnt > 0)
+                            {
+                                trk.LoopStack.Push((levt, lcnt));
+                                return levt;
+                            }
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.BankProgram:
+                    {
+                        if (channel != null)
+                        {
+                            MIDIBankProgramEvent bevt = (MIDIBankProgramEvent)evt;
+                            int ch = (int)(channel & 0x0F);
+
+                            int status;
+                            int msg;
+
+                            status = 0xB0 | ch; // CC
+                            msg = status
+                                      + (0 << 8)
+                                      + (bevt.ControlChange << 16);
+
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+
+                            status = 0xC0 | ch; // ProgramChange
+                            msg = status
+                                      + (bevt.ProgramNumber << 8);
+                            if (send2)
+                            {
+                                midiOut?.Send(msg);
+                            }
+
+                        }
+                        break;
+                    }
+
+                case MIDIEventType.Memo:
+                    {
+                        trk.Memo = ((MIDIMemoEvent)evt).Text;
+                        trk.MemoWait = 60;
+                        Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
+                        break;
+                    }
+
+                case MIDIEventType.MetaLyric:
+                    {
+                        //trk.Memo = ((MIDIMemoEvent)evt).Text;
+                        //trk.MemoWait = 60;
+                        //Common.Log.Write(LogLevel.Information, $"Track {trk.Number + 1}:Memo:{((MIDIMemoEvent)evt).Text}");
+                        break;
+                    }
+
+                case MIDIEventType.MetaMarker:
+                    {
+                        ;//演奏中のMetaMarkerは 何もしない
+                        break;
+                    }
+
+                case MIDIEventType.UserExclusive1:
+                    {
+                        MIDIUsrExEvent sevt = (MIDIUsrExEvent)evt;
+                        byte[] dat = _project.UserExclusive[sevt.MIDIMessage[0] - 0x90].Exclusive;
+                        if (send2) SendSysEx(midiOut, dat, sevt.GT, sevt.VEL, channel);
+                        break;
+                    }
+
+                case MIDIEventType.MetaPortPrefix:
+                    {
+                        MIDIPortPrefixEvent pfe = (MIDIPortPrefixEvent)evt;
+                        trk.OutDevice = pfe.PortNumber;
+                        break;
+                    }
+
+                case MIDIEventType.MetaSequencerSpecific:
+                    {
+                        //参考URL: https://moondoldo.com/wordpress/?p=14483#%E8%B5%B7%E5%8B%95%E3%81%A8%E8%A8%AD%E5%AE%9A
+                        if (evt.MIDIMessage.Length > 5
+                            && evt.MIDIMessage[1] == 0x04
+                            && evt.MIDIMessage[2] == 0x43
+                            && evt.MIDIMessage[3] == 0x00
+                            && evt.MIDIMessage[4] == 0x01)
+                        {
+                            //YAMAHA独自のMIDIポート指定
+                            trk.OutDevice = evt.MIDIMessage[5];
+                        }
+                        else
+                        {
+                            Common.Log.Write(LogLevel.Warning, $" MusicPlayer.cs : Unknown MetaSequencerSpecific");
+                        }
+                        break;
+                    }
+
+                default:
+                    {
+                        Common.Log.Write(
+                            LogLevel.Warning,
+                            $" MusicPlayer.cs : TBD {evt.Type}");
+                        break;
+                    }
             }
 
             return nEvt.Next;
+
         }
 
         private void SendSysEx(ThrottledMidiOut midiOut, byte[] dat,byte GT,byte Vel,int? trkOutChannel)
