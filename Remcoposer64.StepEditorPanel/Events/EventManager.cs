@@ -311,7 +311,7 @@ namespace Remcoposer64.StepEditorPanelControl
             int step = 0;
             int offset = 0;
             int sum = 0;
-            int totalTick = 0;
+            //int totalTick = 0;
 
             LinkedListNode<MIDIEvent> node = events.First;
             while (node != null)
@@ -326,7 +326,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 if (ev.ST != 0) step++;
 
                 sum += ev.ST;
-                totalTick += ev.ST;
+                //totalTick += ev.ST;
 
                 if (ev.Type == MIDIEventType.BarLine)
                 {
@@ -370,7 +370,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 node = node.Next;
             }
 
-            prt.LengthTick = totalTick;
+            //prt.LengthTick = totalTick;
 
             // sameMeasのRepeatMeas/BeforeNodeの調整
             foreach (var si in sameMeasList)
@@ -378,6 +378,9 @@ namespace Remcoposer64.StepEditorPanelControl
                 MIDISameMeasEvent se = (MIDISameMeasEvent)si.Node.Value;
                 SetRepeatMeasNode(se);
             }
+
+            MeasureInfoManager measureInfoManager = new MeasureInfoManager();
+            measureInfoManager.BuildPartInfo(prt);
 
             UpdateTieFlags();
         }

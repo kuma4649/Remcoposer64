@@ -6,6 +6,7 @@ using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.TrackEditor;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using WeifenLuo.WinFormsUI.Docking;
@@ -535,8 +536,89 @@ namespace Remcoposer64.App
             RestoreFormStatus();
 
             opePanel?.SetMarker(currentProject);
-        }
 
+            //SetupDragDrop(this);
+        }
+//        protected override void WndProc(ref Message m)
+//        {
+//            if (m.Msg == 0x233)
+//            {
+//                MessageBox.Show("WM_DROPFILES");
+//            }
+
+//            base.WndProc(ref m);
+//        }
+
+//[DllImport("shell32.dll")]
+//    static extern void DragAcceptFiles(
+//    IntPtr hwnd,
+//    bool accept);
+//        protected override void OnHandleCreated(EventArgs e)
+//        {
+//            base.OnHandleCreated(e);
+
+//            DragAcceptFiles(this.Handle, true);
+//        }
+
+        //private void SetupDragDrop(Control parent)
+        //{
+        //    parent.AllowDrop = true;
+
+        //    parent.DragEnter += Common_DragEnter;
+        //    parent.DragDrop += Common_DragDrop;
+
+        //    foreach (Control ctrl in parent.Controls)
+        //    {
+        //        SetupDragDrop(ctrl);
+        //    }
+        //}
+
+        //private void Common_DragEnter(object sender, DragEventArgs e)
+        //{
+        //    if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+        //    {
+        //        e.Effect = DragDropEffects.Copy;
+        //    }
+        //    else
+        //    {
+        //        e.Effect = DragDropEffects.None;
+        //    }
+        //}
+
+        //private void Common_DragDrop(object sender, DragEventArgs e)
+        //{
+        //    if (!e.Data!.GetDataPresent(DataFormats.FileDrop))
+        //        return;
+
+        //    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+        //    if (files.Length == 0)
+        //        return;
+
+        //    OpenFile(files[0]);
+        //}
+
+        //protected override void OnDragEnter(DragEventArgs drgevent)
+        //{
+        //    base.OnDragEnter(drgevent);
+
+        //    if (drgevent.Data.GetDataPresent(DataFormats.FileDrop))
+        //    {
+        //        drgevent.Effect = DragDropEffects.Copy;
+        //    }
+        //}
+        //protected override void OnDragDrop(DragEventArgs drgevent)
+        //{
+        //    base.OnDragDrop(drgevent);
+
+        //    string[] files =
+        //        (string[])drgevent.Data.GetData(DataFormats.FileDrop);
+
+        //    if (files.Length > 0)
+        //    {
+        //        OpenFile(files[0]);
+        //    }
+        //}
         private void SaveFormStatus()
         {
             setting.ui.FormMain = SaveFormStatus(this);
@@ -714,6 +796,9 @@ namespace Remcoposer64.App
             trackEditor.SetHeaderLine(setting.common.TrackEditorRow);
 
             frmProject.Controls.Add(trackEditor);
+
+            //SetupDragDrop(frmProject);
+            //SetupDragDrop(trackEditor);
 
             // タブを追加
             if (openForm)
@@ -1021,13 +1106,14 @@ namespace Remcoposer64.App
             string[] files =
                 (string[])e.Data.GetData(DataFormats.FileDrop);
 
-            foreach (string file in files)
-            {
-                if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
-                {
-                    OpenPath(file);
-                }
-            }
+            OpenFile(files[0]);
+            //foreach (string file in files)
+            //{
+            //    if (dockPanel1.Contents.Count < MAX_OPEN_FILES)
+            //    {
+            //        OpenPath(file);
+            //    }
+            //}
         }
 
         /// <summary>

@@ -289,6 +289,14 @@ namespace Remcoposer64.Core.Player
             {
                 _project.Information.Played = true;
                 IsFinished = true;
+
+                // 終了時のチェック
+                foreach (var trk in _project.Track)
+                {
+                    if(trk.LoopStack.Count > 0) 
+                        Log.Write(LogLevel.Warning, $"Track:{trk.Number + 1} An inconsistency has occurred with the loop command.");
+                }
+
             }
 
             frameCounter++;
@@ -693,6 +701,10 @@ namespace Remcoposer64.Core.Player
                                 trk.LoopStack.Push((levt, lcnt));
                                 return levt;
                             }
+                        }
+                        else
+                        {
+                            Log.Write(LogLevel.Warning, $"Track:{trk.Number+1} An inconsistency has occurred with the loop command.");
                         }
                         break;
                     }

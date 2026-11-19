@@ -59,6 +59,9 @@ namespace Remcoposer64.StepEditorPanelControl
 
                     bool isCursor = i == cursor.Index;
                     bool isPlayingCursor = (playingCursorIndex != null && node.Value.Meas == playingCursorIndex.Meas && node.Value.Step == playingCursorIndex.Step);
+                    if (isPlayingCursor 
+                        && (node.Value.Type == MIDIEventType.LoopStart|| node.Value.Type == MIDIEventType.LoopEnd)) isPlayingCursor = false;
+
                     UIEvent uie = uiep.Get(node.Value.Type);
 
                     ProcessStepDisplayControl(ref oldStep, ref dispStep, ref firstDisp, node.Value);
