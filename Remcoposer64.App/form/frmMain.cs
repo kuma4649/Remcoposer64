@@ -1,4 +1,3 @@
-using NAudio.Midi;
 using Remcoposer64.App.form;
 using Remcoposer64.Common;
 using Remcoposer64.Core;
@@ -6,11 +5,8 @@ using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.TrackEditor;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using WeifenLuo.WinFormsUI.Docking;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Remcoposer64.App
 {
@@ -32,8 +28,6 @@ namespace Remcoposer64.App
         {
             Initial();
         }
-
-        // E:\FM音源\data\MIDI\MakingMIDI\XGfeelingheart.mid
 
         public frmMain(string[] args)
         {
@@ -157,11 +151,6 @@ namespace Remcoposer64.App
 
             CloseProject();
             undoMng.Clear();
-
-            //// タブを作成
-            //TabPage tab = new TabPage();
-            //tab.Tag = prj;
-            //tab.Text = prj.Information.FileName;
 
             // プロジェクトの UI を構築
             AddProjectTab(prj, true);
@@ -539,26 +528,26 @@ namespace Remcoposer64.App
 
             //SetupDragDrop(this);
         }
-//        protected override void WndProc(ref Message m)
-//        {
-//            if (m.Msg == 0x233)
-//            {
-//                MessageBox.Show("WM_DROPFILES");
-//            }
+        //        protected override void WndProc(ref Message m)
+        //        {
+        //            if (m.Msg == 0x233)
+        //            {
+        //                MessageBox.Show("WM_DROPFILES");
+        //            }
 
-//            base.WndProc(ref m);
-//        }
+        //            base.WndProc(ref m);
+        //        }
 
-//[DllImport("shell32.dll")]
-//    static extern void DragAcceptFiles(
-//    IntPtr hwnd,
-//    bool accept);
-//        protected override void OnHandleCreated(EventArgs e)
-//        {
-//            base.OnHandleCreated(e);
+        //[DllImport("shell32.dll")]
+        //    static extern void DragAcceptFiles(
+        //    IntPtr hwnd,
+        //    bool accept);
+        //        protected override void OnHandleCreated(EventArgs e)
+        //        {
+        //            base.OnHandleCreated(e);
 
-//            DragAcceptFiles(this.Handle, true);
-//        }
+        //            DragAcceptFiles(this.Handle, true);
+        //        }
 
         //private void SetupDragDrop(Control parent)
         //{
@@ -1313,6 +1302,21 @@ namespace Remcoposer64.App
 
         }
 
+        internal void NotePreview(PlayNoteEventArgs e)
+        {
+            List<(int, int, ProjectData.Events.MIDIEvent)> lst = new();
+            ProjectData.Events.MIDINoteEvent evt = new ProjectData.Events.MIDINoteEvent
+            {
+                KeyNumber = e.KeyNumber,
+                ST = 48,
+                GT = 48,
+                Vel = 110
+            };
+            lst.Add((e.DeviceNumber, e.Channel, evt));
+
+            player.FirePreview(lst);
+        }
+
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //List<ProjectData.Events.MIDIEvent> lst = new();
@@ -1346,19 +1350,18 @@ namespace Remcoposer64.App
             //player.FirePreview(lst);
         }
 
-        internal void NotePreview(PlayNoteEventArgs e)
+        private void testToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            List<(int, int, ProjectData.Events.MIDIEvent)> lst = new();
-            ProjectData.Events.MIDINoteEvent evt = new ProjectData.Events.MIDINoteEvent
+            if (currentProject == null)
             {
-                KeyNumber = e.KeyNumber,
-                ST = 48,
-                GT = 48,
-                Vel = 110
-            };
-            lst.Add((e.DeviceNumber, e.Channel, evt));
+                MessageBox.Show("再生するプロジェクトがありません。");
+                return;
+            }
 
-            player.FirePreview(lst);
+            Stop();
+
+            //player.InitialPlay();
+            player.PlayTrack(currentProject);
         }
     }
 }

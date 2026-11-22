@@ -1,4 +1,4 @@
-﻿using Remcomposer64.Core;
+﻿using Remcoposer64.Core;
 using Remcoposer64.Common;
 using Remcoposer64.Core.Timer;
 using Remcoposer64.ProjectData;
@@ -15,12 +15,14 @@ namespace Remcoposer64.Core.Player
         private static MusicPlayer musicPlayer = new();
         private static PreviewPlayer previewPlayer = new();
         private static MidiKeyboardPlayer midiKeyboardPlayer = new();
+        private static TrackPlayer trackPlayer = new();
 
         private readonly List<IPlayerChannel> _channels = new()
         {
             musicPlayer,
             previewPlayer,
-            midiKeyboardPlayer
+            midiKeyboardPlayer,
+            trackPlayer
         };
 
         private Setting setting;
@@ -143,7 +145,35 @@ namespace Remcoposer64.Core.Player
 
             // MusicPlayer にプロジェクトのイベントを渡す
             SendBeforeReset();
+
+            int maxMIDIOut = 0;
+            foreach (var trk in project.Track)
+            {
+                maxMIDIOut = Math.Max(maxMIDIOut, trk.OutDevice);
+            }
+            project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
+
             musicPlayer.PlayMusic(project, mp);
+        }
+
+        public void PlayTrack(MIDIProject project)
+        {
+            if (project == null) return;
+
+            // MusicPlayer にプロジェクトのイベントを渡す
+            SendBeforeReset();
+
+            int maxMIDIOut = 0;
+            foreach (var trk in project.Track)
+            {
+                maxMIDIOut = Math.Max(maxMIDIOut, trk.OutDevice);
+            }
+            project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
+
+            MIDITrack trgTrk = project.Track.First.Next.Value;
+            LinkedListNode<MIDIEvent> sEvt = project.Track.First.Next.Value.Part.First.Value.Event.First;
+            LinkedListNode<MIDIEvent> eEvt = sEvt.Next.Next;
+            trackPlayer.PlayMusic(project, trgTrk, sEvt, eEvt);
         }
 
         public void StartPlayback()
@@ -155,6 +185,7 @@ namespace Remcoposer64.Core.Player
         public void StopPlayback()
         {
             musicPlayer.Stop();
+            trackPlayer.Stop();
             SendAllSoundOff();
         }
 

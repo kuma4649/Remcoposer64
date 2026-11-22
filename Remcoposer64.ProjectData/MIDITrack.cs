@@ -1,33 +1,12 @@
-﻿using Remcoposer64.Common;
-using Remcoposer64.ProjectData.Events;
-using System.ComponentModel;
+﻿using Remcoposer64.ProjectData.Events;
 using System.Drawing;
 using System.Xml.Serialization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Remcoposer64.ProjectData
 {
     [Serializable]
     public class MIDITrack
     {
-        private int? _BeforeIndex = null;
-        private int? _AfterIndex = null;
-        private int _Number = 0;
-        private string _Name = "";
-        private string _Memo = "";
-        private string _Comment = "";
-        //private int? _OutDeviceNumber = 0;
-        //private string _OutDeviceName = "";
-        //private int? _OutUserDeviceNumber = 0;
-        //private string _OutUserDeviceName = "";
-        //private int? _OutChannel = 0;
-        //private int? _InDeviceNumber = 0;
-        //private string _InDeviceName = "";
-        //private int? _InUserDeviceNumber = 0;
-        //private string _InUserDeviceName = "";
-        //private int? _InChannel = 0;
-        private bool _Solo = false;
-        private bool _Mute = false;
         private Color _Color = Color.Black;
         private LinkedList<MIDIPart> _Part = new LinkedList<MIDIPart>();
         private LinkedList<MIDIRythm> _Rythm = new LinkedList<MIDIRythm>();
@@ -43,8 +22,6 @@ namespace Remcoposer64.ProjectData
         private int _NextEventTick = 0;
         private bool _EndMark = false;
         private int _TrackNumber = 0;
-        private Stack<(MIDIEvent,int?)> _LoopStackEvent = new Stack<(MIDIEvent,int?)>();
-        private Stack<MIDIEvent> _SameMeasStackEvent = new Stack<MIDIEvent>();
         private int? _LoopOrSameTargetEventIndex = null;
         private int? _SameMeasure = null;
         private byte _RolandBase_gt = 0;
@@ -56,100 +33,21 @@ namespace Remcoposer64.ProjectData
         private int[] _NoteGateTime = new int[128];
 
 
-        public int? BeforeIndex
-        {
-            set
-            {
-                _BeforeIndex = value;
-            }
-            get
-            {
-                return _BeforeIndex;
-            }
-        }
-        public int? AfterIndex
-        {
-            set
-            {
-                _AfterIndex = value;
-            }
-            get
-            {
-                return _AfterIndex;
-            }
-        }
-        public int Number
-        {
-            set
-            {
-                _Number = value;
-            }
-            get
-            {
-                return _Number;
-            }
-        }
-        public string Name
-        {
-            set
-            {
-                _Name = value;
-            }
-            get
-            {
-                return _Name;
-            }
-        }
-        public string Memo
-        {
-            set
-            {
-                _Memo = value;
-            }
-            get
-            {
-                return _Memo;
-            }
-        }
-        public string Comment
-        {
-            set
-            {
-                _Comment = value;
-            }
-            get
-            {
-                return _Comment;
-            }
-        }
+        public int? BeforeIndex { get; set; } = null;
+        public int? AfterIndex {  get; set; } = null;
+        public int Number { get; set; } = 0;
+        public string Name { get; set; } = "";
+        public string Memo { get; set; } = "";
+        public string Comment { get; set; } = "";
 
         public int OutDevice { get; set; } = -1;
         public int? OutChannel { get; set; } = 0;
         public int InDevice { get; set; } = -1;
         public int? InChannel { get; set; } = 0;
 
-        public bool Solo
-        {
-            set
-            {
-                _Solo = value;
-            }
-            get
-            {
-                return _Solo;
-            }
-        }
-        public bool Mute
-        {
-            set
-            {
-                _Mute = value;
-            }
-            get
-            {
-                return _Mute;
-            }
-        }
+        public bool Solo { get; set; } = false;
+        public bool Mute { get; set; } = false;
+
         [XmlIgnore]
         public Color Color
         {
@@ -469,6 +367,7 @@ namespace Remcoposer64.ProjectData
 
         public bool Played { get; set; } = false;
         public int MemoWait { get; set; }
+        public LinkedListNode<MIDIPart> CurrentPart { get; set; }
 
         //初めのpartを得る
         public LinkedListNode<MIDIPart> getStartPartNode()
@@ -477,14 +376,6 @@ namespace Remcoposer64.ProjectData
 
             return Part.First;//.Value;// [(int)mStartIndex];
         }
-
-        ////最後のpartを得る
-        //public MIDIPart getEndPart()
-        //{
-        //    if (mEndIndex == null) return null;
-
-        //    return Part[(int)mEndIndex];
-        //}
 
         //指定したpartの次のpartを得る
         public LinkedListNode<MIDIPart> getNextPartNode(LinkedListNode<MIDIPart> prt)
@@ -496,72 +387,6 @@ namespace Remcoposer64.ProjectData
             return prt.Next;//  Part[(int)prt.AfterIndex];
         }
 
-        ////指定したpartの前の小節を得る
-        //public MIDIPart getPrevPart(MIDIPart prt)
-        //{
-        //    if (prt == null || prt.BeforeIndex == null) return null;
-
-        //    return Part[(int)prt.BeforeIndex];
-        //}
-
-        //インデックスからpartを得る
-        //public MIDIPart searchPart(int index)
-        //{
-        //    int st_d = int.MaxValue;
-        //    int ed_d = int.MaxValue;
-        //    int now_d = int.MaxValue;
-        //    int mode = -1;
-        //    if (this.mStartIndex != null) st_d = Math.Abs((int)this.mStartIndex - index);
-        //    if (this.mEndIndex != null) ed_d = Math.Abs((int)this.mEndIndex - index);
-        //    if (this.NowPart != null) now_d = Math.Abs(this.NowPart.Number - index);
-        //    MIDIPart prt = null;
-        //    if (st_d < ed_d && st_d < now_d)
-        //    {
-        //        prt = this.getStartPart();
-        //        mode = 0;
-        //    }
-        //    else if (ed_d < st_d && ed_d < now_d)
-        //    {
-        //        prt = this.getEndPart();
-        //        mode = 1;
-        //    }
-        //    else if (now_d <= st_d && now_d <= ed_d)
-        //    {
-        //        prt = this.NowPart;
-        //        if (prt.Number < index)
-        //        {
-        //            mode = 0;
-        //        }
-        //        else
-        //        {
-        //            mode = 1;
-        //        }
-        //    }
-        //    else return null;
-
-        //    switch (mode)
-        //    {
-        //        case 0:
-        //            while (prt != null)
-        //            {
-        //                if (prt.Number == index)
-        //                    return prt;
-        //                prt = this.getNextPart(prt);
-        //            }
-        //            break;
-        //        case 1:
-        //            while (prt != null)
-        //            {
-        //                if (prt.Number == index)
-        //                    return prt;
-        //                prt = this.getPrevPart(prt);
-        //            }
-        //            break;
-        //    }
-
-        //    return null;
-        //}
-
         //全てのPartをメモリから消去する
         public void clearAllPartMemory()
         {
@@ -571,14 +396,6 @@ namespace Remcoposer64.ProjectData
             //this.mEndIndex = null;
             //this.mNumber = 0;
         }
-
-        ////全てのPartを消去する
-        //public void clearEvent()
-        //{
-        //    this.mCounter = 0;
-        //    this.mStartIndex = null;
-        //    this.mEndIndex = null;
-        //}
 
         /// <summary>
         /// partを挿入する
@@ -614,68 +431,49 @@ namespace Remcoposer64.ProjectData
             {
                 if (pPrt.Value.StartTick > prt.StartTick)
                 {
-                    //pPrt = getPrevPart(pPrt);
                     break;
                 }
                 pPrt = pPrt.Next;
-                //MIDIPart ppPrt = getNextPart(pPrt);
-                //if (ppPrt == null) break;
-                //pPrt = ppPrt;
             }
 
             Part.AddAfter(pPrt, prt);
-            //prt.BeforeIndex = pPrt.Number;
-            //prt.AfterIndex = pPrt.AfterIndex;
-            //prt.Number = this.mNumber;
-            //pPrt.AfterIndex = prt.Number;
-            //this.Part.Add(prt);
-            //if (prt.AfterIndex == null)
-            //{
-            //    this.mEndIndex = this.mNumber;
-            //}
-            //else
-            //{
-            //    pPrt = getNextPart(prt);
-            //    pPrt.BeforeIndex = prt.Number;
-            //}
-            //this.mCounter++;
-            //this.mNumber++;
 
         }
 
         public MIDITrack Clone()
         {
-            MIDITrack trk = new MIDITrack();
+            MIDITrack trk = new MIDITrack
+            {
+                BeforeIndex = BeforeIndex,
+                AfterIndex = AfterIndex,
 
-            trk.BeforeIndex = BeforeIndex;
-            trk.AfterIndex = AfterIndex;
+                Number = Number,
+                Name = Name,
+                Memo = Memo,
+                Comment = Comment,
 
-            trk.Number = Number;
-            trk.Name = Name;
-            trk.Memo = Memo;
-            trk.Comment = Comment;
+                OutDevice = OutDevice,
+                OutChannel = OutChannel,
 
-            trk.OutDevice = OutDevice;
-            trk.OutChannel = OutChannel;
+                InDevice = InDevice,
+                InChannel = InChannel,
 
-            trk.InDevice = InDevice;
-            trk.InChannel = InChannel;
+                Solo = Solo,
+                Mute = Mute,
 
-            trk.Solo = Solo;
-            trk.Mute = Mute;
+                Color = Color,
 
-            trk.Color = Color;
+                RythmMode = RythmMode,
 
-            trk.RythmMode = RythmMode;
+                Key = Key,
+                St = St,
 
-            trk.Key = Key;
-            trk.St = St;
+                mStartIndex = mStartIndex,
+                mEndIndex = mEndIndex,
+                mNumber = mNumber,
 
-            trk.mStartIndex = mStartIndex;
-            trk.mEndIndex = mEndIndex;
-            trk.mNumber = mNumber;
-
-            trk.TrackNumber = TrackNumber;
+                TrackNumber = TrackNumber
+            };
 
             foreach (var r in Rythm)
             {

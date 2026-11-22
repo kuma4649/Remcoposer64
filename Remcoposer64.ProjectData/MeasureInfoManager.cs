@@ -8,10 +8,10 @@ namespace Remcoposer64.ProjectData
 {
     public class MeasureInfoManager
     {
-        //public SortedDictionary<long, TimeSignaturePoint> TimeSignatures { get; } = new();
+        long eventCount = 0;
+        long nextFrame = long.MaxValue;
+
         private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
-        //private int currentDen = 4;
-        //private int currentNum = 4;
         private MIDIProject project = null;
         private List<TrackStatus> trkStats = new List<TrackStatus>();
         public class TrackStatus
@@ -73,8 +73,6 @@ namespace Remcoposer64.ProjectData
             if (ClearPlayedFlag) Common.ClearPlayedFlag(project);
         }
 
-        long eventCount = 0;
-        long nextFrame = long.MaxValue;
 
         public bool ProcessFrame(long frameCounter)
         {
@@ -299,121 +297,6 @@ namespace Remcoposer64.ProjectData
             return nEvt.Next;
         }
 
-        //private LinkedListNode<MIDIEvent> AnalyzeEvent(long frameCounter, MIDITrack trk, TrackStatus ts, LinkedListNode<MIDIPart> nPrt, PartStatus ps, LinkedListNode<MIDIEvent> nEvt)
-        //{
-        //    MIDIPart prt = nPrt.Value;
-        //    MIDIEvent evt = nEvt.Value;
-            
-        //    eventCount++;
-
-        //    if (evt.Type == MIDIEventType.TempoChange)
-        //    {
-
-        //    }
-        //    else if (evt.Type == MIDIEventType.MetaMarker)
-        //    {
-        //        var mevt = (MIDIMarkerEvent)evt;
-
-        //        project.Information.Markers.Add(new MarkerPoint()
-        //        {
-        //            Tick = frameCounter,
-        //            Text = mevt.Text
-        //        });
-        //    }
-        //    else if (evt.Type == MIDIEventType.MetaTimeSignature)
-        //    {
-        //        // rcp形式はBarLineに拍子情報が存在する筈なのでMetaTimeSignatureはない
-        //        throw new NotSupportedException();
-        //    }
-        //    else if (evt.Type == MIDIEventType.SameMeas)
-        //    {
-        //        if (ts.SameMeasStack.Count > 0)
-        //        {
-        //            return ts.SameMeasStack.Pop();
-        //        }
-
-        //        bool first = true;
-        //        while (evt.Type == MIDIEventType.SameMeas)
-        //        {
-        //            var sevt = (MIDISameMeasEvent)evt;
-        //            int target = sevt.RepeatMeas;
-
-        //            var key = (trk.Number, prt.Number, target);
-
-        //            if (!measureStartNode.TryGetValue(key, out var jumpNode))
-        //                break;
-
-        //            if (jumpNode.Value.Type == MIDIEventType.BarLine)
-        //            {
-        //                return nEvt.Next;
-
-        //            }
-
-        //            if (jumpNode.Value.Type == MIDIEventType.SameMeas)
-        //            {
-        //                if (nEvt == jumpNode)
-        //                {
-        //                    Log.Write(LogLevel.Error, $"MeasueInfoManager.cs: same measureEvent: Self-reference Case 4 : Part Name:{nPrt.Value.Name} Event:{((MIDISameMeasEvent)nEvt.Value).RepeatMeas}");
-        //                    break;
-        //                }
-
-        //                if (first) ts.SameMeasStack.Push(nEvt.Next);
-        //                first = false;
-
-        //                nEvt = jumpNode;
-        //                evt = jumpNode.Value;
-        //                continue;
-        //            }
-
-        //            // ★ 戻り位置をスタックに積む（元の位置の次イベント）
-        //            if (first) ts.SameMeasStack.Push(nEvt.Next);
-
-        //            return jumpNode;
-
-        //        }
-        //    }
-        //    else if (evt.Type == MIDIEventType.BarLine)
-        //    {
-        //        if (ts.SameMeasStack.Count > 0)
-        //        {
-        //            return ts.SameMeasStack.Pop();
-        //        }
-        //    }
-        //    else if (evt.Type == MIDIEventType.MetaEndOfTrack)
-        //    {
-        //        if (ts.SameMeasStack.Count > 0)
-        //        {
-        //            return ts.SameMeasStack.Pop();
-        //        }
-        //    }
-        //    else if (evt.Type == MIDIEventType.LoopStart)
-        //    {
-        //        ts.LoopStack.Push((nEvt.Next, null));
-        //    }
-        //    else if (evt.Type == MIDIEventType.LoopEnd)
-        //    {
-        //        if (ts.LoopStack.Count > 0)
-        //        {
-        //            var (levt, lcnt) = ts.LoopStack.Pop();
-        //            MIDILoopEndEvent leEvt = (MIDILoopEndEvent)evt;
-        //            if (lcnt == null)
-        //            {
-        //                lcnt = leEvt.LoopCounter;
-        //            }
-
-        //            lcnt--;
-
-        //            if (lcnt > 0)
-        //            {
-        //                ts.LoopStack.Push((levt, lcnt));
-        //                return levt;
-        //            }
-        //        }
-        //    }
-
-        //    return nEvt.Next;
-        //}
-
         public MeasureInfo GetMeasure(int measureNo)
         {
             return null;
@@ -428,7 +311,7 @@ namespace Remcoposer64.ProjectData
         {
             Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNodePart = new();
             Common.BuildMeasureStartNode(measureStartNodePart, prt, 0, 0);
-            TrackStatus ts=new TrackStatus();
+            TrackStatus ts = new TrackStatus();
             ts.ps.Add(new PartStatus());
             ProcessFrameFromPart(measureStartNodePart, prt, ts, ts.ps[0]);
 
@@ -562,6 +445,131 @@ namespace Remcoposer64.ProjectData
             }
 
             return nEvt.Next;
+        }
+
+        /// <summary>
+        /// 指定したトラック中の指定したイベントが初めて演奏されるTick数を調べる
+        /// </summary>
+        public Dictionary<LinkedListNode<MIDIEvent>, int> GetTicksFormTrackEvent(
+            MIDIProject project,
+            LinkedListNode<MIDITrack> targetTrack,
+            params LinkedListNode<MIDIEvent>[] events)
+        {
+            if (events == null || events.Length < 1) return null;
+
+            Dictionary<LinkedListNode<MIDIEvent>, int> ret = new();
+
+            // ダミーのステータス保持インスタンスを用意する(計測向け)
+            trkStats.Clear();
+            LinkedListNode<MIDITrack> nTrk = targetTrack;
+            TrackStatus ts = new TrackStatus();
+            for (int i = 0; i < nTrk.Value.Part.Count; i++) ts.ps.Add(new());
+            trkStats.Add(ts);
+
+            long frameCounter = 0;
+            bool isFinished = false;
+
+            Common.BuildMeasureStartNode(project, measureStartNode);
+
+            while (!isFinished)
+            {
+                isFinished = ProcessFrame_GetTicks(frameCounter, nTrk, events,ref ret);
+                //frameCounter++;
+                frameCounter = nextFrame;
+            }
+
+            return ret;
+        }
+
+        private bool ProcessFrame_GetTicks(long frameCounter, LinkedListNode<MIDITrack> nTrk, LinkedListNode<MIDIEvent>[] events,ref Dictionary<LinkedListNode<MIDIEvent>, int> ret)
+        {
+            int eventsCount = 0;
+            for(int i=0;i< events.Length; i++)
+            {
+                if (events[i] == null) continue;
+                eventsCount++;
+            }
+
+            int trkStatsIndex = 0;
+
+            nextFrame = long.MaxValue;
+
+            TrackStatus ts = trkStats[trkStatsIndex];
+            MIDITrack trk = nTrk.Value;
+            if (ts.Played) return true;
+
+            int prtStatsIndex = 0;
+            LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
+            bool playedAllParts = true;
+
+            while (nPrt != null)
+            {
+                MIDIPart prt = nPrt.Value;
+                PartStatus ps = ts.ps[prtStatsIndex];
+
+                // 初期化（イベント開始前）
+                if (ps.CurrentEventFrame == -1)
+                {
+                    ps.CurrentEventFrame = prt.StartTick;
+                    ps.CurrentEvent = prt.Event.First;
+                }
+
+                if (ps.CurrentEvent == null)
+                {
+                    nPrt = nPrt.Next;
+                    prtStatsIndex++;
+                    continue;
+                }
+
+                playedAllParts = false;
+
+                while (ps.CurrentEvent != null)
+                {
+                    long eventTick = ps.CurrentEventFrame + trk.St;
+
+                    // ここでチェック
+                    for (int i = 0; i < events.Length; i++)
+                    {
+                        if (ps.CurrentEvent == events[i] && !ret.ContainsKey(ps.CurrentEvent))
+                        {
+                            ret.Add(ps.CurrentEvent, (int)eventTick);
+                            eventsCount--;
+                            if (eventsCount == 0)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                    // まだ未来のイベント
+                    if (frameCounter < eventTick)
+                    {
+                        nextFrame = Math.Min(nextFrame, eventTick);
+                        break;
+                    }
+
+                    MIDIEvent evt = ps.CurrentEvent.Value;
+
+                    ps.CurrentEvent = AnalyzeEvent(frameCounter, trk, ts, nPrt, ps, ps.CurrentEvent);
+                    ps.CurrentEventFrame += evt.ST;
+
+                }
+
+                // 次イベントの時刻を収集
+                if (ps.CurrentEvent != null)
+                {
+                    nextFrame = Math.Min(
+                        nextFrame,
+                        ps.CurrentEventFrame + trk.St);
+                }
+
+                nPrt = nPrt.Next;
+                prtStatsIndex++;
+            }
+
+            if (playedAllParts) ts.Played = true;
+
+            return false;
         }
 
     }

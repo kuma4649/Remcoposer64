@@ -1,9 +1,6 @@
 ﻿using NAudio.Midi;
-using Remcoposer64.Core;
-using System;
-using System.Collections.Generic;
 
-namespace Remcomposer64.Core
+namespace Remcoposer64.Core
 {
     public class MidiDeviceManager : IDisposable
     {

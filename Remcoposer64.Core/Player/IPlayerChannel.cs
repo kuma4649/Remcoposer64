@@ -1,7 +1,6 @@
 ﻿
-using Remcoposer64.Common;
-using Remcoposer64.Core.Timer;
 using NAudio.Midi;
+using Remcoposer64.Common;
 
 namespace Remcoposer64.Core.Player
 {
@@ -13,10 +12,19 @@ namespace Remcoposer64.Core.Player
         void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, ThrottledMidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice);
 
         /// <summary>
+        /// ベースとなる周波数の割り込みを基に自身のテンポから
+        /// ProcessFrameの処理回数となるFireFrameProcessを求める
+        /// </summary>
+        void UpdateTimer();
+
+        /// <summary>
         /// 現在時刻に応じてイベントを発火する
         /// </summary>
         void ProcessFrame(long seqCounter);
-        void UpdateTimer();
+
+        /// <summary>
+        /// 演奏停止指示を受けた時に実施される処理
+        /// </summary>
         void Stop();
 
         /// <summary>

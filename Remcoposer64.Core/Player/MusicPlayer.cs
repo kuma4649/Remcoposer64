@@ -2,86 +2,77 @@
 using Remcoposer64.Common;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
-//using static Remcoposer64.Common.Setting;
 
 namespace Remcoposer64.Core.Player
 {
     public class MusicPlayer : IPlayerChannel
     {
+        private Setting _setting;
         private Setting.midiOutInfo[] _midiOutInfo;
         private Setting.midiInInfo[] _midiInInfo;
-
-        // --- Tempo / Timing ---
-        private int _ppq = 480;               // デフォルトPPQ（後でプロジェクトから取得）
-        private double _bpm = 120;               // 人間が扱うテンポ
-        private bool RelativeTempoChangeSW = false;
-        private double RelativeTempoChangeTargetTempo = 120.0;
-        public double RelativeTempoChangeTickSlice = 1.0;
-        //public double RelativeTempoChangeNowTempo = 120.0;
-
-        private int _meas = 0;
-        private int _step = 0;
-        private int _tick = 0;
-        private int _den = 4;
-        private int _mol = 4;
-
-        private double _currentPpq = 0;       // 現在のPPQ
+        private ThrottledMidiOut[] midiOutDevice;
+        private MidiIn[] midiInDevice;
 
         // --- 状態 ---
         public int FireFrameProcess { get; set; } = 0;
         public bool IsFinished { get; set; } = true;
 
-        private MIDIProject _project = null;
+        // --- Tempo / Timing ---
+        protected int _ppq = 480;               // デフォルトPPQ（後でプロジェクトから取得）
+        protected double _bpm = 120;               // 人間が扱うテンポ
+        protected bool RelativeTempoChangeSW = false;
+        protected double RelativeTempoChangeTargetTempo = 120.0;
+        public double RelativeTempoChangeTickSlice = 1.0;
+
+        protected int _meas = 0;
+        protected int _step = 0;
+        protected int _tick = 0;
+        protected int _den = 4;
+        protected int _mol = 4;
+
+        private double _currentPpq = 0;       // 現在のPPQ
+
+        protected MIDIProject _project = null;
         // フレーム(Tick)刻みのカウンター
         public long frameCounter;
         // 44100Hz刻みのカウンター
-        public long timerCounter=0;
+        public long timerCounter = 0;
         public double timerCounterD = 0.0;
-        private int[][][] aryNoteOnTable = null;
-        private ThrottledMidiOut[] midiOutDevice;
-        private NAudio.Midi.MidiIn[] midiInDevice;
-        
+        protected int[][][] aryNoteOnTable = null;
 
         private byte[] RolEx = new byte[11];
 
         private Dictionary<(int track, int part, int meas), LinkedListNode<MIDIEvent>> measureStartNode = new();
-        private Setting _setting;
-        private bool hasSolo = false;
+        protected bool hasSolo = false;
         public long SkipFrameCount;
-        private int SkipModeType = 2;
+        protected int SkipModeType = 2;
 
-        public void Initialize(Setting setting, Setting.midiOutInfo[] midiOut, ThrottledMidiOut[] midiOutDevice, Setting.midiInInfo[] midiIn, MidiIn[] midiInDevice)
+        public virtual void Initialize(
+            Setting setting,
+            Setting.midiOutInfo[] midiOutInfo, ThrottledMidiOut[] midiOutDevice,
+            Setting.midiInInfo[] midiInInfo, MidiIn[] midiInDevice)
         {
-            _setting = setting;
-            _midiOutInfo = midiOut;
-            _midiInInfo = midiIn;
-
-            _currentPpq = 0;
-
             FireFrameProcess = 0;
             IsFinished = true;
 
-            RelativeTempoChangeSW = false;
+            _setting = setting;
+            _midiOutInfo = midiOutInfo;
+            _midiInInfo = midiInInfo;
 
             this.midiOutDevice = midiOutDevice;
-
             this.midiInDevice = midiInDevice;
+
+            _currentPpq = 0;
+            RelativeTempoChangeSW = false;
         }
-        
-        public void PlayMusic(MIDIProject project,MarkerPoint mp)
+
+        public void PlayMusic(MIDIProject project, MarkerPoint mp)
         {
             if (project == null) return;
 
             _project = project;
             _bpm = project.Information.Tempo;
             _ppq = project.Information.TimeBase;
-
-            int maxMIDIOut = 0;
-            foreach (var trk in _project.Track)
-            {
-                maxMIDIOut = Math.Max(maxMIDIOut, trk.OutDevice);
-            }
-            project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
 
             aryNoteOnTable = new int[project.Information.MaxLengthMIDIOut][][];
             for (int i = 0; i < project.Information.MaxLengthMIDIOut; i++)
@@ -107,7 +98,7 @@ namespace Remcoposer64.Core.Player
             _currentPpq = 0;
 
             Remcoposer64.ProjectData.Common.ClearPlayedFlag(_project);
-            
+
             int minSt = 0;
             foreach (var trk in _project.Track)
             {
@@ -155,7 +146,7 @@ namespace Remcoposer64.Core.Player
             {
                 //spd = 100.0;
                 FireFrameProcess++;
-                
+
                 if (SkipModeType == 2)
                 {
                     foreach (var midiout in midiOutDevice)
@@ -188,7 +179,7 @@ namespace Remcoposer64.Core.Player
             }
         }
 
-        public void ProcessFrame(long seqCounter)
+        public virtual void ProcessFrame(long seqCounter)
         {
             if (SkipFrameCount > 0)
             {
@@ -198,90 +189,15 @@ namespace Remcoposer64.Core.Player
 
             hasSolo = _project.Track.Any(t => t.Solo);
 
-            if (RelativeTempoChangeSW)
-            {
-                double RelativeTempoChangeNowTempo = _bpm;
-                RelativeTempoChangeNowTempo += RelativeTempoChangeTickSlice * 1;// Tick.Sabun;
-                if (
-                    (RelativeTempoChangeTickSlice > 0.0 && RelativeTempoChangeNowTempo >= RelativeTempoChangeTargetTempo)
-                    || (RelativeTempoChangeTickSlice < 0.0 && RelativeTempoChangeNowTempo <= RelativeTempoChangeTargetTempo)
-                    )
-                {
-                    RelativeTempoChangeSW = false;
-                    RelativeTempoChangeNowTempo = RelativeTempoChangeTargetTempo;
-                }
-
-                _bpm = RelativeTempoChangeNowTempo;
-            }
-
+            UpdateTempo();
             bool zanGT = ProcessNoteOff();
-
-            _tick++;
-            if (_tick >= _ppq * (4.0 / _den))
-            {
-                _tick = 0;
-                _step++;
-                if (_step >= _mol)
-                {
-                    _step = 0;
-                    _meas++;
-                }
-            }
+            UpdateTickStepMeas();
 
             LinkedListNode<MIDITrack> nTrk = _project.Track.First;
             bool playedAllTracks = true;
             while (nTrk != null)
             {
-                MIDITrack trk = nTrk.Value;
-                if (trk.Played)
-                {
-                    nTrk = nTrk.Next;
-                    continue;
-                }
-
-                playedAllTracks = false;
-                LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
-                bool playedAllParts = true;
-
-                while (nPrt != null)
-                {
-                    MIDIPart prt = nPrt.Value;
-
-                    // 初期化（イベント開始前）
-                    if (prt.CurrentEventFrame == -1)
-                    {
-                        prt.CurrentEventFrame = prt.StartTick;
-                        prt.CurrentEvent = prt.Event.First;
-                    }
-
-                    if (prt.CurrentEvent == null)
-                    {
-                        nPrt = nPrt.Next;
-                        continue;
-                    }
-
-                    playedAllParts = false;
-
-                    if (frameCounter < prt.CurrentEventFrame + trk.St)
-                        break;
-
-                    while (prt.CurrentEvent != null)
-                    {
-                        MIDIEvent evt = prt.CurrentEvent.Value;
-
-                        if (frameCounter < prt.CurrentEventFrame + trk.St)
-                            break;
-
-                        prt.CurrentEvent = PlayEvent(trk, nPrt, prt.CurrentEvent);
-                        prt.CurrentEventFrame += evt.ST;
-                    }
-
-                    nPrt = nPrt.Next;
-                }
-
-                if (playedAllParts)
-                    trk.Played = true;
-
+                ProcessFrameTrack(nTrk, ref playedAllTracks);
                 nTrk = nTrk.Next;
             }
 
@@ -293,14 +209,97 @@ namespace Remcoposer64.Core.Player
                 // 終了時のチェック
                 foreach (var trk in _project.Track)
                 {
-                    if(trk.LoopStack.Count > 0) 
+                    if (trk.LoopStack.Count > 0)
                         Log.Write(LogLevel.Warning, $"Track:{trk.Number + 1} An inconsistency has occurred with the loop command.");
                 }
 
             }
 
             frameCounter++;
+        }
 
+        protected virtual void ProcessFrameTrack(LinkedListNode<MIDITrack> nTrk, ref bool playedAllTracks)
+        {
+            MIDITrack trk = nTrk.Value;
+            if (trk.Played)
+            {
+                return;
+            }
+
+            playedAllTracks = false;
+
+            LinkedListNode<MIDIPart> nPrt = nTrk.Value.Part.First;
+            bool playedAllParts = true;
+            while (nPrt != null)
+            {
+                trk.CurrentPart = nPrt;
+                if (!ProcessFramePart(trk, nPrt, ref playedAllParts)) break;
+                nPrt = nPrt.Next;
+            }
+            if (playedAllParts) trk.Played = true;
+
+        }
+
+        protected virtual bool ProcessFramePart(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, ref bool playedAllParts)
+        {
+            MIDIPart prt = nPrt.Value;
+
+            // 初期化（イベント開始前）
+            if (prt.CurrentEventFrame == -1)
+            {
+                prt.CurrentEventFrame = prt.StartTick;
+                prt.CurrentEvent = prt.Event.First;
+            }
+            if (prt.CurrentEvent == null) return true;
+
+            playedAllParts = false;
+
+            if (frameCounter < prt.CurrentEventFrame + trk.St) return false;
+            while (prt.CurrentEvent != null)
+            {
+                MIDIEvent evt = prt.CurrentEvent.Value;
+
+                if (frameCounter < prt.CurrentEventFrame + trk.St)
+                    return false;
+
+                prt.CurrentEvent = PlayEvent(trk, nPrt, prt.CurrentEvent);
+                prt.CurrentEventFrame += evt.ST;
+            }
+
+            return true;
+        }
+
+        protected void UpdateTempo()
+        {
+            if (!RelativeTempoChangeSW) return;
+
+            double RelativeTempoChangeNowTempo = _bpm;
+            RelativeTempoChangeNowTempo += RelativeTempoChangeTickSlice * 1;// Tick.Sabun;
+            if (
+                (RelativeTempoChangeTickSlice > 0.0 && RelativeTempoChangeNowTempo >= RelativeTempoChangeTargetTempo)
+                || (RelativeTempoChangeTickSlice < 0.0 && RelativeTempoChangeNowTempo <= RelativeTempoChangeTargetTempo)
+                )
+            {
+                RelativeTempoChangeSW = false;
+                RelativeTempoChangeNowTempo = RelativeTempoChangeTargetTempo;
+            }
+
+            _bpm = RelativeTempoChangeNowTempo;
+        }
+
+        protected void UpdateTickStepMeas()
+        {
+            _tick++;
+            if (_tick >= _ppq * (4.0 / _den))
+            {
+                _tick = 0;
+                _step++;
+                if (_step >= _mol)
+                {
+                    _step = 0;
+                    _meas++;
+                }
+            }
         }
 
         private void InitMIDI()
@@ -326,15 +325,15 @@ namespace Remcoposer64.Core.Player
             }
         }
 
-        private void FlushMIDI()
+        protected void FlushMIDI()
         {
-            foreach(var midiout in midiOutDevice)
+            foreach (var midiout in midiOutDevice)
             {
                 midiout?.FlushMIDI();
             }
         }
 
-        private LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
+        protected LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
         {
             MIDIPart prt = nPrt.Value;
             MIDIEvent evt = nEvt.Value;
@@ -704,7 +703,7 @@ namespace Remcoposer64.Core.Player
                         }
                         else
                         {
-                            Log.Write(LogLevel.Warning, $"Track:{trk.Number+1} An inconsistency has occurred with the loop command.");
+                            Log.Write(LogLevel.Warning, $"Track:{trk.Number + 1} An inconsistency has occurred with the loop command.");
                         }
                         break;
                     }
@@ -810,7 +809,7 @@ namespace Remcoposer64.Core.Player
 
         }
 
-        private void SendSysEx(ThrottledMidiOut midiOut, byte[] dat,byte GT,byte Vel,int? trkOutChannel)
+        private void SendSysEx(ThrottledMidiOut midiOut, byte[] dat, byte GT, byte Vel, int? trkOutChannel)
         {
             List<byte> buf = new List<byte>();
 
@@ -888,7 +887,7 @@ namespace Remcoposer64.Core.Player
 
         private const int MidiNoteCount = 128;
 
-        private bool ProcessNoteOff()
+        protected bool ProcessNoteOff()
         {
             if (aryNoteOnTable == null) return false;
             if (midiOutDevice == null) return false;

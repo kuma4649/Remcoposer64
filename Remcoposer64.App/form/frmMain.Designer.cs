@@ -79,6 +79,7 @@
             tsbSEFont12 = new ToolStripButton();
             tsbSEFont16 = new ToolStripButton();
             timerScreen = new System.Windows.Forms.Timer(components);
+            testToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             toolStripContainer1.BottomToolStripPanel.SuspendLayout();
@@ -179,6 +180,7 @@
             // 
             // tsmiEdit
             // 
+            tsmiEdit.DropDownItems.AddRange(new ToolStripItem[] { testToolStripMenuItem });
             tsmiEdit.Name = "tsmiEdit";
             tsmiEdit.Size = new Size(39, 20);
             tsmiEdit.Text = "&Edit";
@@ -400,7 +402,7 @@
             // 
             toolStrip2.Dock = DockStyle.None;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel2, tsbTrackRow1, tsbTrackRow2, tsbTrackRow3 });
-            toolStrip2.Location = new Point(242, 24);
+            toolStrip2.Location = new Point(230, 24);
             toolStrip2.Name = "toolStrip2";
             toolStrip2.Size = new Size(138, 25);
             toolStrip2.TabIndex = 2;
@@ -445,9 +447,9 @@
             // 
             toolStrip3.Dock = DockStyle.None;
             toolStrip3.Items.AddRange(new ToolStripItem[] { toolStripLabel3, tsbSEFont8, tsbSEFont12, tsbSEFont16 });
-            toolStrip3.Location = new Point(395, 24);
+            toolStrip3.Location = new Point(381, 24);
             toolStrip3.Name = "toolStrip3";
-            toolStrip3.Size = new Size(220, 25);
+            toolStrip3.Size = new Size(189, 25);
             toolStrip3.TabIndex = 3;
             // 
             // toolStripLabel3
@@ -491,6 +493,13 @@
             timerScreen.Enabled = true;
             timerScreen.Interval = 20;
             timerScreen.Tick += timerScreen_Tick;
+            // 
+            // testToolStripMenuItem
+            // 
+            testToolStripMenuItem.Name = "testToolStripMenuItem";
+            testToolStripMenuItem.Size = new Size(180, 22);
+            testToolStripMenuItem.Text = "test";
+            testToolStripMenuItem.Click += testToolStripMenuItem_Click_1;
             // 
             // frmMain
             // 
@@ -574,5 +583,6 @@
         private ToolStripButton tsbSEFont12;
         private ToolStripButton tsbSEFont16;
         private ToolStripMenuItem tsmiCloseSequenceFile;
+        private ToolStripMenuItem testToolStripMenuItem;
     }
 }
