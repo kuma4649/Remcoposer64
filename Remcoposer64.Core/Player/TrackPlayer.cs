@@ -8,6 +8,9 @@ namespace Remcoposer64.Core.Player
 {
     public class TrackPlayer : MusicPlayer
     {
+        private bool _isMeasureMode = false;
+        private bool _isQuickMeasureMode=false;
+
         public class MeasurePoint
         {
             public int Tick;
@@ -26,10 +29,12 @@ namespace Remcoposer64.Core.Player
             base.Initialize(setting, midiOutInfo, midiOutDevice, midiInInfo, midiInDevice);
         }
 
-        public void PlayMusic(MIDIProject project, MIDITrack targetTrk, LinkedListNode<MIDIEvent> startEvent, LinkedListNode<MIDIEvent> endEvent)
+        public void PlayMusic(MIDIProject project,bool isMeasureMode,bool isQuickMeasureMode, MIDITrack targetTrk, LinkedListNode<MIDIEvent> startEvent, LinkedListNode<MIDIEvent> endEvent)
         {
             if (project == null) return;
 
+            _isMeasureMode = isMeasureMode;
+            _isQuickMeasureMode = isQuickMeasureMode;
             _project = project;
             _bpm = project.Information.Tempo;
             _ppq = project.Information.TimeBase;
@@ -92,7 +97,7 @@ namespace Remcoposer64.Core.Player
             if (playedAllTracks && !zanGT)
             {
                 _project.Information.Played = true;
-                //IsFinished = true;
+                IsFinished = true;
 
                 // 終了時のチェック
                 if (nTrk.Value.LoopStack.Count > 0)
@@ -131,7 +136,9 @@ namespace Remcoposer64.Core.Player
                         SkipFrameCount = 0;
                         if (trk.OutChannel != null)
                         {
-                            FlushMIDI(trk.OutDevice, (int)trk.OutChannel);// SkipMode解除
+                            if (_isMeasureMode && _isQuickMeasureMode) SkipModeOFFMIDI();
+                            else
+                                FlushMIDI(trk.OutDevice, (int)trk.OutChannel);// SkipMode解除
                         }
                     }
                 }
@@ -157,6 +164,10 @@ namespace Remcoposer64.Core.Player
             return true;
         }
 
+        public override RmPlayer.PlayerState GetState()
+        {
+            return IsFinished ? RmPlayer.PlayerState.Stopped : RmPlayer.PlayerState.Processing;
+        }
 
     }
 }

@@ -317,7 +317,7 @@ namespace Remcoposer64.Core.Player
                 midiout?.SkipModeOn();
             }
         }
-        private void SkipModeOFFMIDI()
+        protected void SkipModeOFFMIDI()
         {
             foreach (var midiout in midiOutDevice)
             {
@@ -1000,7 +1000,7 @@ namespace Remcoposer64.Core.Player
             return frameCounter;
         }
 
-        internal RmPlayer.PlayerState GetState()
+        public virtual RmPlayer.PlayerState GetState()
         {
             return IsFinished ? RmPlayer.PlayerState.Stopped : RmPlayer.PlayerState.Processing;
         }

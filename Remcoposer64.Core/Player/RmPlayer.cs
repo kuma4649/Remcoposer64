@@ -156,14 +156,19 @@ namespace Remcoposer64.Core.Player
             musicPlayer.PlayMusic(project, mp);
         }
 
-        public void PlayTrack(MIDIProject project,MIDITrack targetTrack,
+        public void PlayTrack(MIDIProject project,
+            bool isMeasureMode,
+            MIDITrack targetTrack,
             LinkedListNode<MIDIEvent> startEvent,
             LinkedListNode<MIDIEvent> endEvent)
         {
             if (project == null) return;
 
+            bool flg = true;
+            if (isMeasureMode && setting.player.QuickMeasure) flg = false;
+            if(flg) SendBeforeReset();
+
             // MusicPlayer にプロジェクトのイベントを渡す
-            SendBeforeReset();
 
             int maxMIDIOut = 0;
             foreach (var trk in project.Track)
@@ -175,7 +180,7 @@ namespace Remcoposer64.Core.Player
             //MIDITrack trgTrk = project.Track.First.Next.Value;
             //LinkedListNode<MIDIEvent> sEvt = project.Track.First.Next.Value.Part.First.Value.Event.First;
             //LinkedListNode<MIDIEvent> eEvt = sEvt.Next.Next;
-            trackPlayer.PlayMusic(project, targetTrack, startEvent, endEvent);
+            trackPlayer.PlayMusic(project, isMeasureMode, setting.player.QuickMeasure, targetTrack, startEvent, endEvent);
         }
 
         public void StartPlayback()
@@ -184,11 +189,11 @@ namespace Remcoposer64.Core.Player
             musicPlayer.StartPlayback();
         }
 
-        public void StopPlayback()
+        public void StopPlayback(bool sendAllSoundOff=true)
         {
             musicPlayer.Stop();
             trackPlayer.Stop();
-            SendAllSoundOff();
+            if(sendAllSoundOff) SendAllSoundOff();
         }
 
         public void FirePreview(List<(int, int, MIDIEvent)> ev)
@@ -369,6 +374,11 @@ namespace Remcoposer64.Core.Player
         public PlayerState GetMusicState()
         {
             return musicPlayer.GetState();
+        }
+
+        public PlayerState GetTrackPlayerState()
+        {
+            return trackPlayer.GetState();
         }
 
         public MIDIProject GetPlayingProject()

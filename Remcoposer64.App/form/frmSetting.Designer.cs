@@ -186,6 +186,9 @@ namespace Remcoposer64.App.form
             label31 = new Label();
             btnOK = new Button();
             btnCancel = new Button();
+            groupBox3 = new GroupBox();
+            rbMeasurePlay_Quick = new RadioButton();
+            rbMeasurePlay_Control = new RadioButton();
             tcSetting.SuspendLayout();
             tpOutput.SuspendLayout();
             tbcDeviceCategory.SuspendLayout();
@@ -223,6 +226,7 @@ namespace Remcoposer64.App.form
             groupBox1.SuspendLayout();
             tpReset.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // tcSetting
@@ -372,7 +376,7 @@ namespace Remcoposer64.App.form
             tbcMIDIOutList.Margin = new Padding(4);
             tbcMIDIOutList.Name = "tbcMIDIOutList";
             tbcMIDIOutList.SelectedIndex = 0;
-            tbcMIDIOutList.Size = new Size(478, 205);
+            tbcMIDIOutList.Size = new Size(478, 204);
             tbcMIDIOutList.TabIndex = 4;
             // 
             // tpA
@@ -384,7 +388,7 @@ namespace Remcoposer64.App.form
             tpA.Margin = new Padding(4);
             tpA.Name = "tpA";
             tpA.Padding = new Padding(4);
-            tpA.Size = new Size(470, 177);
+            tpA.Size = new Size(470, 176);
             tpA.TabIndex = 0;
             tpA.Tag = "0";
             tpA.Text = "A";
@@ -405,7 +409,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListA.RowHeadersVisible = false;
             dgvMIDIoutListA.RowTemplate.Height = 21;
             dgvMIDIoutListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListA.Size = new Size(428, 169);
+            dgvMIDIoutListA.Size = new Size(428, 168);
             dgvMIDIoutListA.TabIndex = 1;
             dgvMIDIoutListA.CellMouseDoubleClick += dgvMIDIoutListA_CellMouseDoubleClick;
             // 
@@ -492,7 +496,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_A
             // 
             btnDownMIDIOut_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_A.Location = new Point(440, 101);
+            btnDownMIDIOut_A.Location = new Point(440, 100);
             btnDownMIDIOut_A.Margin = new Padding(4);
             btnDownMIDIOut_A.Name = "btnDownMIDIOut_A";
             btnDownMIDIOut_A.Size = new Size(26, 72);
@@ -508,7 +512,7 @@ namespace Remcoposer64.App.form
             tpB.Controls.Add(dgvMIDIoutListB);
             tpB.Location = new Point(4, 24);
             tpB.Name = "tpB";
-            tpB.Size = new Size(470, 177);
+            tpB.Size = new Size(470, 176);
             tpB.TabIndex = 1;
             tpB.Text = "B";
             tpB.UseVisualStyleBackColor = true;
@@ -528,7 +532,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_B
             // 
             btnDownMIDIOut_B.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_B.Location = new Point(440, 101);
+            btnDownMIDIOut_B.Location = new Point(440, 100);
             btnDownMIDIOut_B.Margin = new Padding(4);
             btnDownMIDIOut_B.Name = "btnDownMIDIOut_B";
             btnDownMIDIOut_B.Size = new Size(26, 72);
@@ -552,7 +556,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListB.RowHeadersVisible = false;
             dgvMIDIoutListB.RowTemplate.Height = 21;
             dgvMIDIoutListB.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListB.Size = new Size(428, 169);
+            dgvMIDIoutListB.Size = new Size(428, 168);
             dgvMIDIoutListB.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn14
@@ -630,7 +634,7 @@ namespace Remcoposer64.App.form
             tpC.Controls.Add(dgvMIDIoutListC);
             tpC.Location = new Point(4, 24);
             tpC.Name = "tpC";
-            tpC.Size = new Size(470, 177);
+            tpC.Size = new Size(470, 176);
             tpC.TabIndex = 2;
             tpC.Text = "C";
             tpC.UseVisualStyleBackColor = true;
@@ -650,7 +654,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_C
             // 
             btnDownMIDIOut_C.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_C.Location = new Point(440, 101);
+            btnDownMIDIOut_C.Location = new Point(440, 100);
             btnDownMIDIOut_C.Margin = new Padding(4);
             btnDownMIDIOut_C.Name = "btnDownMIDIOut_C";
             btnDownMIDIOut_C.Size = new Size(26, 72);
@@ -674,7 +678,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListC.RowHeadersVisible = false;
             dgvMIDIoutListC.RowTemplate.Height = 21;
             dgvMIDIoutListC.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListC.Size = new Size(428, 169);
+            dgvMIDIoutListC.Size = new Size(428, 168);
             dgvMIDIoutListC.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn19
@@ -752,7 +756,7 @@ namespace Remcoposer64.App.form
             tpD.Controls.Add(dgvMIDIoutListD);
             tpD.Location = new Point(4, 24);
             tpD.Name = "tpD";
-            tpD.Size = new Size(470, 177);
+            tpD.Size = new Size(470, 176);
             tpD.TabIndex = 3;
             tpD.Text = "D";
             tpD.UseVisualStyleBackColor = true;
@@ -772,7 +776,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_D
             // 
             btnDownMIDIOut_D.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_D.Location = new Point(440, 101);
+            btnDownMIDIOut_D.Location = new Point(440, 100);
             btnDownMIDIOut_D.Margin = new Padding(4);
             btnDownMIDIOut_D.Name = "btnDownMIDIOut_D";
             btnDownMIDIOut_D.Size = new Size(26, 72);
@@ -796,7 +800,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListD.RowHeadersVisible = false;
             dgvMIDIoutListD.RowTemplate.Height = 21;
             dgvMIDIoutListD.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListD.Size = new Size(428, 169);
+            dgvMIDIoutListD.Size = new Size(428, 168);
             dgvMIDIoutListD.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn24
@@ -874,7 +878,7 @@ namespace Remcoposer64.App.form
             tpE.Controls.Add(dgvMIDIoutListE);
             tpE.Location = new Point(4, 24);
             tpE.Name = "tpE";
-            tpE.Size = new Size(470, 177);
+            tpE.Size = new Size(470, 176);
             tpE.TabIndex = 4;
             tpE.Text = "E";
             tpE.UseVisualStyleBackColor = true;
@@ -894,7 +898,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_E
             // 
             btnDownMIDIOut_E.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_E.Location = new Point(440, 101);
+            btnDownMIDIOut_E.Location = new Point(440, 100);
             btnDownMIDIOut_E.Margin = new Padding(4);
             btnDownMIDIOut_E.Name = "btnDownMIDIOut_E";
             btnDownMIDIOut_E.Size = new Size(26, 72);
@@ -918,7 +922,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListE.RowHeadersVisible = false;
             dgvMIDIoutListE.RowTemplate.Height = 21;
             dgvMIDIoutListE.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListE.Size = new Size(428, 169);
+            dgvMIDIoutListE.Size = new Size(428, 168);
             dgvMIDIoutListE.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn29
@@ -996,7 +1000,7 @@ namespace Remcoposer64.App.form
             tpF.Controls.Add(dgvMIDIoutListF);
             tpF.Location = new Point(4, 24);
             tpF.Name = "tpF";
-            tpF.Size = new Size(470, 177);
+            tpF.Size = new Size(470, 176);
             tpF.TabIndex = 5;
             tpF.Text = "F";
             tpF.UseVisualStyleBackColor = true;
@@ -1016,7 +1020,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_F
             // 
             btnDownMIDIOut_F.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_F.Location = new Point(440, 101);
+            btnDownMIDIOut_F.Location = new Point(440, 100);
             btnDownMIDIOut_F.Margin = new Padding(4);
             btnDownMIDIOut_F.Name = "btnDownMIDIOut_F";
             btnDownMIDIOut_F.Size = new Size(26, 72);
@@ -1040,7 +1044,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListF.RowHeadersVisible = false;
             dgvMIDIoutListF.RowTemplate.Height = 21;
             dgvMIDIoutListF.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListF.Size = new Size(428, 169);
+            dgvMIDIoutListF.Size = new Size(428, 168);
             dgvMIDIoutListF.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn34
@@ -1118,7 +1122,7 @@ namespace Remcoposer64.App.form
             tpG.Controls.Add(dgvMIDIoutListG);
             tpG.Location = new Point(4, 24);
             tpG.Name = "tpG";
-            tpG.Size = new Size(470, 177);
+            tpG.Size = new Size(470, 176);
             tpG.TabIndex = 6;
             tpG.Text = "G";
             tpG.UseVisualStyleBackColor = true;
@@ -1138,7 +1142,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIOut_G
             // 
             btnDownMIDIOut_G.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIOut_G.Location = new Point(440, 101);
+            btnDownMIDIOut_G.Location = new Point(440, 100);
             btnDownMIDIOut_G.Margin = new Padding(4);
             btnDownMIDIOut_G.Name = "btnDownMIDIOut_G";
             btnDownMIDIOut_G.Size = new Size(26, 72);
@@ -1162,7 +1166,7 @@ namespace Remcoposer64.App.form
             dgvMIDIoutListG.RowHeadersVisible = false;
             dgvMIDIoutListG.RowTemplate.Height = 21;
             dgvMIDIoutListG.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIoutListG.Size = new Size(428, 169);
+            dgvMIDIoutListG.Size = new Size(428, 168);
             dgvMIDIoutListG.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn39
@@ -1384,7 +1388,7 @@ namespace Remcoposer64.App.form
             tbcMIDIinList.Margin = new Padding(4);
             tbcMIDIinList.Name = "tbcMIDIinList";
             tbcMIDIinList.SelectedIndex = 0;
-            tbcMIDIinList.Size = new Size(478, 205);
+            tbcMIDIinList.Size = new Size(478, 204);
             tbcMIDIinList.TabIndex = 4;
             // 
             // tabPage3
@@ -1396,7 +1400,7 @@ namespace Remcoposer64.App.form
             tabPage3.Margin = new Padding(4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(4);
-            tabPage3.Size = new Size(470, 177);
+            tabPage3.Size = new Size(470, 176);
             tabPage3.TabIndex = 0;
             tabPage3.Tag = "0";
             tabPage3.Text = "...";
@@ -1417,7 +1421,7 @@ namespace Remcoposer64.App.form
             dgvMIDIinListA.RowHeadersVisible = false;
             dgvMIDIinListA.RowTemplate.Height = 21;
             dgvMIDIinListA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMIDIinListA.Size = new Size(428, 169);
+            dgvMIDIinListA.Size = new Size(428, 168);
             dgvMIDIinListA.TabIndex = 1;
             dgvMIDIinListA.CellMouseDoubleClick += dgvMIDIinListA_CellMouseDoubleClick;
             // 
@@ -1496,7 +1500,7 @@ namespace Remcoposer64.App.form
             // btnDownMIDIin_A
             // 
             btnDownMIDIin_A.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDownMIDIin_A.Location = new Point(440, 101);
+            btnDownMIDIin_A.Location = new Point(440, 100);
             btnDownMIDIin_A.Margin = new Padding(4);
             btnDownMIDIin_A.Name = "btnDownMIDIin_A";
             btnDownMIDIin_A.Size = new Size(26, 72);
@@ -1551,6 +1555,7 @@ namespace Remcoposer64.App.form
             // 
             // tpPlayer
             // 
+            tpPlayer.Controls.Add(groupBox3);
             tpPlayer.Controls.Add(groupBox1);
             tpPlayer.Controls.Add(cbRCPMuteMode);
             tpPlayer.Location = new Point(4, 24);
@@ -1750,6 +1755,39 @@ namespace Remcoposer64.App.form
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
             // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(rbMeasurePlay_Control);
+            groupBox3.Controls.Add(rbMeasurePlay_Quick);
+            groupBox3.Location = new Point(4, 158);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(200, 85);
+            groupBox3.TabIndex = 2;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "MeasurePlay Mode";
+            // 
+            // rbMeasurePlay_Quick
+            // 
+            rbMeasurePlay_Quick.AutoSize = true;
+            rbMeasurePlay_Quick.Location = new Point(6, 22);
+            rbMeasurePlay_Quick.Name = "rbMeasurePlay_Quick";
+            rbMeasurePlay_Quick.Size = new Size(56, 19);
+            rbMeasurePlay_Quick.TabIndex = 0;
+            rbMeasurePlay_Quick.TabStop = true;
+            rbMeasurePlay_Quick.Text = "Quick";
+            rbMeasurePlay_Quick.UseVisualStyleBackColor = true;
+            // 
+            // rbMeasurePlay_Control
+            // 
+            rbMeasurePlay_Control.AutoSize = true;
+            rbMeasurePlay_Control.Location = new Point(6, 47);
+            rbMeasurePlay_Control.Name = "rbMeasurePlay_Control";
+            rbMeasurePlay_Control.Size = new Size(142, 19);
+            rbMeasurePlay_Control.TabIndex = 0;
+            rbMeasurePlay_Control.TabStop = true;
+            rbMeasurePlay_Control.Text = "Control enabled(Slow)";
+            rbMeasurePlay_Control.UseVisualStyleBackColor = true;
+            // 
             // frmSetting
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1807,6 +1845,8 @@ namespace Remcoposer64.App.form
             tpReset.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -1964,5 +2004,8 @@ namespace Remcoposer64.App.form
         private Label label33;
         private TextBox tbBeforeSend_GMReset;
         private Label label31;
+        private GroupBox groupBox3;
+        private RadioButton rbMeasurePlay_Control;
+        private RadioButton rbMeasurePlay_Quick;
     }
 }

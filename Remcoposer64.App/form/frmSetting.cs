@@ -171,6 +171,9 @@ namespace Remcoposer64.App.form
             rbMiddle.Checked = setting.player.SkipModeType == 1;
             rbSlow.Checked = setting.player.SkipModeType == 2;
 
+            rbMeasurePlay_Quick.Checked = setting.player.QuickMeasure;
+            rbMeasurePlay_Control.Checked = !setting.player.QuickMeasure;
+
             // Reset
             tbBeforeSend_GMReset.Text = setting.midiOut.GMReset;
             tbBeforeSend_XGReset.Text = setting.midiOut.XGReset;
@@ -461,6 +464,7 @@ namespace Remcoposer64.App.form
 
             setting.player.RCPMuteMode = cbRCPMuteMode.Checked;
             setting.player.SkipModeType = rbFast.Checked ? 0 : (rbMiddle.Checked ? 1 : 2);
+            setting.player.QuickMeasure = rbMeasurePlay_Quick.Checked;
 
             setting.midiOut.GMReset = tbBeforeSend_GMReset.Text;
             setting.midiOut.XGReset = tbBeforeSend_XGReset.Text;

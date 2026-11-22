@@ -1532,7 +1532,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 endEvent = cur;
                 if (endEvent == null) endEvent = old;
 
-                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(isMeasurePlay, targetTrack, startEvent, endEvent));
 
                 return;
             }
@@ -1545,7 +1545,7 @@ namespace Remcoposer64.StepEditorPanelControl
                 startEvent = cur;
                 endEvent = cur.Next;
 
-                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(isMeasurePlay, targetTrack, startEvent, endEvent));
 
                 return;
             }
@@ -1594,7 +1594,7 @@ namespace Remcoposer64.StepEditorPanelControl
             endEvent = cur;
             if (endEvent == null) endEvent = old;
 
-            PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+            PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(isMeasurePlay, targetTrack, startEvent, endEvent));
         }
 
 

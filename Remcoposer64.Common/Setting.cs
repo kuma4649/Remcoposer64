@@ -97,6 +97,7 @@ namespace Remcoposer64.Common
             public bool RCPMuteMode { get; set; } = true;
             public double playSpeed { get; set; } = 1.0;
             public int SkipModeType { get; set; } = 0;
+            public bool QuickMeasure { get; set; } = true;
 
             public Player Copy()
             {
@@ -104,6 +105,7 @@ namespace Remcoposer64.Common
                 player.RCPMuteMode = this.RCPMuteMode;
                 player.playSpeed = this.playSpeed;
                 player.SkipModeType = this.SkipModeType;
+                player.QuickMeasure = this.QuickMeasure;
                 return player;
             }
         }

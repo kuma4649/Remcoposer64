@@ -58,9 +58,9 @@ namespace Remcoposer64.App
             player.PlayMusic(currentProject);
         }
 
-        internal void Stop()
+        internal void Stop(bool sendAllSoundOff=true)
         {
-            player.StopPlayback();
+            player.StopPlayback(sendAllSoundOff);
         }
 
         internal string GetLocationText()
@@ -1373,10 +1373,14 @@ namespace Remcoposer64.App
                 return;
             }
 
-            Stop();
+            bool flg = true;
+            if (e.isMeasureMode && setting.player.QuickMeasure) flg = false;
+            if (player.GetTrackPlayerState() == RmPlayer.PlayerState.Processing 
+                || player.GetMusicState() == RmPlayer.PlayerState.Processing) flg = true;
+            Stop(flg);
 
             //player.InitialPlay();
-            player.PlayTrack(currentProject, e.TargetTrack, e.StartEvent, e.EndEvent);
+            player.PlayTrack(currentProject, e.isMeasureMode, e.TargetTrack, e.StartEvent, e.EndEvent);
         }
     }
 }
