@@ -34,11 +34,18 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.ExitStepEditor += stepEditorPanel1_ExitStepEditor;
             stepEditorPanel1.SysExEditRequested = ExecuteSysExEditor;
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
+            stepEditorPanel1.PlayMeasureOrPointRequested += StepEditorPanel1_PlayMeasureOrPointRequested;
             stepEditorPanel1.GetScrollLockState = GetScrollLockState;
             stepEditorPanel1.KeyDownEvent += StepEditorPanel1_KeyDown;
             stepEditorPanel1.RefreshTrackEditorEvent += StepEditorPanel1_RefreashTrackEditorEvent;
 
             UpdateFormTitle();
+        }
+
+        private void StepEditorPanel1_PlayMeasureOrPointRequested(object sender, StepEditorPanel.EventArgs.PlayMeasureOrPointEventArgs e)
+        {
+            //e.TargetTrack = trk;
+            parent.PlayMeasureOrPointRequested(e);
         }
 
         private void StepEditorPanel1_RefreashTrackEditorEvent(object sender, EventArgs e)

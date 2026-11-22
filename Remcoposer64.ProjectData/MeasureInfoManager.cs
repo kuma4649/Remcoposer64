@@ -1,8 +1,5 @@
 ﻿using Remcoposer64.Common;
 using Remcoposer64.ProjectData.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Remcoposer64.ProjectData
 {

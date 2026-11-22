@@ -38,6 +38,8 @@ namespace Remcoposer64.Core
         private volatile bool sending = false;
         private volatile bool skipMode = false;
 
+        private int silentSendCount = 0;
+
         public int QueueCount => queue.Count;
 
         public ThrottledMidiOut(MidiOut midiOut,Setting.midiOutInfo midiOutInfo, double bytesPerMs = 30.0)
@@ -147,6 +149,10 @@ namespace Remcoposer64.Core
                     {
                         midiOut.SendBuffer(packet.SysExData);
                         midiParam.SendBuffer(packet.SysExData);
+                        if (skipMode)
+                        {
+                            silentSendCount += packet.Size;
+                        }
                     }
                     else
                     {
@@ -207,10 +213,11 @@ namespace Remcoposer64.Core
             }
         }
 
-        public void FlushMIDI()
+        public int FlushMIDI()
         {
             int status;
             int msg;
+            int count = 0;
             for (int i = 0; i < 16; i++)
             {
                 status = 0xB0 | i; // CC
@@ -223,6 +230,7 @@ namespace Remcoposer64.Core
                     {
                         msg = (int)(status | (j << 8) | (val << 16));
                         midiOut.Send(msg);
+                        count+=3;
                         Flush2();
                     }
                 }
@@ -233,6 +241,7 @@ namespace Remcoposer64.Core
                     status = 0xC0 | i; // ProgramChange
                     msg = (int)(status | (pc << 8));
                     midiOut.Send(msg);
+                    count += 2;
                     Flush2();
                 }
 
@@ -248,11 +257,13 @@ namespace Remcoposer64.Core
                     byte lsb = (byte)(n & 0x7f);
                     midiOut.Send(status | (0x65 << 8) | (msb << 16));
                     midiOut.Send(status | (0x64 << 8) | (lsb << 16));
+                    count += 6;
 
                     msb = (byte)((val >> 8) & 0x7f);
                     lsb = (byte)(val & 0x7f);
                     midiOut.Send(status | (0x06 << 8) | (msb << 16));
                     midiOut.Send(status | (0x26 << 8) | (lsb << 16));
+                    count += 6;
                     Flush2();
                 }
 
@@ -267,6 +278,7 @@ namespace Remcoposer64.Core
                     midiOut.Send(status | (0x62 << 8) | (lsb << 16));
 
                     midiOut.Send(status | (0x06 << 8) | (val << 16));
+                    count += 9;
                     Flush2();
                 }
 
@@ -279,6 +291,7 @@ namespace Remcoposer64.Core
                     byte msb = (byte)((bend >> 7) & 0x7F);
                     msg = status | (lsb << 8) | (msb << 16);
                     midiOut.Send(msg);
+                    count += 3;
                     Flush2();
                 }
 
@@ -288,6 +301,7 @@ namespace Remcoposer64.Core
                     status = 0xD0 | i; // Channel Pressure
                     msg = (int)(status | (cp<< 8));
                     midiOut.Send(msg);
+                    count += 2;
                     Flush2();
                 }
 
@@ -299,12 +313,18 @@ namespace Remcoposer64.Core
                     {
                         msg = (int)(status | (j << 8) | (val << 16));
                         midiOut.Send(msg);
+                        count += 3;
                         Flush2();
                     }
                 }
 
             }
+
+            count += silentSendCount;
+            silentSendCount = 0;
             skipMode = false;
+
+            return count;
         }
 
         public void Dispose()
@@ -323,6 +343,7 @@ namespace Remcoposer64.Core
         internal void SkipModeOn()
         {
             skipMode = true;
+            silentSendCount = 0;
         }
         internal void SkipModeOff()
         {

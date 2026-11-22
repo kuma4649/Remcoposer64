@@ -70,8 +70,9 @@ namespace Remcoposer64.StepEditorPanelControl
                 }
             }
 
+            //ProgramControlのポップアップウィンドウが表示中の場合はカーソルキーなどの情報を渡して処理終了
             var pcForm = parent.PCcandidateForm;
-
+            // ★ 先に候補フォームが表示中かチェック
             if (pcForm != null && pcForm.Visible)
             {
                 switch (key)
@@ -223,6 +224,14 @@ namespace Remcoposer64.StepEditorPanelControl
                     if (parent.OverwriteMode) parent.ToggleOverwriteMode();
                     parent.ShowEventContextMenu();
                     CancelKeyPress = true;
+                    break;
+                case Keys.P:
+                case Keys.M:
+                    if (inputState == InputState.None)
+                    {
+                        parent.PlayMeasureorPoint(key == Keys.M);
+                        CancelKeyPress = true;
+                    }
                     break;
             }
         }

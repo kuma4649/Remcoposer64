@@ -2,6 +2,7 @@
 using Remcoposer64.Common.Render;
 using Remcoposer64.ProjectData;
 using Remcoposer64.ProjectData.Events;
+using Remcoposer64.StepEditorPanel.EventArgs;
 using Remcoposer64.StepEditorPanel.Events;
 using Remcoposer64.StepEditorPanelControl.Command;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
@@ -31,6 +32,7 @@ namespace Remcoposer64.StepEditorPanelControl
         public event EventHandler<StatusBarMessageEventArgs> ChangeStatusBarMessage;
         public Func<SysExEditRequest, SysExEditResult> SysExEditRequested;
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
+        public event EventHandler<PlayMeasureOrPointEventArgs> PlayMeasureOrPointRequested;
         public Func<bool> GetScrollLockState;
         public event EventHandler<KeyEventArgs> KeyDownEvent;
         public event EventHandler RefreshTrackEditorEvent;
@@ -1507,6 +1509,95 @@ namespace Remcoposer64.StepEditorPanelControl
             if (GetScrollLockState == null) return false;
             return GetScrollLockState.Invoke();
         }
+
+        public void PlayMeasureorPoint(bool isMeasurePlay)
+        {
+            MIDITrack targetTrack = track;
+            LinkedListNode<MIDIEvent> startEvent;
+            LinkedListNode<MIDIEvent> endEvent;
+            LinkedListNode<MIDIEvent> cur;
+            LinkedListNode<MIDIEvent> old;
+
+            if (!isMeasurePlay)
+            {
+                old = null;
+                cur = cursor.EventNode;
+                startEvent = cur;
+
+                while (cur != null)
+                {
+                    old = cur;
+                    cur = cur.Next;
+                }
+                endEvent = cur;
+                if (endEvent == null) endEvent = old;
+
+                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+
+                return;
+            }
+
+            old = null;
+            cur = cursor.EventNode;
+
+            if (cur?.Value.Type == MIDIEventType.SameMeas)
+            {
+                startEvent = cur;
+                endEvent = cur.Next;
+
+                PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+
+                return;
+            }
+
+
+            if (cur?.Value.Type == MIDIEventType.BarLine)
+            {
+                old = cur;
+                cur = cur.Previous;
+            }
+
+            while (cur != null
+                && cur.Value.Type != MIDIEventType.BarLine
+                && cur.Value.Type != MIDIEventType.SameMeas)
+            {
+                old = cur;
+                cur = cur.Previous;
+            }
+            if (cur?.Value.Type == MIDIEventType.SameMeas)
+            {
+                old = cur;
+                cur = cur.Next;
+            }
+            startEvent = cur;
+            if (startEvent == null) startEvent = old;
+
+
+            old = null;
+            cur = cursor.EventNode;
+
+            if (cur?.Value.Type == MIDIEventType.BarLine)
+            {
+                old = cur;
+                cur = cur.Next;
+            }
+
+            while (cur != null
+                && cur.Value.Type != MIDIEventType.EndOfTrack
+                && cur.Value.Type != MIDIEventType.MetaEndOfTrack
+                && cur.Value.Type != MIDIEventType.BarLine
+                && cur.Value.Type != MIDIEventType.SameMeas)
+            {
+                old = cur;
+                cur = cur.Next;
+            }
+            endEvent = cur;
+            if (endEvent == null) endEvent = old;
+
+            PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(targetTrack, startEvent, endEvent));
+        }
+
+
 
     }
 }

@@ -92,7 +92,7 @@ namespace Remcoposer64.Core.Player
             if (playedAllTracks && !zanGT)
             {
                 _project.Information.Played = true;
-                IsFinished = true;
+                //IsFinished = true;
 
                 // 終了時のチェック
                 if (nTrk.Value.LoopStack.Count > 0)
@@ -126,8 +126,11 @@ namespace Remcoposer64.Core.Player
                 // 指定小節迄の演奏スキップ制御及び演奏完了制御
                 if (SkipFrameCount > 0)
                 {
-                    SkipFrameCount--;
-                    if (SkipFrameCount < 1) FlushMIDI();// SkipMode解除
+                    if (frameCounter >= measStartPoint.Tick)
+                    {
+                        FlushMIDI();// SkipMode解除
+                        SkipFrameCount = 0;
+                    }
                 }
                 else
                 {
@@ -144,6 +147,7 @@ namespace Remcoposer64.Core.Player
 
                 prt.CurrentEvent = PlayEvent(trk, nPrt, prt.CurrentEvent);
                 prt.CurrentEventFrame += evt.ST;
+                //SkipFrameCount -= evt.ST;
 
             }
 

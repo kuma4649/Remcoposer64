@@ -327,10 +327,14 @@ namespace Remcoposer64.Core.Player
 
         protected void FlushMIDI()
         {
+            int maxCount = 0;
             foreach (var midiout in midiOutDevice)
             {
-                midiout?.FlushMIDI();
+                int n = 0;
+                n = (midiout == null ? 0 : midiout.FlushMIDI());
+                maxCount = Math.Max(n, maxCount);
             }
+            Thread.Sleep(maxCount * 4);
         }
 
         protected LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)

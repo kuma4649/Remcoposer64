@@ -156,7 +156,9 @@ namespace Remcoposer64.Core.Player
             musicPlayer.PlayMusic(project, mp);
         }
 
-        public void PlayTrack(MIDIProject project)
+        public void PlayTrack(MIDIProject project,MIDITrack targetTrack,
+            LinkedListNode<MIDIEvent> startEvent,
+            LinkedListNode<MIDIEvent> endEvent)
         {
             if (project == null) return;
 
@@ -170,10 +172,10 @@ namespace Remcoposer64.Core.Player
             }
             project.Information.MaxLengthMIDIOut = maxMIDIOut + 1;
 
-            MIDITrack trgTrk = project.Track.First.Next.Value;
-            LinkedListNode<MIDIEvent> sEvt = project.Track.First.Next.Value.Part.First.Value.Event.First;
-            LinkedListNode<MIDIEvent> eEvt = sEvt.Next.Next;
-            trackPlayer.PlayMusic(project, trgTrk, sEvt, eEvt);
+            //MIDITrack trgTrk = project.Track.First.Next.Value;
+            //LinkedListNode<MIDIEvent> sEvt = project.Track.First.Next.Value.Part.First.Value.Event.First;
+            //LinkedListNode<MIDIEvent> eEvt = sEvt.Next.Next;
+            trackPlayer.PlayMusic(project, targetTrack, startEvent, endEvent);
         }
 
         public void StartPlayback()

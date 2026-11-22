@@ -3,6 +3,7 @@ using Remcoposer64.Common;
 using Remcoposer64.Core;
 using Remcoposer64.Core.Player;
 using Remcoposer64.ProjectData;
+using Remcoposer64.StepEditorPanel.EventArgs;
 using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.TrackEditor;
 using System.Text;
@@ -1352,6 +1353,20 @@ namespace Remcoposer64.App
 
         private void testToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+            //if (currentProject == null)
+            //{
+            //    MessageBox.Show("再生するプロジェクトがありません。");
+            //    return;
+            //}
+
+            //Stop();
+
+            ////player.InitialPlay();
+            //player.PlayTrack(currentProject);
+        }
+
+        public void PlayMeasureOrPointRequested(PlayMeasureOrPointEventArgs e)
+        {
             if (currentProject == null)
             {
                 MessageBox.Show("再生するプロジェクトがありません。");
@@ -1361,7 +1376,7 @@ namespace Remcoposer64.App
             Stop();
 
             //player.InitialPlay();
-            player.PlayTrack(currentProject);
+            player.PlayTrack(currentProject, e.TargetTrack, e.StartEvent, e.EndEvent);
         }
     }
 }
