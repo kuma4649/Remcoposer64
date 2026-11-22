@@ -255,7 +255,6 @@ namespace Remcoposer64.Core.Player
                         midiOut.Send((0xE0 | ch) | (0 << 8) | (64 << 16));
                         midiOut.Flush2();
                     }
-                    //midiOut.Close();
                 }
                 catch(NAudio.MmException)
                 {
@@ -270,6 +269,7 @@ namespace Remcoposer64.Core.Player
                     //try { midiOut?.Close(); } catch { }
                 }
             }
+            Thread.Sleep(500);
         }
 
         public void SendBeforeReset()

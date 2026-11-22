@@ -225,7 +225,7 @@ namespace Remcoposer64.StepEditorPanelControl
                     parent.ShowEventContextMenu();
                     CancelKeyPress = true;
                     break;
-                case Keys.P:
+                case Keys.J:
                 case Keys.M:
                     if (inputState == InputState.None)
                     {
