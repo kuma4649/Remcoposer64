@@ -336,6 +336,17 @@ namespace Remcoposer64.Core.Player
             }
             Thread.Sleep(maxCount * 5);
         }
+        protected void FlushMIDI(int outDevice,int outChannel)
+        {
+            int maxCount = 0;
+            ThrottledMidiOut midiout = null;
+            midiout = outDevice < midiOutDevice.Length ? midiOutDevice[outDevice] : null;
+            int n = 0;
+            n = (midiout == null ? 0 : midiout.FlushMIDI(outChannel));
+            maxCount = Math.Max(n, maxCount);
+
+            Thread.Sleep(1000+maxCount * 3);
+        }
 
         protected LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
         {

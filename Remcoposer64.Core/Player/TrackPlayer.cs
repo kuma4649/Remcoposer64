@@ -128,8 +128,11 @@ namespace Remcoposer64.Core.Player
                 {
                     if (frameCounter >= measStartPoint.Tick)
                     {
-                        FlushMIDI();// SkipMode解除
                         SkipFrameCount = 0;
+                        if (trk.OutChannel != null)
+                        {
+                            FlushMIDI(trk.OutDevice, (int)trk.OutChannel);// SkipMode解除
+                        }
                     }
                 }
                 else
