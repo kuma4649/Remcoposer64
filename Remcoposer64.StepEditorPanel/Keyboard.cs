@@ -233,6 +233,13 @@ namespace Remcoposer64.StepEditorPanelControl
                         CancelKeyPress = true;
                     }
                     break;
+                case Keys.Decimal:
+                    if (ctrl && inputState == InputState.None)
+                    {
+                        parent.PlayMeasureorPoint(true);
+                        CancelKeyPress = true;
+                    }
+                    break;
             }
         }
 
