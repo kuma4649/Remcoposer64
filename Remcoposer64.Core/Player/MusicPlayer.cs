@@ -334,7 +334,7 @@ namespace Remcoposer64.Core.Player
                 n = (midiout == null ? 0 : midiout.FlushMIDI());
                 maxCount = Math.Max(n, maxCount);
             }
-            Thread.Sleep(maxCount * 4);
+            Thread.Sleep(maxCount * 5);
         }
 
         protected LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)
