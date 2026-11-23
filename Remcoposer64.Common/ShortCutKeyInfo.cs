@@ -70,6 +70,44 @@ namespace Remcoposer64.Common
                 && this.alt2 == alt
                 && this.key2 == key;
         }
+
+        public override string ToString()
+        {
+            string s1 = GetOneStrokeText(
+                shift,
+                ctrl,
+                alt,
+                key);
+
+            if (key2 == Keys.None)
+                return s1;
+
+            string s2 = GetOneStrokeText(
+                shift2,
+                ctrl2,
+                alt2,
+                key2);
+
+            return $"{s1} , {s2}";
+        }
+
+        private static string GetOneStrokeText(
+            bool shift,
+            bool ctrl,
+            bool alt,
+            Keys key)
+        {
+            List<string> lst = [];
+
+            if (ctrl) lst.Add("Ctrl");
+            if (shift) lst.Add("Shift");
+            if (alt) lst.Add("Alt");
+
+            lst.Add(key.ToString());
+
+            return string.Join(" + ", lst);
+        }
+
     }
 
 }

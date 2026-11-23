@@ -5,6 +5,7 @@ using Remcoposer64.StepEditorPanelControl.EventArgs;
 using Remcoposer64.SysExEditorPanel;
 using System.Runtime.InteropServices;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Remcoposer64.App.form
 {
@@ -36,11 +37,14 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.PlayNoteRequested += StepEditorPanel1_PlayNoteRequested;
             stepEditorPanel1.PlayMeasureOrPointRequested += StepEditorPanel1_PlayMeasureOrPointRequested;
             stepEditorPanel1.GetScrollLockState = GetScrollLockState;
-            stepEditorPanel1.KeyDownEvent += StepEditorPanel1_KeyDown;
+            //stepEditorPanel1.KeyDownEvent += StepEditorPanel1_KeyDown;
             stepEditorPanel1.RefreshTrackEditorEvent += StepEditorPanel1_RefreashTrackEditorEvent;
+            stepEditorPanel1.ShortCut = parent.setting.shortcut;
+            stepEditorPanel1.ShortCutEvent += StepEditorPanel1_ShortCutEvent;
 
             UpdateFormTitle();
         }
+
 
         private void StepEditorPanel1_PlayMeasureOrPointRequested(object sender, StepEditorPanel.EventArgs.PlayMeasureOrPointEventArgs e)
         {
@@ -60,18 +64,20 @@ namespace Remcoposer64.App.form
         }
 
 
-        private void StepEditorPanel1_KeyDown(object sender, KeyEventArgs e)
+        //private void StepEditorPanel1_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    var info = parent.setting.shortcut.ProcessKey(ShortCutKey.enmCategory.Common, e.KeyData);
+        //    if (info != null)
+        //    {
+        //        parent.ExecuteShortcut(info);
+        //    }
+        //}
+        private void StepEditorPanel1_ShortCutEvent(ShortCutKeyInfo info)
         {
-            switch (e.KeyCode)
-            {
-                case Keys.F5:
-                    parent.Play();
-                    break;
-                case Keys.F10:
-                    parent.Stop();
-                    break;
-            }
+            parent.ExecuteShortcut(info);
         }
+
+
 
         private bool GetScrollLockState()
         {

@@ -44,6 +44,7 @@
             toolStripSeparator2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             tsmiEdit = new ToolStripMenuItem();
+            testToolStripMenuItem = new ToolStripMenuItem();
             tsmiTransport = new ToolStripMenuItem();
             tsmiPlay = new ToolStripMenuItem();
             tsmiStop = new ToolStripMenuItem();
@@ -79,8 +80,9 @@
             tsbSEFont12 = new ToolStripButton();
             tsbSEFont16 = new ToolStripButton();
             timerScreen = new System.Windows.Forms.Timer(components);
-            testToolStripMenuItem = new ToolStripMenuItem();
+            tsmiStatusLabel = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             toolStripContainer1.ContentPanel.SuspendLayout();
@@ -185,6 +187,13 @@
             tsmiEdit.Size = new Size(39, 20);
             tsmiEdit.Text = "&Edit";
             // 
+            // testToolStripMenuItem
+            // 
+            testToolStripMenuItem.Name = "testToolStripMenuItem";
+            testToolStripMenuItem.Size = new Size(93, 22);
+            testToolStripMenuItem.Text = "test";
+            testToolStripMenuItem.Click += testToolStripMenuItem_Click_1;
+            // 
             // tsmiTransport
             // 
             tsmiTransport.DropDownItems.AddRange(new ToolStripItem[] { tsmiPlay, tsmiStop });
@@ -195,16 +204,14 @@
             // tsmiPlay
             // 
             tsmiPlay.Name = "tsmiPlay";
-            tsmiPlay.ShortcutKeys = Keys.F5;
-            tsmiPlay.Size = new Size(123, 22);
+            tsmiPlay.Size = new Size(98, 22);
             tsmiPlay.Text = "&Play";
             tsmiPlay.Click += tsmiPlay_Click;
             // 
             // tsmiStop
             // 
             tsmiStop.Name = "tsmiStop";
-            tsmiStop.ShortcutKeys = Keys.F10;
-            tsmiStop.Size = new Size(123, 22);
+            tsmiStop.Size = new Size(98, 22);
             tsmiStop.Text = "&Stop";
             tsmiStop.Click += tsmiStop_Click;
             // 
@@ -259,6 +266,7 @@
             // statusStrip1
             // 
             statusStrip1.Dock = DockStyle.None;
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsmiStatusLabel });
             statusStrip1.Location = new Point(0, 0);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(800, 22);
@@ -402,7 +410,7 @@
             // 
             toolStrip2.Dock = DockStyle.None;
             toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel2, tsbTrackRow1, tsbTrackRow2, tsbTrackRow3 });
-            toolStrip2.Location = new Point(230, 24);
+            toolStrip2.Location = new Point(235, 24);
             toolStrip2.Name = "toolStrip2";
             toolStrip2.Size = new Size(138, 25);
             toolStrip2.TabIndex = 2;
@@ -447,9 +455,9 @@
             // 
             toolStrip3.Dock = DockStyle.None;
             toolStrip3.Items.AddRange(new ToolStripItem[] { toolStripLabel3, tsbSEFont8, tsbSEFont12, tsbSEFont16 });
-            toolStrip3.Location = new Point(381, 24);
+            toolStrip3.Location = new Point(378, 24);
             toolStrip3.Name = "toolStrip3";
-            toolStrip3.Size = new Size(189, 25);
+            toolStrip3.Size = new Size(220, 25);
             toolStrip3.TabIndex = 3;
             // 
             // toolStripLabel3
@@ -494,12 +502,10 @@
             timerScreen.Interval = 20;
             timerScreen.Tick += timerScreen_Tick;
             // 
-            // testToolStripMenuItem
+            // tsmiStatusLabel
             // 
-            testToolStripMenuItem.Name = "testToolStripMenuItem";
-            testToolStripMenuItem.Size = new Size(180, 22);
-            testToolStripMenuItem.Text = "test";
-            testToolStripMenuItem.Click += testToolStripMenuItem_Click_1;
+            tsmiStatusLabel.Name = "tsmiStatusLabel";
+            tsmiStatusLabel.Size = new Size(0, 17);
             // 
             // frmMain
             // 
@@ -515,6 +521,8 @@
             DragEnter += dockPanel1_DragEnter;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
@@ -584,5 +592,6 @@
         private ToolStripButton tsbSEFont16;
         private ToolStripMenuItem tsmiCloseSequenceFile;
         private ToolStripMenuItem testToolStripMenuItem;
+        private ToolStripStatusLabel tsmiStatusLabel;
     }
 }

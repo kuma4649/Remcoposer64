@@ -24,6 +24,7 @@ namespace Remcoposer64.App
         private frmInformation info;
         private frmProject frmProject;
         private List<frmStepEditor> stepEditors = new List<frmStepEditor>();
+        private readonly System.Windows.Forms.Timer statusTimer = new System.Windows.Forms.Timer();
 
         public frmMain()
         {
@@ -61,6 +62,70 @@ namespace Remcoposer64.App
         internal void Stop(bool sendAllSoundOff=true)
         {
             player.StopPlayback(sendAllSoundOff);
+        }
+
+        internal void FileOpen()
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "All support files (*.rmc;*.mid;*.rcp;*.g36)|*.rmc;*.mid;*.rcp;*.g36|RMC Files (*.rmc)|*.rmc|MIDI Files (*.mid)|*.mid|RCP Files (*.rcp;*.g36)|*.rcp;*.g36";
+            //ofd.Filter = "RMC Files (*.rmc)|*.rmc";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            if (Path.GetExtension(ofd.FileName).ToLower() != ".rmc")
+            {
+                ImportMidiFile(ofd.FileName);
+                undoMng.Clear();
+                return;
+            }
+
+            // プロジェクトをロード
+            MIDIProject prj = MIDIProject.Load(ofd.FileName);
+            if (prj == null)
+            {
+                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
+                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            CloseProject();
+            undoMng.Clear();
+
+            // プロジェクトの UI を構築
+            AddProjectTab(prj, true);
+            UpdateTitle();
+            UpdateInformation(prj);
+
+            // ファイル名を更新
+            prj.Information.FileFullName = ofd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+        }
+
+        internal void FileSave()
+        {
+            MIDIProject prj = currentProject;
+            string fn = prj.Information.FileFullName;
+            if (string.IsNullOrEmpty(fn))
+            {
+                fn = $"NewSequence_{DateTime.Now:yyMMddHHmmss}";
+            }
+            else
+                fn = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
+
+            var sfd = new SaveFileDialog();
+            sfd.FileName = fn;
+            sfd.Filter = "RMC Files (*.rmc)|*.rmc";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            prj.Information.FileFullName = sfd.FileName;
+            prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
+
+            prj.Save(sfd.FileName);
+
+            ((frmProject)currentProject.parentForm).Text = prj.Information.FileName;
+            undoMng.Clear();
         }
 
         internal string GetLocationText()
@@ -134,33 +199,7 @@ namespace Remcoposer64.App
 
         private void tsmiOpenSequenceFile_Click(object sender, EventArgs e)
         {
-
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "RMC Files (*.rmc)|*.rmc";
-
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            // プロジェクトをロード
-            MIDIProject prj = MIDIProject.Load(ofd.FileName);
-            if (prj == null)
-            {
-                MessageBox.Show("プロジェクトの読み込みに失敗しました。",
-                                "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            CloseProject();
-            undoMng.Clear();
-
-            // プロジェクトの UI を構築
-            AddProjectTab(prj, true);
-            UpdateTitle();
-            UpdateInformation(prj);
-
-            // ファイル名を更新
-            prj.Information.FileFullName = ofd.FileName;
-            prj.Information.FileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+            FileOpen();
         }
 
         private void tsmiExit_Click(object sender, EventArgs e)
@@ -216,28 +255,7 @@ namespace Remcoposer64.App
 
         private void tsmiSaveSequenceFile_Click(object sender, EventArgs e)
         {
-            MIDIProject prj = currentProject;
-            string fn = prj.Information.FileFullName;
-            if (string.IsNullOrEmpty(fn))
-            {
-                fn = $"NewSequence_{DateTime.Now:yyMMddHHmmss}";
-            }
-            else
-                fn = Path.Combine(fn.Replace(Path.GetFileName(fn), ""), Path.GetFileNameWithoutExtension(fn));
-
-            var sfd = new SaveFileDialog();
-            sfd.FileName = fn;
-            sfd.Filter = "RMC Files (*.rmc)|*.rmc";
-            if (sfd.ShowDialog() != DialogResult.OK)
-                return;
-
-            prj.Information.FileFullName = sfd.FileName;
-            prj.Information.FileName = Path.GetFileNameWithoutExtension(sfd.FileName);
-
-            prj.Save(sfd.FileName);
-
-            ((frmProject)currentProject.parentForm).Text = prj.Information.FileName;
-            undoMng.Clear();
+            FileSave();
         }
 
 
@@ -443,6 +461,13 @@ namespace Remcoposer64.App
 
             Log.Write(LogLevel.Information, "Start initialization.");
 
+            statusTimer.Interval = 10_000;
+            statusTimer.Tick += (s, e) =>
+            {
+                tsmiStatusLabel.Text = "";
+                statusTimer.Stop();
+            };
+            
             dockPanel1.Theme = vS2015DarkTheme1;
             dockPanel1.DocumentStyle = DocumentStyle.DockingSdi;
 
@@ -529,86 +554,7 @@ namespace Remcoposer64.App
 
             //SetupDragDrop(this);
         }
-        //        protected override void WndProc(ref Message m)
-        //        {
-        //            if (m.Msg == 0x233)
-        //            {
-        //                MessageBox.Show("WM_DROPFILES");
-        //            }
 
-        //            base.WndProc(ref m);
-        //        }
-
-        //[DllImport("shell32.dll")]
-        //    static extern void DragAcceptFiles(
-        //    IntPtr hwnd,
-        //    bool accept);
-        //        protected override void OnHandleCreated(EventArgs e)
-        //        {
-        //            base.OnHandleCreated(e);
-
-        //            DragAcceptFiles(this.Handle, true);
-        //        }
-
-        //private void SetupDragDrop(Control parent)
-        //{
-        //    parent.AllowDrop = true;
-
-        //    parent.DragEnter += Common_DragEnter;
-        //    parent.DragDrop += Common_DragDrop;
-
-        //    foreach (Control ctrl in parent.Controls)
-        //    {
-        //        SetupDragDrop(ctrl);
-        //    }
-        //}
-
-        //private void Common_DragEnter(object sender, DragEventArgs e)
-        //{
-        //    if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
-        //    {
-        //        e.Effect = DragDropEffects.Copy;
-        //    }
-        //    else
-        //    {
-        //        e.Effect = DragDropEffects.None;
-        //    }
-        //}
-
-        //private void Common_DragDrop(object sender, DragEventArgs e)
-        //{
-        //    if (!e.Data!.GetDataPresent(DataFormats.FileDrop))
-        //        return;
-
-        //    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-        //    if (files.Length == 0)
-        //        return;
-
-        //    OpenFile(files[0]);
-        //}
-
-        //protected override void OnDragEnter(DragEventArgs drgevent)
-        //{
-        //    base.OnDragEnter(drgevent);
-
-        //    if (drgevent.Data.GetDataPresent(DataFormats.FileDrop))
-        //    {
-        //        drgevent.Effect = DragDropEffects.Copy;
-        //    }
-        //}
-        //protected override void OnDragDrop(DragEventArgs drgevent)
-        //{
-        //    base.OnDragDrop(drgevent);
-
-        //    string[] files =
-        //        (string[])drgevent.Data.GetData(DataFormats.FileDrop);
-
-        //    if (files.Length > 0)
-        //    {
-        //        OpenFile(files[0]);
-        //    }
-        //}
         private void SaveFormStatus()
         {
             setting.ui.FormMain = SaveFormStatus(this);
@@ -835,19 +781,6 @@ namespace Remcoposer64.App
             //frmInformation info = new frmInformation(project);
             //info.Show(dockPanel1, new Rectangle(0, 0, 640, 480));
             //info.Size = new Size(640, 480);
-        }
-
-        private string MakePartDots(MIDITrack trk)
-        {
-            int count = 0;
-            LinkedListNode<MIDIPart> part = trk.getStartPartNode();
-            while (part != null)
-            {
-                count++;
-                part = trk.getNextPartNode(part);
-            }
-
-            return new string('●', count);
         }
 
         private void SelectPresetButton(ToolStripItemCollection collection, ToolStripButton selected)
@@ -1318,39 +1251,6 @@ namespace Remcoposer64.App
             player.FirePreview(lst);
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //List<ProjectData.Events.MIDIEvent> lst = new();
-            //ProjectData.Events.MIDINoteEvent evt = new ProjectData.Events.MIDINoteEvent
-            //{
-            //    KeyNumber = 60,
-            //    ST = 48,
-            //    GT = 48,
-            //    Vel = 110
-            //};
-            //lst.Add(evt);
-
-            //evt = new ProjectData.Events.MIDINoteEvent
-            //{
-            //    KeyNumber = 62,
-            //    ST = 48,
-            //    GT = 24,
-            //    Vel = 110
-            //};
-            //lst.Add(evt);
-
-            //evt = new ProjectData.Events.MIDINoteEvent
-            //{
-            //    KeyNumber = 64,
-            //    ST = 48,
-            //    GT = 48,
-            //    Vel = 110
-            //};
-            //lst.Add(evt);
-
-            //player.FirePreview(lst);
-        }
-
         private void testToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             //if (currentProject == null)
@@ -1382,5 +1282,59 @@ namespace Remcoposer64.App
             //player.InitialPlay();
             player.PlayTrack(currentProject, e.isMeasureMode, e.TargetTrack, e.StartEvent, e.EndEvent);
         }
+
+
+        protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, System.Windows.Forms.Keys keyData)
+        {
+            var info = setting.shortcut.ProcessKey(ShortCutKey.enmCategory.Common, keyData);
+            if (info != null)
+            {
+                ExecuteShortcut(info);
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        public void ExecuteShortcut(ShortCutKeyInfo info)
+        {
+            if (info == null) return;
+
+            DispStatus($"{info}:{info.displayName}");
+
+            switch (info.func)
+            {
+                case ShortCutKey.enmContent.Play:
+                    Play();
+                    break;
+
+                case ShortCutKey.enmContent.Stop:
+                    Stop();
+                    break;
+
+                case ShortCutKey.enmContent.FileOpen:
+                    FileOpen();
+                    break;
+
+                case ShortCutKey.enmContent.FileSave:
+                    FileSave();
+                    break;
+            }
+        }
+
+        public void DispStatus(string msg)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(DispStatus), msg);
+                return;
+            }
+
+            tsmiStatusLabel.Text = msg;
+
+            statusTimer.Stop();
+            statusTimer.Start();
+        }
+
     }
 }

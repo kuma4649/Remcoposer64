@@ -34,8 +34,11 @@ namespace Remcoposer64.StepEditorPanelControl
         public event EventHandler<PlayNoteEventArgs> PlayNoteRequested;
         public event EventHandler<PlayMeasureOrPointEventArgs> PlayMeasureOrPointRequested;
         public Func<bool> GetScrollLockState;
-        public event EventHandler<KeyEventArgs> KeyDownEvent;
+        //public event EventHandler<KeyEventArgs> KeyDownEvent;
         public event EventHandler RefreshTrackEditorEvent;
+
+        public ShortCutKey ShortCut = null;
+        public event Action<ShortCutKeyInfo> ShortCutEvent;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -551,6 +554,7 @@ namespace Remcoposer64.StepEditorPanelControl
             isDragging = false;
         }
 
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -559,17 +563,18 @@ namespace Remcoposer64.StepEditorPanelControl
                 return;
             }
 
-            // 親ウィンドウにキー操作を送信する
-            switch (e.KeyCode)
+            if (ShortCut != null)
             {
-                case Keys.F5://再生
-                case Keys.F10://停止
-                    if (KeyDownEvent != null)
-                    {
-                        KeyDownEvent?.Invoke(this, e);
-                        return;
-                    }
-                    break;
+                var info = ShortCut.ProcessKey(
+                    ShortCutKey.enmCategory.Common,
+                    e.KeyData);
+
+                if (info != null)
+                {
+                    ShortCutEvent?.Invoke(info);
+                    e.Handled = true;
+                    return;
+                }
             }
 
 

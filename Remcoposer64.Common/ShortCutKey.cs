@@ -270,48 +270,98 @@ namespace Remcoposer64.Common
                 sb.Append(" | ");
                 sb.Append(displayName);
                 sb.Append(" | ");
-                sb.Append(GetShortcutText(info));
+                sb.Append(info.ToString());
                 sb.AppendLine();
             }
 
             return sb.ToString();
         }
 
-        private static string GetShortcutText(ShortCutKeyInfo info)
+
+        public List<ShortCutKeyInfo> Find1stStroke(enmCategory category, Keys keyData)
         {
-            string s1 = GetOneStrokeText(
-                info.shift,
-                info.ctrl,
-                info.alt,
-                info.key);
+            List<ShortCutKeyInfo> ret = [];
+            DecodeKeyData(keyData, out Keys key, out bool shift, out bool ctrl, out bool alt);
 
-            if (info.key2 == Keys.None)
-                return s1;
+            foreach (var info in Info)
+            {
+                if (info.category != category) continue;
+                if (info.shift != shift) continue;
+                if (info.ctrl != ctrl) continue;
+                if (info.alt != alt) continue;
+                if (info.key != key) continue;
 
-            string s2 = GetOneStrokeText(
-                info.shift2,
-                info.ctrl2,
-                info.alt2,
-                info.key2);
+                ret.Add(info);
+            }
 
-            return $"{s1} , {s2}";
+            return ret;
         }
 
-        private static string GetOneStrokeText(
-            bool shift,
-            bool ctrl,
-            bool alt,
-            Keys key)
+        public ShortCutKeyInfo Find2ndStroke(List<ShortCutKeyInfo> candidates, Keys keyData)
         {
-            List<string> lst = [];
+            DecodeKeyData(keyData, out Keys key, out bool shift, out bool ctrl, out bool alt);
 
-            if (ctrl) lst.Add("Ctrl");
-            if (shift) lst.Add("Shift");
-            if (alt) lst.Add("Alt");
+            foreach (var info in candidates)
+            {
+                if (info.shift2 != shift) continue;
+                if (info.ctrl2 != ctrl) continue;
+                if (info.alt2 != alt) continue;
+                if (info.key2 != key) continue;
 
-            lst.Add(key.ToString());
+                return info;
+            }
 
-            return string.Join(" + ", lst);
+            return null;
+
+        }
+
+        private static void DecodeKeyData(Keys keyData, out Keys key, out bool shift, out bool ctrl, out bool alt)
+        {
+            key = keyData & Keys.KeyCode;
+
+            ctrl = (keyData & Keys.Control) == Keys.Control;
+            shift = (keyData & Keys.Shift) == Keys.Shift;
+            alt = (keyData & Keys.Alt) == Keys.Alt;
+        }
+
+        private List<ShortCutKeyInfo> waitingShortcut = null;
+        private DateTime waitingShortcutTime;
+
+        public ShortCutKeyInfo ProcessKey(enmCategory category, Keys keyData)
+        {
+            if ((DateTime.Now - waitingShortcutTime)
+                .TotalSeconds > 3)
+            {
+                waitingShortcut = null;
+            }
+
+            if (waitingShortcut != null)
+            {
+                var info =
+                    Find2ndStroke(waitingShortcut, keyData);
+
+                waitingShortcut = null;
+
+                if (info != null)
+                    return info;
+            }
+
+            var lst = Find1stStroke(category, keyData);
+
+            if (lst.Count == 1
+                && lst[0].key2 == Keys.None)
+            {
+                return lst[0];
+            }
+
+            if (lst.Count > 0
+                && lst.Any(x => x.key2 != Keys.None))
+            {
+                waitingShortcut = lst;
+                waitingShortcutTime = DateTime.Now;
+            }
+
+            return null;
         }
     }
 }
