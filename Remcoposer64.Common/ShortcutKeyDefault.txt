@@ -1,0 +1,41 @@
+# Categoryに使用できる句
+#   Common        共通
+#   StepEditor    数値エディタ
+#   TrackEditor   トラックエディタ
+#   SysExEditor   SysExエディタ
+
+# Functionに使用できる句
+#   FileOpen      ファイルを開く
+#   FileSave      ファイルを保存する
+#   Play          演奏開始
+#   Stop          演奏停止
+#   InsCC         コントロールチェンジイベントを挿入
+#   MeasPlay      小節演奏
+
+# 定義の注意
+#   1. #で始まる行はコメントとして解析をしません。
+#   2. !で始まる行はカテゴリとして解析します。次のカテゴリの指定がくるまでそのカテゴリ内の定義として扱います。
+#   3. ショートカットは、Function(機能)、DisplayName(設定画面での表示名)、Shortcut(ショートカットのキー操作)の順で「|」で区切って定義します。
+#   4. ショートカットキーが2ストロークのキー入力がある場合は,で区切って列挙してください
+#   5. DisplayNameは、「||」と記述すると「|」文字を指定したことになります
+#   6. キーの名称は別ツールを使用して調べてください
+#   7. タブと空白は無視されます。
+
+
+
+
+
+# Category
+!Common
+  # Function | DisplayName | Shortcut
+    FileOpen | Open | F1
+    FileOpen | Open | Ctrl + O
+    FileSave | Save | F2
+    FileSave | Save | Ctrl + S
+    Play     | Play | F5
+    Stop     | Stop | F10
+
+!StepEditor
+    InsCC    | Insert ControlChangeEvent | OemQuestion , OemQuestion
+    InsCC    | Insert ControlChangeEvent | Divide , Divide
+    MeasPlay | Play Measure              | Ctrl + Oemcomma

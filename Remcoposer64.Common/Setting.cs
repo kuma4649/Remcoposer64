@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 using static Remcoposer64.Common.Setting;
@@ -12,13 +14,30 @@ namespace Remcoposer64.Common
         public Player player = new Player();
         public MidiOut midiOut { get; set; } = new();
         public MidiIn midiIn { get; set; } = new();
+        public ShortCutKey shortcut { get; set; } = new();
         public UI ui = new();
 
         public Setting.Common common = new();
 
         public Setting()
         {
+#if DEBUG
+            Assembly asm = Assembly.GetExecutingAssembly();
+            foreach (string s in asm.GetManifestResourceNames())
+            {
+                Debug.WriteLine(s);
+            }
 
+            Debug.WriteLine(Assembly.GetExecutingAssembly().FullName);
+            Debug.WriteLine(Assembly.GetCallingAssembly().FullName);
+
+            asm = typeof(ShortCutKey).Assembly;
+
+            foreach (string s in asm.GetManifestResourceNames())
+            {
+                Debug.WriteLine(s);
+            }
+#endif
         }
 
         public Setting Copy()
@@ -28,6 +47,7 @@ namespace Remcoposer64.Common
             setting.player = this.player.Copy();
             setting.midiOut = this.midiOut.Copy();
             setting.midiIn = this.midiIn.Copy();
+            setting.shortcut = this.shortcut.Copy();
             setting.ui = this.ui.Copy();
             setting.common = this.common.Copy();
 
@@ -64,6 +84,11 @@ namespace Remcoposer64.Common
                 using StreamReader sr = new(fullPath, new UTF8Encoding(false));
 
                 Setting sett = (Setting)serializer.Deserialize(sr);
+                if (sett != null && (sett.shortcut == null || sett.shortcut.Info == null || sett.shortcut.Info.Length < 1))
+                {
+                    sett.shortcut = new();
+                    sett.shortcut.LoadDefault();
+                }
 
                 return sett;
             }
@@ -246,6 +271,7 @@ namespace Remcoposer64.Common
                 return mii;
             }
         }
+
 
         [Serializable]
         public class UI

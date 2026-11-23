@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using Remcoposer64.Common;
+using Remcoposer64.ProjectData;
+using System.Security.Cryptography;
 using static Remcoposer64.Common.Setting;
 
 namespace Remcoposer64.App.form
@@ -11,6 +13,10 @@ namespace Remcoposer64.App.form
         private string[] midiOutBeforeSendList = new string[] { "None", "GM Reset", "XG Reset", "GS Reset", "Custom" };
         private DataGridView[] dgvMIDIOutList;
         private DataGridView[] dgvMIDIInList;
+        private ShortCutKeyInfo waitShortCutInfo;
+        private DataGridViewRow waitShortCutRow;
+        private int waitShortCutStep=0;
+        private int waitShortCutStroke=1;
 
         public frmSetting()
         {
@@ -174,6 +180,9 @@ namespace Remcoposer64.App.form
             rbMeasurePlay_Quick.Checked = setting.player.QuickMeasure;
             rbMeasurePlay_Control.Checked = !setting.player.QuickMeasure;
 
+            // Shortcutのオプション
+            RefreshDgvShortCut(setting.shortcut);
+
             // Reset
             tbBeforeSend_GMReset.Text = setting.midiOut.GMReset;
             tbBeforeSend_XGReset.Text = setting.midiOut.XGReset;
@@ -181,6 +190,7 @@ namespace Remcoposer64.App.form
             tbBeforeSend_Custom.Text = setting.midiOut.Custom;
 
         }
+
 
         private void btnAddMIDIout_Click(object sender, EventArgs e)
         {
@@ -471,6 +481,17 @@ namespace Remcoposer64.App.form
             setting.midiOut.GSReset = tbBeforeSend_GSReset.Text;
             setting.midiOut.Custom = tbBeforeSend_Custom.Text;
 
+            // Shortcut設定反映
+            List<ShortCutKeyInfo> lstShortcut = new();
+
+            foreach (DataGridViewRow row in dgvShortCutKey.Rows)
+            {
+                if (row.Tag is ShortCutKeyInfo sc)
+                    lstShortcut.Add(sc);
+            }
+
+            setting.shortcut.Info = lstShortcut.ToArray();
+
             this.DialogResult = DialogResult.OK;
             this.Close();
 
@@ -488,6 +509,212 @@ namespace Remcoposer64.App.form
             tbBeforeSend_XGReset.Text = mo.XGReset;
             tbBeforeSend_GSReset.Text = mo.GSReset;
             tbBeforeSend_Custom.Text = mo.Custom;
+        }
+
+        private void btnShortcutAllDefault_Click(object sender, EventArgs e)
+        {
+            ShortCutKey sck = new ShortCutKey();
+            sck.LoadDefault();
+            RefreshDgvShortCut(sck);
+        }
+
+        private void RefreshDgvShortCut(ShortCutKey sck)
+        {
+            dgvShortCutKey.SuspendLayout();
+            dgvShortCutKey.Rows.Clear();
+            foreach (var sc in sck.Info)
+            {
+                dgvShortCutKey.Rows.Add(
+                    sc.number,
+                    sc.category,
+                    sc.func,
+                    sc.displayName,
+                    sc.shift,
+                    sc.ctrl,
+                    sc.alt,
+                    sc.key,
+                    sc.shift2,
+                    sc.ctrl2,
+                    sc.alt2,
+                    sc.key2,
+                    "Set",
+                    "Clr"
+                );
+                DataGridViewRow row = dgvShortCutKey.Rows[dgvShortCutKey.Rows.Count - 1];
+                row.Tag = sc;
+            }
+            dgvShortCutKey.ResumeLayout();
+        }
+
+        private void dgvShortCutKey_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            DataGridViewRow row = dgvShortCutKey.Rows[e.RowIndex];
+            ShortCutKeyInfo info = (ShortCutKeyInfo)row.Tag;
+
+            if (e.ColumnIndex == clmSet.Index)
+            {
+                // Set処理
+                if (waitShortCutRow != null) waitShortCutRow.Selected = false;
+
+                waitShortCutInfo = null;
+                waitShortCutRow = null;
+                waitShortCutStep = -1;
+                waitShortCutStroke = 0;
+
+                btnOK.Enabled = false;
+                row.Selected = true;
+                lblSKKey.Text = "Please enter the key you wish to assign";
+                lblSKKey.ForeColor = System.Drawing.Color.Red;
+                waitShortCutInfo = info;
+                waitShortCutRow = row;
+                waitShortCutStep = 0;
+                waitShortCutStroke = cbShortcut2StrokeMode.Checked ? 2 : 1;
+            }
+            else if (e.ColumnIndex == clmClr.Index)
+            {
+                EndShortcutInput();
+
+                info.shift = false;
+                info.ctrl = false;
+                info.alt = false;
+                info.key = Keys.None;
+
+                info.shift2 = false;
+                info.ctrl2 = false;
+                info.alt2 = false;
+                info.key2 = Keys.None;
+
+                row.Cells["clmShift"].Value = false;
+                row.Cells["clmCtrl"].Value = false;
+                row.Cells["clmAlt"].Value = false;
+                row.Cells["clmKey"].Value = Keys.None;
+
+                row.Cells["clmShift2"].Value = false;
+                row.Cells["clmCtrl2"].Value = false;
+                row.Cells["clmAlt2"].Value = false;
+                row.Cells["clmKey2"].Value = Keys.None;
+
+                EndShortcutInput();
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, System.Windows.Forms.Keys keyData)
+        {
+            if (waitShortCutInfo == null) return base.ProcessCmdKey(ref msg, keyData);
+
+
+            Keys key = keyData & Keys.KeyCode;
+            bool ctrl = (keyData & Keys.Control) == Keys.Control;
+            bool shift = (keyData & Keys.Shift) == Keys.Shift;
+            bool alt = (keyData & Keys.Alt) == Keys.Alt;
+
+            if (key == Keys.ControlKey || key == Keys.ShiftKey || key == Keys.Menu)
+            {
+                return true;
+            }
+
+            if (waitShortCutStep == 0)
+            {
+                waitShortCutInfo.shift = shift;
+                waitShortCutInfo.ctrl = ctrl;
+                waitShortCutInfo.alt = alt;
+                waitShortCutInfo.key = key;
+                waitShortCutRow.Cells["clmShift"].Value = shift;
+                waitShortCutRow.Cells["clmCtrl"].Value = ctrl;
+                waitShortCutRow.Cells["clmAlt"].Value = alt;
+                waitShortCutRow.Cells["clmKey"].Value = key;
+                waitShortCutStep++;
+                if (waitShortCutStroke == 2)
+                {
+                    lblSKKey.Text = "Please enter Step 2 key.";
+                }
+                else
+                {
+                    EndShortcutInput();
+                }
+            }
+            else
+            {
+                waitShortCutInfo.shift2 = shift;
+                waitShortCutInfo.ctrl2 = ctrl;
+                waitShortCutInfo.alt2 = alt;
+                waitShortCutInfo.key2 = key;
+                waitShortCutRow.Cells["clmShift2"].Value = shift;
+                waitShortCutRow.Cells["clmCtrl2"].Value = ctrl;
+                waitShortCutRow.Cells["clmAlt2"].Value = alt;
+                waitShortCutRow.Cells["clmKey2"].Value = key;
+
+                EndShortcutInput();
+            }
+
+            ////キー設定中のESC押下時はウィンドウを閉じないようにする
+            //if (keyData == Keys.Escape) return true;
+
+            //return base.ProcessCmdKey(ref msg, keyData);
+            return true;
+        }
+
+        private void EndShortcutInput()
+        {
+            lblSKKey.Text = "";
+            btnOK.Enabled = true;
+
+            waitShortCutInfo = null;
+            waitShortCutRow = null;
+            waitShortCutStep = -1;
+            waitShortCutStroke = 0;
+        }
+
+
+        private void btnShortcutImport_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Shortcut setting File (*.txt)|*.txt";
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            ShortCutKey sck = new ShortCutKey();
+            bool result = sck.Load(ofd.FileName);
+            if (!result)
+            {
+                MessageBox.Show("Fail import shortcut setting file.",
+                                "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            RefreshDgvShortCut(sck);
+        }
+
+        private void btnShortcutExport_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog();
+            sfd.FileName = $"shortcut_{DateTime.Now:yyMMdd}.txt";
+            sfd.Filter = "Shortcut setting File (*.txt)|*.txt";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            try
+            {
+                List<ShortCutKeyInfo> info = new();
+                foreach (DataGridViewRow row in dgvShortCutKey.Rows)
+                {
+                    if (row.Tag is ShortCutKeyInfo sc)
+                        info.Add(sc);
+                }
+                ShortCutKey sck = new ShortCutKey();
+                string result = sck.GetText(info.ToArray());
+                File.WriteAllText(sfd.FileName, result);
+            }
+            catch (Exception ex)
+            {
+                string msg = "Fail export shortcut setting file.";
+                Common.Log.ForcedWrite(ex);
+                MessageBox.Show(msg,
+                                "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
         }
     }
 }
