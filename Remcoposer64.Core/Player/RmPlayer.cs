@@ -393,7 +393,7 @@ namespace Remcoposer64.Core.Player
 
         public MIDIParam GetMIDIParam(int devNo)
         {
-            
+            if (midiOutDev == null) return null;
             return midiOutDev[devNo]?.midiParam;
         }
 

@@ -33,10 +33,25 @@ namespace Remcoposer64.StepEditorPanelControl
         /// このメソッドはHandleKeyPressよりも先に処理される
         /// </summary>
         /// <param name="keyData"></param>
-        public void HandleKeyDown(uint keyData)
+        public void HandleKeyDown(KeyEventArgs e)
         {
+            uint keyData = (uint)e.KeyData;
             MIDIEvent activeEvent = parent.cursor.EventNode.Value;
             CancelKeyPress = false;
+
+            if (parent.ShortCut != null)
+            {
+                var info = parent.ShortCut.ProcessKey(
+                    ShortCutKey.enmCategory.StepEditor,
+                    e.KeyData);
+
+                if (info != null)
+                {
+                    ExecuteShortcut(info);
+                    e.Handled = true;
+                    return;
+                }
+            }
 
             // ★モディファイア除去
             Keys key = (Keys)(keyData & (uint)Keys.KeyCode);
@@ -225,24 +240,8 @@ namespace Remcoposer64.StepEditorPanelControl
                     parent.ShowEventContextMenu();
                     CancelKeyPress = true;
                     break;
-                case Keys.J:
-                case Keys.M:
-                    if (inputState == InputState.None)
-                    {
-                        parent.PlayMeasureorPoint(key == Keys.M);
-                        CancelKeyPress = true;
-                    }
-                    break;
-                case Keys.Decimal:
-                    if (ctrl && inputState == InputState.None)
-                    {
-                        parent.PlayMeasureorPoint(true);
-                        CancelKeyPress = true;
-                    }
-                    break;
             }
         }
-
 
         public void HandleKeyPress(char keyChar)
         {
@@ -793,6 +792,27 @@ namespace Remcoposer64.StepEditorPanelControl
 
             // 入力状態は"通常"に戻す
             inputState = InputState.None;
+        }
+
+        public void ExecuteShortcut(ShortCutKeyInfo info)
+        {
+            if (info == null) return;
+
+            parent.DispStatus($"{info}:{info.displayName}");
+
+            switch (info.func)
+            {
+                case ShortCutKey.enmContent.JumpPlay:
+                    parent.ForceEndEditing();
+                    CancelKeyPress = true;
+                    parent.PlayMeasureorPoint(false);
+                    break;
+                case ShortCutKey.enmContent.MeasPlay:
+                    parent.ForceEndEditing();
+                    CancelKeyPress = true;
+                    parent.PlayMeasureorPoint(true);
+                    break;
+            }
         }
 
     }

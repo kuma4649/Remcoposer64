@@ -136,7 +136,8 @@ namespace Remcoposer64.Core.Player
                         SkipFrameCount = 0;
                         if (trk.OutChannel != null)
                         {
-                            if (_isMeasureMode && _isQuickMeasureMode) SkipModeOFFMIDI();
+                            if (_isMeasureMode && _isQuickMeasureMode) 
+                                SkipModeOFFMIDI();
                             else
                                 FlushMIDI(trk.OutDevice, (int)trk.OutChannel);// SkipMode解除
                         }

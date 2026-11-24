@@ -41,10 +41,15 @@ namespace Remcoposer64.App.form
             stepEditorPanel1.RefreshTrackEditorEvent += StepEditorPanel1_RefreashTrackEditorEvent;
             stepEditorPanel1.ShortCut = parent.setting.shortcut;
             stepEditorPanel1.ShortCutEvent += StepEditorPanel1_ShortCutEvent;
+            stepEditorPanel1.DiapStatusEvent += StepEditorPanel1_DiapStatusEvent;
 
             UpdateFormTitle();
         }
 
+        private void StepEditorPanel1_DiapStatusEvent(string msg)
+        {
+            parent.DispStatus(msg);
+        }
 
         private void StepEditorPanel1_PlayMeasureOrPointRequested(object sender, StepEditorPanel.EventArgs.PlayMeasureOrPointEventArgs e)
         {

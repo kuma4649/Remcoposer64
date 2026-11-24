@@ -36,6 +36,6 @@
     Stop     | Stop | F10
 
 !StepEditor
-    InsCC    | Insert ControlChangeEvent | OemQuestion , OemQuestion
-    InsCC    | Insert ControlChangeEvent | Divide , Divide
-    MeasPlay | Play Measure              | Ctrl + Oemcomma
+    JumpPlay | Jump Play                 | J
+    MeasPlay | Play Measure              | M
+    MeasPlay | Play Measure              | Ctrl + Decimal

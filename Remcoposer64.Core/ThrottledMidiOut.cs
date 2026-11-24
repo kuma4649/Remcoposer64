@@ -37,6 +37,7 @@ namespace Remcoposer64.Core
         private readonly AutoResetEvent wakeup = new(false);
         private volatile bool sending = false;
         private volatile bool skipMode = false;
+        private volatile bool quickMode = false;
 
         private int silentSendCount = 0;
 
@@ -147,7 +148,8 @@ namespace Remcoposer64.Core
                 {
                     if (packet.IsSysEx)
                     {
-                        midiOut.SendBuffer(packet.SysExData);
+                        if (!skipMode ||(skipMode && !quickMode))
+                            midiOut.SendBuffer(packet.SysExData);
                         midiParam.SendBuffer(packet.SysExData);
                         if (skipMode)
                         {
@@ -164,7 +166,9 @@ namespace Remcoposer64.Core
                 }
                 catch
                 {
+#if DEBUG
                     // 必要ならLog
+#endif
                 }
                 finally
                 {
@@ -203,6 +207,7 @@ namespace Remcoposer64.Core
                 Thread.Sleep(0);
             }
             skipMode = false;
+            quickMode = false;
         }
 
         public void Flush2()
@@ -224,6 +229,7 @@ namespace Remcoposer64.Core
             count += silentSendCount;
             silentSendCount = 0;
             skipMode = false;
+            quickMode = false;
 
             return count;
         }
@@ -236,6 +242,7 @@ namespace Remcoposer64.Core
             count += silentSendCount;
             silentSendCount = 0;
             skipMode = false;
+            quickMode = false;
 
             return count;
         }
@@ -357,14 +364,17 @@ namespace Remcoposer64.Core
             midiOut?.Dispose();
         }
 
-        internal void SkipModeOn()
+        internal void SkipModeOn(bool QuickMode)
         {
             skipMode = true;
+            quickMode = QuickMode;
             silentSendCount = 0;
         }
+
         internal void SkipModeOff()
         {
             skipMode = false;
+            quickMode = false;
         }
     }
 }

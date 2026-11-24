@@ -22,14 +22,15 @@ namespace Remcoposer64.Common
         public enum enmContent : int
         {
             None = int.MinValue,
-
+// Common
             FileOpen = 0,
             FileSave = 100,
             Play = 400,
             Stop = 800,
-
+// StepEditor
             InsCC = 1000,
-            MeasPlay = 1010,
+            JumpPlay = 1010,
+            MeasPlay = 1020,
         };
 
         public ShortCutKeyInfo[] Info { get; set; } = [];

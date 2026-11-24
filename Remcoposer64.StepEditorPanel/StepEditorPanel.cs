@@ -39,6 +39,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
         public ShortCutKey ShortCut = null;
         public event Action<ShortCutKeyInfo> ShortCutEvent;
+        public event Action<string> DiapStatusEvent;
 
         // 公開プロパティ
         [Browsable(true)]
@@ -554,14 +555,16 @@ namespace Remcoposer64.StepEditorPanelControl
             isDragging = false;
         }
 
+        // keydown はキーが押された瞬間にすべてのキーで発生
+        // keypress は文字が入力される際に印字可能な文字キーのみで発生
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (e.Handled)
-            {
-                return;
-            }
+            if (e.Handled) return;
+            if (keyb == null) return;
+            if (imeMode) return; // Panel 側のキー処理を止める
+
 
             if (ShortCut != null)
             {
@@ -575,17 +578,6 @@ namespace Remcoposer64.StepEditorPanelControl
                     e.Handled = true;
                     return;
                 }
-            }
-
-
-            if (keyb == null)
-            {
-                return;
-            }
-
-            if (imeMode)
-            {
-                return; // Panel 側のキー処理を止める
             }
 
             // ★ 選択解除していいのは「通常の文字入力」だけ
@@ -611,28 +603,16 @@ namespace Remcoposer64.StepEditorPanelControl
                 cursor.ClearSelection();
             }
 
-            keyb.HandleKeyDown((uint)e.KeyData);
-
+            keyb.HandleKeyDown(e);
             Debug.WriteLine(undoRedoManager.GetDebugInfo());
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
             base.OnKeyPress(e);
-            if (e.Handled)
-            {
-                return;
-            }
-
-            if (keyb == null)
-            {
-                return;
-            }
-
-            if (imeMode)
-            {
-                return; // Panel 側のキー処理を止める
-            }
+            if (e.Handled) return;
+            if (keyb == null) return;
+            if (imeMode) return; // Panel 側のキー処理を止める
 
             if ((e.KeyChar == '\t' && WinApi.IsKeyDown(Keys.I))
                 || (e.KeyChar == '\r' && WinApi.IsKeyDown(Keys.M))
@@ -1602,7 +1582,9 @@ namespace Remcoposer64.StepEditorPanelControl
             PlayMeasureOrPointRequested?.Invoke(this, new PlayMeasureOrPointEventArgs(isMeasurePlay, targetTrack, startEvent, endEvent));
         }
 
-
-
+        internal void DispStatus(string msg)
+        {
+            DiapStatusEvent?.Invoke(msg);
+        }
     }
 }

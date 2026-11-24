@@ -1185,6 +1185,8 @@ namespace Remcoposer64.App
             player.StopPlayback();
             player.Close();
 
+            if (frmProject == null) return;
+
             // MIDIデバイスの表示を更新する
             try
             {

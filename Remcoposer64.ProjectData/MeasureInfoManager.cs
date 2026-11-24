@@ -466,6 +466,8 @@ namespace Remcoposer64.ProjectData
             long frameCounter = 0;
             bool isFinished = false;
 
+            this.project = project;
+
             Common.BuildMeasureStartNode(project, measureStartNode);
 
             while (!isFinished)

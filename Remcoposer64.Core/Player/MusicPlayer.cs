@@ -304,6 +304,7 @@ namespace Remcoposer64.Core.Player
 
         private void InitMIDI()
         {
+            if (midiOutDevice == null) return;
             foreach (var midiout in midiOutDevice)
             {
                 midiout?.Init();
@@ -312,13 +313,15 @@ namespace Remcoposer64.Core.Player
 
         private void SkipModeONMIDI()
         {
+            if (midiOutDevice == null) return;
             foreach (var midiout in midiOutDevice)
             {
-                midiout?.SkipModeOn();
+                midiout?.SkipModeOn(_setting.player.QuickMeasure);
             }
         }
         protected void SkipModeOFFMIDI()
         {
+            if (midiOutDevice == null) return;
             foreach (var midiout in midiOutDevice)
             {
                 midiout?.SkipModeOff();
@@ -338,6 +341,7 @@ namespace Remcoposer64.Core.Player
         }
         protected void FlushMIDI(int outDevice,int outChannel)
         {
+            if (midiOutDevice == null) return;
             int maxCount = 0;
             ThrottledMidiOut midiout = null;
             midiout = outDevice < midiOutDevice.Length ? midiOutDevice[outDevice] : null;
