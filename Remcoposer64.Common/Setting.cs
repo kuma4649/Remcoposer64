@@ -84,10 +84,22 @@ namespace Remcoposer64.Common
                 using StreamReader sr = new(fullPath, new UTF8Encoding(false));
 
                 Setting sett = (Setting)serializer.Deserialize(sr);
-                if (sett != null && (sett.shortcut == null || sett.shortcut.Info == null || sett.shortcut.Info.Length < 1))
+                if (sett != null && 
+                    (sett.shortcut == null 
+                    || sett.shortcut.Info == null 
+                    || sett.shortcut.Info.Length < 1))
                 {
                     sett.shortcut = new();
                     sett.shortcut.LoadDefault();
+                }
+                else if (sett != null && sett.shortcut != null && sett.shortcut.Info != null)
+                {
+                    ShortCutKey sck = new();
+                    sck.LoadDefault();
+                    sett.shortcut.Info = sett.shortcut.MergeDefaultShortcut(
+                        sck.Info,
+                        sett.shortcut.Info,
+                        sett.shortcut.RemovedFunctions);
                 }
 
                 return sett;
@@ -95,7 +107,10 @@ namespace Remcoposer64.Common
             catch (Exception ex)
             {
                 Remcoposer64.Common.Log.ForcedWrite(ex);
-                return new Setting();
+                Setting sett = new Setting();
+                sett.shortcut = new();
+                sett.shortcut.LoadDefault();
+                return sett;
             }
         }
 

@@ -1,16 +1,37 @@
 # Categoryに使用できる句
-#   Common        共通
-#   StepEditor    数値エディタ
-#   TrackEditor   トラックエディタ
-#   SysExEditor   SysExエディタ
+#   Common         共通
+#   StepEditor     数値エディタ
+#   TrackEditor    トラックエディタ
+#   SysExEditor    SysExエディタ
 
 # Functionに使用できる句
-#   FileOpen      ファイルを開く
-#   FileSave      ファイルを保存する
-#   Play          演奏開始
-#   Stop          演奏停止
-#   InsCC         コントロールチェンジイベントを挿入
-#   MeasPlay      小節演奏
+#   FileOpen       ファイルを開く
+#   FileSave       ファイルを保存する
+#   Play           演奏開始
+#   Stop           演奏停止
+#   InsCC          コントロールチェンジイベントを挿入
+#   JumpPlay       ジャンプ演奏
+#   MeasPlay       小節演奏
+#   SpecialEvent   スペシャルイベント挿入
+#   Cut            カット
+#   Copy           コピー
+#   Paste          ペースト
+#   Undo           アンドゥ
+#   Redo           リドゥ
+#   Escape         StepEditorを閉じる
+#   BackSpace      バックスペース
+#   ModeChange     挿入、上書きのモードチェンジ
+#   DeleteEvent    削除
+#   Enter          SysExEvent の編集開始（上書きモード限定） その他はEnter動作
+#   PageUp         カーソルを基準に１Page上に移動する
+#   PageDown       カーソルを基準に１Page下に移動する
+#   MoveTopMeas    カーソルを小節の初めに移動する
+#   MoveNextMeas   カーソルを次の小節に移動する
+#   MoveFirstEvent カーソルをトラックの初めのイベントに移動する
+#   MoveLastEvent  カーソルをトラックの最後のイベントに移動する
+#   Left           カーソルを左へ移動
+#   Right          カーソルを右へ移動
+
 
 # 定義の注意
 #   1. #で始まる行はコメントとして解析をしません。
@@ -27,15 +48,37 @@
 
 # Category
 !Common
-  # Function | DisplayName | Shortcut
-    FileOpen | Open | F1
-    FileOpen | Open | Ctrl + O
-    FileSave | Save | F2
-    FileSave | Save | Ctrl + S
-    Play     | Play | F5
-    Stop     | Stop | F10
+  # Function       | DisplayName                | ShortcutKey
+    FileOpen       | Open                       | F1
+    FileOpen       | Open                       | Ctrl + O
+    FileSave       | Save                       | F2
+    FileSave       | Save                       | Ctrl + S
+    Play           | Play                       | F5
+    Stop           | Stop                       | F10
+                                                
+!StepEditor                                     
+    JumpPlay       | Jump Play                  | J
+    MeasPlay       | Play Measure               | M
+    MeasPlay       | Play Measure               | Ctrl + Decimal
+    SpecialEvent   | Insert Special Event       | OemQuestion
+    SpecialEvent   | Insert Special Event       | Divide
+    Cut            | Cut                        | Ctrl + X
+    Copy           | Copy                       | Ctrl + C
+    Paste          | Paste                      | Ctrl + V
+    Undo           | Undo                       | Ctrl + Z
+    Redo           | Redo                       | Ctrl + Y
+    Redo           | Redo                       | Ctrl + Shift + Z
+    Escape         | Escape StepEditor          | Escape
+    BackSpace      | BackSpace                  | Back
+    ModeChange     | Ins <-> Upd mode change    | Insert
+    DeleteEvent    | Delete Event               | Delete
+    Enter          | Enter                      | Enter
+    PageUp         | Page Up                    | PageUp
+    PageDown       | Page Down                  | PageDown
+    MoveTopMeas    | Move cursor to top meas    | Home
+    MoveNextMeas   | Move cursor to next meas   | End
+    MoveFirstEvent | Move cursor to first event | Ctrl + Home
+    MoveLastEvent  | Move cursor to last event  | Ctrl + End
+    Left           | Cursor Left                | Left
+    Right          | Cursor Right               | Right
 
-!StepEditor
-    JumpPlay | Jump Play                 | J
-    MeasPlay | Play Measure              | M
-    MeasPlay | Play Measure              | Ctrl + Decimal

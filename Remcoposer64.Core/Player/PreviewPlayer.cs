@@ -103,13 +103,16 @@ namespace Remcoposer64.Core.Player
 
             if (ev.Item3.Type == MIDIEventType.NoteON)
             {
-                MIDINoteEvent ne = (MIDINoteEvent)ev.Item3;
-                midiOut[ev.Item1].Send(
-                      (0x90 + ev.Item2)
-                    | (ne.KeyNumber << 8)
-                    | (ne.Vel << 16));
-                dicNoteOn[ev] = ne.GT;
-                currentST = ne.ST;
+                if (midiOut != null && ev.Item1 < midiOut.Length && midiOut[ev.Item1]!=null)
+                {
+                    MIDINoteEvent ne = (MIDINoteEvent)ev.Item3;
+                    midiOut[ev.Item1].Send(
+                          (0x90 + ev.Item2)
+                        | (ne.KeyNumber << 8)
+                        | (ne.Vel << 16));
+                    dicNoteOn[ev] = ne.GT;
+                    currentST = ne.ST;
+                }
             }
 
             if (_queue.Count == 0)

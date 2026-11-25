@@ -22,18 +22,41 @@ namespace Remcoposer64.Common
         public enum enmContent : int
         {
             None = int.MinValue,
-// Common
+            // Common(0 - 999)
             FileOpen = 0,
-            FileSave = 100,
-            Play = 400,
-            Stop = 800,
-// StepEditor
+            FileSave = 10,
+            Play = 20,
+            Stop = 30,
+            // StepEditor(1000 - 1999)
             InsCC = 1000,
             JumpPlay = 1010,
             MeasPlay = 1020,
+            SpecialEvent = 1030,
+            Cut = 1040,
+            Copy = 1050,
+            Paste = 1060,
+            Undo = 1070,
+            Redo = 1080,
+            Escape = 1090,
+            BackSpace = 1100,
+            ModeChange = 1110,
+            DeleteEvent = 1120,
+            Enter = 1130,
+            PageUp = 1140,
+            PageDown = 1150,
+            MoveTopMeas = 1160,
+            MoveNextMeas = 1170,
+            MoveFirstEvent = 1180,
+            MoveLastEvent = 1190,
+            Left = 1200,
+            Right = 1210,
         };
 
         public ShortCutKeyInfo[] Info { get; set; } = [];
+        public enmContent[] RemovedFunctions { get; set; } = [];
+
+        private List<ShortCutKeyInfo> waitingShortcut = null;
+
 
 
 
@@ -41,16 +64,24 @@ namespace Remcoposer64.Common
         {
             ShortCutKey ret = new ShortCutKey();
 
-            if (this.Info == null)
-                return ret;
-
-            ret.Info = new ShortCutKeyInfo[this.Info.Length];
-            int i = 0;
-            foreach (ShortCutKeyInfo inf in this.Info)
+            if (this.Info != null)
             {
-                ret.Info[i++] = inf.Copy();
+                ret.Info = new ShortCutKeyInfo[this.Info.Length];
+                int i = 0;
+                foreach (ShortCutKeyInfo inf in this.Info)
+                {
+                    ret.Info[i++] = inf.Copy();
+                }
             }
-
+            if (this.RemovedFunctions != null)
+            {
+                ret.RemovedFunctions = new enmContent[this.RemovedFunctions.Length];
+                int i = 0;
+                foreach (enmContent content in this.RemovedFunctions)
+                {
+                    ret.RemovedFunctions[i++] = content;
+                }
+            }
             return ret;
         }
         public bool Load(string fileName)
@@ -325,7 +356,6 @@ namespace Remcoposer64.Common
             alt = (keyData & Keys.Alt) == Keys.Alt;
         }
 
-        private List<ShortCutKeyInfo> waitingShortcut = null;
         private DateTime waitingShortcutTime;
 
         public ShortCutKeyInfo ProcessKey(enmCategory category, Keys keyData)
@@ -363,6 +393,183 @@ namespace Remcoposer64.Common
             }
 
             return null;
+        }
+
+
+        //public ShortCutKeyInfo[] MergeDefaultShortcut(ShortCutKeyInfo[] defaultInfo, ShortCutKeyInfo[] srcInfo)
+        //{
+        //    // 先ずはリストへコピー
+        //    List<ShortCutKeyInfo> lsrcInfo = srcInfo.ToList<ShortCutKeyInfo>();
+
+        //    // 実施済み項目
+        //    List<ShortCutKeyInfo> lpInfo = new();
+
+        //    // defaultにはあってsrcには無いもの(新規追加された機能)を追加する。
+        //    foreach (var dInf in defaultInfo)
+        //    {
+        //        // 処理済みの項目は飛ばす
+        //        bool fnd = false;
+        //        foreach (var pInf in lpInfo)
+        //        {
+        //            if (dInf.func == pInf.func) { fnd = true; break; }
+        //        }
+        //        if (fnd) continue;
+
+
+        //        // 個数を数える
+        //        int dCount = 0;
+        //        foreach (var dInf2 in defaultInfo)
+        //            if (dInf.func == dInf2.func) dCount++;
+
+        //        // 個数を数える
+        //        int sCount = 0;
+        //        foreach (var sInf in srcInfo)
+        //            if (dInf.func == sInf.func) sCount++;
+
+        //        // 個数が同じ場合又はdefaultより多い場合は次を調べる
+        //        if (dCount <= sCount) continue;
+
+        //        // 存在しない或いは数が足りない機能はその分だけ追加する
+        //        int i = dCount - sCount;
+        //        foreach (var dInf3 in defaultInfo)
+        //        {
+        //            if (dInf.func == dInf3.func) lsrcInfo.Add(dInf3);
+        //            i--;
+        //            if (i <= 0) break;
+        //        }
+
+        //        lpInfo.Add(dInf);
+        //    }
+
+
+        //    // srcにはあってdefaultには無いもの(廃止された機能)を削除する。
+        //    foreach (var sInf in srcInfo)
+        //    {
+        //        // defaultに存在する機能か調べる
+        //        bool fnd = false;
+        //        foreach (var dInf in defaultInfo)
+        //        {
+        //            if (dInf.func == sInf.func) { fnd = true; break; }
+        //        }
+
+        //        // 見つからない機能であった場合は削除する。
+        //        if (!fnd)
+        //        {
+        //            if (lsrcInfo.Contains(sInf)) lsrcInfo.Remove(sInf);
+        //        }
+        //    }
+
+
+        //    // 結果をセットする
+        //    return lsrcInfo.ToArray();
+        //}
+
+        public ShortCutKeyInfo[] MergeDefaultShortcut(
+            ShortCutKeyInfo[] defaultInfo,
+            ShortCutKeyInfo[] srcInfo,
+            enmContent[] removedFunctions)
+        {
+            List<ShortCutKeyInfo> result = srcInfo.ToList();
+
+            // 廃止された機能を削除
+            result.RemoveAll(s =>
+                !defaultInfo.Any(d => d.func == s.func));
+
+            HashSet<enmContent> processed = [];
+
+            foreach (var dInf in defaultInfo)
+            {
+                // 同じ機能は一度だけ処理
+                if (!processed.Add(dInf.func))
+                    continue;
+
+                // ユーザーが削除した機能は復活させない
+                if (removedFunctions.Contains(dInf.func))
+                    continue;
+
+                // 既に存在する機能は何もしない
+                if (result.Any(s => s.func == dInf.func))
+                    continue;
+
+                // その機能の定義を全部追加
+                foreach (var addInf in defaultInfo)
+                {
+                    if (addInf.func == dInf.func)
+                    {
+                        result.Add(addInf.Copy());
+                    }
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        public static (
+                ShortCutKeyInfo[] SrcInfo, 
+                enmContent[] RemovedFunctions
+            )
+            RemoveShortcut(
+                ShortCutKeyInfo[] srcInfo,
+                enmContent[] removedFunctions,
+                ShortCutKeyInfo target)
+        {
+            List<ShortCutKeyInfo> lst = srcInfo.ToList();
+
+            lst.Remove(target);
+
+            bool exists =
+                lst.Any(x => x.func == target.func);
+
+            List<enmContent> removed =
+                removedFunctions.ToList();
+
+            if (!exists && !removed.Contains(target.func))
+            {
+                removed.Add(target.func);
+            }
+
+            return (
+                lst.ToArray(),
+                removed.ToArray()
+            );
+        }
+
+        public static (
+            ShortCutKeyInfo[] SrcInfo,
+            enmContent[] RemovedFunctions
+            )
+            AddShortcut(
+                ShortCutKeyInfo[] srcInfo,
+                enmContent[] removedFunctions,
+                ShortCutKeyInfo addInfo)
+        {
+            List<ShortCutKeyInfo> lst = srcInfo.ToList();
+
+            lst.Add(addInfo);
+
+            enmContent[] removed =
+                removedFunctions
+                    .Where(x => x != addInfo.func)
+                    .ToArray();
+
+            return (
+                lst.ToArray(),
+                removed
+            );
+        }
+
+        private static bool IsSameShortcut(ShortCutKeyInfo a, ShortCutKeyInfo b)
+        {
+            return
+                a.func == b.func
+                && a.shift == b.shift
+                && a.ctrl == b.ctrl
+                && a.alt == b.alt
+                && a.key == b.key
+                && a.shift2 == b.shift2
+                && a.ctrl2 == b.ctrl2
+                && a.alt2 == b.alt2
+                && a.key2 == b.key2;
         }
     }
 }

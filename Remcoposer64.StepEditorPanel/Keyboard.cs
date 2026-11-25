@@ -35,32 +35,18 @@ namespace Remcoposer64.StepEditorPanelControl
         /// <param name="keyData"></param>
         public void HandleKeyDown(KeyEventArgs e)
         {
+
             uint keyData = (uint)e.KeyData;
-            MIDIEvent activeEvent = parent.cursor.EventNode.Value;
-            CancelKeyPress = false;
-
-            if (parent.ShortCut != null)
-            {
-                var info = parent.ShortCut.ProcessKey(
-                    ShortCutKey.enmCategory.StepEditor,
-                    e.KeyData);
-
-                if (info != null)
-                {
-                    ExecuteShortcut(info);
-                    e.Handled = true;
-                    return;
-                }
-            }
-
             // ★モディファイア除去
             Keys key = (Keys)(keyData & (uint)Keys.KeyCode);
             // モディファイアキーの状態を取得
             bool ctrl = (keyData & (uint)Keys.Control) != 0;
             bool shift = (keyData & (uint)Keys.Shift) != 0;
             bool alt = (keyData & (uint)Keys.Alt) != 0;
-
             Debug.WriteLine($"KeyDownEvent: {key}, Ctrl: {ctrl}, Shift: {shift}, Alt: {alt}");
+
+            MIDIEvent activeEvent = parent.cursor.EventNode.Value;
+            CancelKeyPress = false;
 
 
             //CCのポップアップウィンドウが表示中の場合はカーソルキーなどの情報を渡して処理終了
@@ -83,6 +69,7 @@ namespace Remcoposer64.StepEditorPanelControl
                         CancelKeyPress = true;
                         return;
                 }
+                return;
             }
 
             //ProgramControlのポップアップウィンドウが表示中の場合はカーソルキーなどの情報を渡して処理終了
@@ -106,7 +93,25 @@ namespace Remcoposer64.StepEditorPanelControl
                         CancelKeyPress = true;
                         return;
                 }
+                return;
             }
+
+
+            // ショートカット処理を実施
+            if (parent.ShortCut != null)
+            {
+                var info = parent.ShortCut.ProcessKey(
+                    ShortCutKey.enmCategory.StepEditor,
+                    e.KeyData);
+
+                if (info != null)
+                {
+                    ExecuteShortcut(info);
+                    e.Handled = true;
+                    return;
+                }
+            }
+
 
             switch (key)
             {
@@ -121,127 +126,9 @@ namespace Remcoposer64.StepEditorPanelControl
                     MoveCursorDown();
                     UpdateShiftSelection(shift);
                     break;
-                case Keys.Left: MoveCursorLeft(); break;
-                case Keys.Right: MoveCursorRight(); break;
-                case Keys.Home:
-                    if (ctrl) MoveCursorToFirstEvent();
-                    else MoveCursorTopMeasure();
-                    break;
-                case Keys.End:
-                    if (ctrl) MoveCursorToLastEvent();
-                    else MoveCursorNextMeasure();
-                    break;
-                case Keys.PageUp: MoveCursorPageUp(); break;
-                case Keys.PageDown: MoveCursorPageDown(); break;
-                case Keys.Enter:
-                    if (inputState == InputState.None)
-                    {
-                        var sx = parent.cursor.EventNode.Value as MIDISysExEvent;
-
-                        // ★ SysExEvent の編集開始（上書きモード限定）
-                        if (sx != null && parent.OverwriteMode)
-                        {
-                            MdlSysExEvent me = (MdlSysExEvent)parent.eventManager.GetModel(sx.Type);
-                            me.BeginEditExternal(sx, parent.cursor, this);
-                            parent.ScreenUpdate();
-                            CancelKeyPress = true;   // Enter の通常動作をキャンセル
-                            break;
-                        }
-
-                        // ★ 通常の Enter 動作（次の行へ移動）
-                        MoveCursorDown();
-                    }
-                    break;
-
-                // モード切替系
-                case Keys.Insert: parent.ToggleOverwriteMode(); break;
-
-                // 編集系
-                case Keys.Delete:
-                    // ★ 通常時はイベント削除
-                    DeleteEvent(activeEvent);
-                    break;
-                case Keys.Back: if (inputState == InputState.None) BackSpaceEvent(activeEvent); break;
-                case Keys.Escape: EscapeEvent(activeEvent); break;
-                case Keys.Z: // Undo (Ctrl + Z) / Redo (Ctrl + Shift + Z)
-                    if (ctrl && shift) {
-                        parent.ForceEndEditing();   // ★ 編集モード強制終了
-                        parent.Redo();
-                        CancelKeyPress = true;
-                    }
-                    else if (ctrl) {
-                        parent.ForceEndEditing();   // ★ 編集モード強制終了
-                        parent.Undo();
-                        CancelKeyPress = true; 
-                    }
-                    break;
-                case Keys.Y: // Redo (Ctrl + Y)
-                    if (ctrl) {
-                        parent.ForceEndEditing();   // ★ 編集モード強制終了
-                        parent.Redo();
-                        CancelKeyPress = true;
-                    }
-                    break;
-                case Keys.C: // ★ コピー（Ctrl + C）
-                    if (ctrl) {
-                        bool hasRangeSelection =
-                            parent.cursor.SelectionStart >= 0 &&
-                            parent.cursor.SelectionEnd >= 0 &&
-                            parent.cursor.SelectionStart != parent.cursor.SelectionEnd;
-
-                        bool hasMultiSelection =
-                            parent.cursor.MultiSelectIndices.Count > 0;
-
-                        if (hasRangeSelection || hasMultiSelection)
-                        {
-                            parent.CopySelectedRows();
-                        }
-                        else
-                        {
-                            parent.CopyCurrentRow();
-                        }
-
-                        CancelKeyPress = true;
-                    }
-                    break;
-                case Keys.X: // ★ カット（Ctrl + X）
-                    if (ctrl)
-                    {
-                        bool hasRangeSelection =
-                            parent.cursor.SelectionStart >= 0 &&
-                            parent.cursor.SelectionEnd >= 0 &&
-                            parent.cursor.SelectionStart != parent.cursor.SelectionEnd;
-
-                        bool hasMultiSelection =
-                            parent.cursor.MultiSelectIndices.Count > 0;
-
-                        if (hasRangeSelection || hasMultiSelection)
-                        {
-                            parent.CutSelectedRows();
-                        }
-                        else
-                        {
-                            parent.CutCurrentRow();
-                        }
-
-                        CancelKeyPress = true;
-                    }
-                    break;
-                case Keys.V: // ★ ペースト（Ctrl + V）
-                    if (ctrl) { parent.PasteToCurrentRow(); CancelKeyPress = true; }
-                    break;
-                case Keys.OemQuestion:   // “？”キー
-                case Keys.Divide:   // “／”キー
-                    if (inputState == InputState.EditEvent)
-                    {
-                        CommitActiveEvent(parent.cursor.EventNode.Value, CommitKeyPattern.OtherKey);
-                    }
-                    if (parent.OverwriteMode) parent.ToggleOverwriteMode();
-                    parent.ShowEventContextMenu();
-                    CancelKeyPress = true;
-                    break;
             }
         }
+
 
         public void HandleKeyPress(char keyChar)
         {
@@ -330,7 +217,7 @@ namespace Remcoposer64.StepEditorPanelControl
         }
 
 
-        private void BeginShiftSelectionIfNeeded(bool shift,bool ctrl)
+        private void BeginShiftSelectionIfNeeded(bool shift, bool ctrl)
         {
             if (!shift)
             {
@@ -578,7 +465,7 @@ namespace Remcoposer64.StepEditorPanelControl
             }
 
             // カーソルがBarLineの直後にある場合、BarLineに移動する。但し、カーソルがBarLineにある場合は、前のBarLineに移動しない
-            if (parent.cursor.EventNode.Previous.Value.Type== MIDIEventType.BarLine)
+            if (parent.cursor.EventNode.Previous.Value.Type == MIDIEventType.BarLine)
             {
                 if (parent.cursor.EventNode.Value.Type != MIDIEventType.BarLine)
                 {
@@ -701,7 +588,7 @@ namespace Remcoposer64.StepEditorPanelControl
         {
             MdlEvent me = parent.eventManager.GetModel(activeEvent.Type);
             me.Commit(activeEvent, parent.cursor, keyPattern);
-            
+
             if (activeEvent is MIDIMemoEvent) ((MdlMemoEvent)me).memoBoxSwitch = false;
             if (activeEvent is MIDIMarkerEvent) ((MdlMarkerEvent)me).memoBoxSwitch = false;
 
@@ -729,7 +616,7 @@ namespace Remcoposer64.StepEditorPanelControl
 
             bool hasMultiSelection =
                 parent.cursor.MultiSelectIndices.Count > 0;
-            
+
             if (inputState == InputState.None)
             {
                 // ★ 複数選択削除
@@ -794,6 +681,9 @@ namespace Remcoposer64.StepEditorPanelControl
             inputState = InputState.None;
         }
 
+
+
+
         public void ExecuteShortcut(ShortCutKeyInfo info)
         {
             if (info == null) return;
@@ -802,17 +692,202 @@ namespace Remcoposer64.StepEditorPanelControl
 
             switch (info.func)
             {
-                case ShortCutKey.enmContent.JumpPlay:
-                    parent.ForceEndEditing();
-                    CancelKeyPress = true;
-                    parent.PlayMeasureorPoint(false);
-                    break;
-                case ShortCutKey.enmContent.MeasPlay:
-                    parent.ForceEndEditing();
-                    CancelKeyPress = true;
-                    parent.PlayMeasureorPoint(true);
-                    break;
+                case ShortCutKey.enmContent.JumpPlay: scJumpPlay(); break;
+                case ShortCutKey.enmContent.MeasPlay: scMeasPlay(); break;
+                case ShortCutKey.enmContent.SpecialEvent: scSpecialEvent(); break;
+                case ShortCutKey.enmContent.Cut: scCutEvent(); break;
+                case ShortCutKey.enmContent.Copy: scCopyEvent(); break;
+                case ShortCutKey.enmContent.Paste: scPasteEvent(); break;
+                case ShortCutKey.enmContent.Undo: scUndoEvent(); break;
+                case ShortCutKey.enmContent.Redo: scRedoEvent(); break;
+                case ShortCutKey.enmContent.Escape: scEscapeEvent(); break;
+                case ShortCutKey.enmContent.BackSpace: scBackSpaceEvent(); break;
+                case ShortCutKey.enmContent.ModeChange: scModeChangeEvent(); break;
+                case ShortCutKey.enmContent.DeleteEvent: scDeleteEvent(); break;
+                case ShortCutKey.enmContent.Enter: scEnterEvent(); break;
+                case ShortCutKey.enmContent.PageUp: scPageUp(); break;
+                case ShortCutKey.enmContent.PageDown: scPageDown(); break;
+                case ShortCutKey.enmContent.MoveTopMeas: scMoveTopMeas(); break;
+                case ShortCutKey.enmContent.MoveNextMeas: scMoveNextMeas(); break;
+                case ShortCutKey.enmContent.MoveFirstEvent: scMoveFirstEvent(); break;
+                case ShortCutKey.enmContent.MoveLastEvent: scMoveLastEvent(); break;
+                case ShortCutKey.enmContent.Left: scLeft(); break;
+                case ShortCutKey.enmContent.Right: scRight(); break;
+
             }
+        }
+
+        private void scJumpPlay()
+        {
+            parent.ForceEndEditing();
+            CancelKeyPress = true;
+            parent.PlayMeasureorPoint(false);
+        }
+
+        private void scMeasPlay()
+        {
+            parent.ForceEndEditing();
+            CancelKeyPress = true;
+            parent.PlayMeasureorPoint(true);
+        }
+
+        private void scSpecialEvent()
+        {
+            if (inputState == InputState.EditEvent)
+            {
+                CommitActiveEvent(parent.cursor.EventNode.Value, CommitKeyPattern.OtherKey);
+            }
+            if (parent.OverwriteMode) parent.ToggleOverwriteMode();
+            parent.ShowEventContextMenu();
+            CancelKeyPress = true;
+        }
+
+        private void scCutEvent()
+        {
+            bool hasRangeSelection =
+                parent.cursor.SelectionStart >= 0 &&
+                parent.cursor.SelectionEnd >= 0 &&
+                parent.cursor.SelectionStart != parent.cursor.SelectionEnd;
+
+            bool hasMultiSelection =
+                parent.cursor.MultiSelectIndices.Count > 0;
+
+            if (hasRangeSelection || hasMultiSelection)
+            {
+                parent.CutSelectedRows();
+            }
+            else
+            {
+                parent.CutCurrentRow();
+            }
+
+            CancelKeyPress = true;
+        }
+
+        private void scCopyEvent()
+        {
+            bool hasRangeSelection =
+                parent.cursor.SelectionStart >= 0 &&
+                parent.cursor.SelectionEnd >= 0 &&
+                parent.cursor.SelectionStart != parent.cursor.SelectionEnd;
+
+            bool hasMultiSelection =
+                parent.cursor.MultiSelectIndices.Count > 0;
+
+            if (hasRangeSelection || hasMultiSelection)
+            {
+                parent.CopySelectedRows();
+            }
+            else
+            {
+                parent.CopyCurrentRow();
+            }
+
+            CancelKeyPress = true;
+        }
+
+        private void scPasteEvent()
+        {
+            parent.PasteToCurrentRow(); CancelKeyPress = true;
+        }
+
+        private void scUndoEvent()
+        {
+            parent.ForceEndEditing();   // ★ 編集モード強制終了
+            parent.Undo();
+            CancelKeyPress = true;
+        }
+
+        private void scRedoEvent()
+        {
+            parent.ForceEndEditing();   // ★ 編集モード強制終了
+            parent.Redo();
+            CancelKeyPress = true;
+        }
+
+        private void scEscapeEvent()
+        {
+            MIDIEvent activeEvent = parent.cursor.EventNode.Value;
+            EscapeEvent(activeEvent);
+        }
+
+        private void scBackSpaceEvent()
+        {
+            MIDIEvent activeEvent = parent.cursor.EventNode.Value;
+            if (inputState == InputState.None) BackSpaceEvent(activeEvent);
+        }
+
+        private void scModeChangeEvent()
+        {
+            // モード切替
+            parent.ToggleOverwriteMode();
+        }
+
+        private void scDeleteEvent()
+        {
+            // ★ 通常時はイベント削除
+            MIDIEvent activeEvent = parent.cursor.EventNode.Value;
+            DeleteEvent(activeEvent);
+        }
+
+        private void scEnterEvent()
+        {
+            if (inputState != InputState.None) return;
+
+            var sx = parent.cursor.EventNode.Value as MIDISysExEvent;
+
+            // ★ SysExEvent の編集開始（上書きモード限定）
+            if (sx != null && parent.OverwriteMode)
+            {
+                MdlSysExEvent me = (MdlSysExEvent)parent.eventManager.GetModel(sx.Type);
+                me.BeginEditExternal(sx, parent.cursor, this);
+                parent.ScreenUpdate();
+                CancelKeyPress = true;   // Enter の通常動作をキャンセル
+                return;
+            }
+
+            // ★ 通常の Enter 動作（次の行へ移動）
+            MoveCursorDown();
+        }
+
+        private void scPageUp()
+        {
+            MoveCursorPageUp();
+        }
+
+        private void scPageDown()
+        {
+            MoveCursorPageDown();
+        }
+
+        private void scMoveTopMeas()
+        {
+            MoveCursorTopMeasure();
+        }
+
+        private void scMoveNextMeas()
+        {
+            MoveCursorNextMeasure();
+        }
+
+        private void scMoveFirstEvent()
+        {
+            MoveCursorToFirstEvent();
+        }
+
+        private void scMoveLastEvent()
+        {
+            MoveCursorToLastEvent();
+        }
+
+        private void scLeft()
+        {
+            MoveCursorLeft();
+        }
+
+        private void scRight()
+        {
+            MoveCursorRight();
         }
 
     }
