@@ -112,21 +112,6 @@ namespace Remcoposer64.StepEditorPanelControl
                 }
             }
 
-
-            switch (key)
-            {
-                // カーソル移動系
-                case Keys.Up:
-                    BeginShiftSelectionIfNeeded(shift, ctrl);
-                    MoveCursorUp();
-                    UpdateShiftSelection(shift);
-                    break;
-                case Keys.Down:
-                    BeginShiftSelectionIfNeeded(shift, ctrl);
-                    MoveCursorDown();
-                    UpdateShiftSelection(shift);
-                    break;
-            }
         }
 
 
