@@ -713,6 +713,12 @@ namespace Remcoposer64.StepEditorPanelControl
                 case ShortCutKey.enmContent.MoveLastEvent: scMoveLastEvent(); break;
                 case ShortCutKey.enmContent.Left: scLeft(); break;
                 case ShortCutKey.enmContent.Right: scRight(); break;
+                case ShortCutKey.enmContent.Up: scUp(); break;
+                case ShortCutKey.enmContent.Down: scDown(); break;
+                case ShortCutKey.enmContent.SelectUp: scSelectUp(); break;
+                case ShortCutKey.enmContent.SelectDown: scSelectDown(); break;
+                case ShortCutKey.enmContent.KeepUp: scKeepUp(); break;
+                case ShortCutKey.enmContent.KeepDown: scKeepDown(); break;
 
             }
         }
@@ -888,6 +894,48 @@ namespace Remcoposer64.StepEditorPanelControl
         private void scRight()
         {
             MoveCursorRight();
+        }
+
+        private void scUp()
+        {
+            BeginShiftSelectionIfNeeded(false, false);
+            MoveCursorUp();
+            UpdateShiftSelection(false);
+        }
+
+        private void scDown()
+        {
+            BeginShiftSelectionIfNeeded(false, false);
+            MoveCursorDown();
+            UpdateShiftSelection(false);
+        }
+
+        private void scSelectUp()
+        {
+            BeginShiftSelectionIfNeeded(true, false);
+            MoveCursorUp();
+            UpdateShiftSelection(true);
+        }
+
+        private void scSelectDown()
+        {
+            BeginShiftSelectionIfNeeded(true, false);
+            MoveCursorDown();
+            UpdateShiftSelection(true);
+        }
+
+        private void scKeepUp()
+        {
+            BeginShiftSelectionIfNeeded(false, true);
+            MoveCursorUp();
+            UpdateShiftSelection(false);
+        }
+
+        private void scKeepDown()
+        {
+            BeginShiftSelectionIfNeeded(false, true);
+            MoveCursorDown();
+            UpdateShiftSelection(false);
         }
 
     }

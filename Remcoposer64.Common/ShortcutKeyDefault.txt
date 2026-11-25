@@ -31,6 +31,12 @@
 #   MoveLastEvent  カーソルをトラックの最後のイベントに移動する
 #   Left           カーソルを左へ移動
 #   Right          カーソルを右へ移動
+#   Up             カーソルを上へ移動
+#   Down           カーソルを下へ移動
+#   SelectUp       選択しながらカーソルを上へ移動
+#   SelectDown     選択しながらカーソルを下へ移動
+#   KeepUp         選択を維持しながらカーソルを上へ移動
+#   KeepDown       選択を維持しながらカーソルを下へ移動
 
 
 # 定義の注意
@@ -81,4 +87,10 @@
     MoveLastEvent  | Move cursor to last event  | Ctrl + End
     Left           | Cursor Left                | Left
     Right          | Cursor Right               | Right
+    Up             | Up                         | Up 
+    Down           | Down                       | Down
+    SelectUp       | Select Up                  | Shift + Up
+    SelectDown     | Select Down                | Shift + Down
+    KeepUp         | Keep Up                    | Ctrl + Up
+    KeepDown       | Keep Down                  | Ctrl + Down
 

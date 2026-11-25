@@ -50,6 +50,12 @@ namespace Remcoposer64.Common
             MoveLastEvent = 1190,
             Left = 1200,
             Right = 1210,
+            Up = 1220,
+            Down = 1230,
+            SelectUp = 1240,
+            SelectDown = 1250,
+            KeepUp = 1260,
+            KeepDown = 1270,
         };
 
         public ShortCutKeyInfo[] Info { get; set; } = [];
