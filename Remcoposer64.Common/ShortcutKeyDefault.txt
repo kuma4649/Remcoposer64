@@ -9,6 +9,16 @@
 #   FileSave       ファイルを保存する
 #   Play           演奏開始
 #   Stop           演奏停止
+#   Marker0        Marker 0 演奏
+#   Marker1        Marker 1 演奏
+#   Marker2        Marker 2 演奏
+#   Marker3        Marker 3 演奏
+#   Marker4        Marker 4 演奏
+#   Marker5        Marker 5 演奏
+#   Marker6        Marker 6 演奏
+#   Marker7        Marker 7 演奏
+#   Marker8        Marker 8 演奏
+#   Marker9        Marker 9 演奏
 #   InsCC          コントロールチェンジイベントを挿入
 #   JumpPlay       ジャンプ演奏
 #   MeasPlay       小節演奏
@@ -61,6 +71,16 @@
     FileSave       | Save                       | Ctrl + S
     Play           | Play                       | F5
     Stop           | Stop                       | F10
+    Marker0        | Play Marker 0              | Ctrl + NumPad0
+    Marker1        | Play Marker 1              | Ctrl + NumPad1
+    Marker2        | Play Marker 2              | Ctrl + NumPad2
+    Marker3        | Play Marker 3              | Ctrl + NumPad3
+    Marker4        | Play Marker 4              | Ctrl + NumPad4
+    Marker5        | Play Marker 5              | Ctrl + NumPad5
+    Marker6        | Play Marker 6              | Ctrl + NumPad6
+    Marker7        | Play Marker 7              | Ctrl + NumPad7
+    Marker8        | Play Marker 8              | Ctrl + NumPad8
+    Marker9        | Play Marker 9              | Ctrl + NumPad9
                                                 
 !StepEditor                                     
     JumpPlay       | Jump Play                  | J

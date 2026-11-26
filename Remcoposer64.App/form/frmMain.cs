@@ -1321,6 +1321,66 @@ namespace Remcoposer64.App
                 case ShortCutKey.enmContent.FileSave:
                     FileSave();
                     break;
+
+                case ShortCutKey.enmContent.Marker0:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null 
+                        || currentProject.Information.Markers.Count < 1) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[0]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker1:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 2) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[1]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker2:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 3) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[2]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker3:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 4) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[3]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker4:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 5) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[4]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker5:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 6) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[5]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker6:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 7) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[6]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker7:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 8) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[7]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker8:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 9) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[8]);
+                    break;
+
+                case ShortCutKey.enmContent.Marker9:
+                    if (currentProject == null || currentProject.Information == null || currentProject.Information.Markers == null
+                        || currentProject.Information.Markers.Count < 10) return;
+                    Play((MarkerPoint)currentProject.Information.Markers[9]);
+                    break;
             }
         }
 

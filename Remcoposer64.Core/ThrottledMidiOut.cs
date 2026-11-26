@@ -40,6 +40,7 @@ namespace Remcoposer64.Core
         private volatile bool quickMode = false;
 
         private int silentSendCount = 0;
+        private int skipSysExWaitCount = 0;
 
         public int QueueCount => queue.Count;
 
@@ -153,7 +154,7 @@ namespace Remcoposer64.Core
                         midiParam.SendBuffer(packet.SysExData);
                         if (skipMode)
                         {
-                            silentSendCount += packet.Size;
+                            silentSendCount += midiParam.waitSysEx;// packet.Size;
                         }
                     }
                     else

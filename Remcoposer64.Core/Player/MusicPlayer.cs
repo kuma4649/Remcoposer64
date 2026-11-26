@@ -337,8 +337,9 @@ namespace Remcoposer64.Core.Player
                 n = (midiout == null ? 0 : midiout.FlushMIDI());
                 maxCount = Math.Max(n, maxCount);
             }
-            Thread.Sleep(maxCount * 5);
+            Thread.Sleep(maxCount);// * 5);
         }
+
         protected void FlushMIDI(int outDevice,int outChannel)
         {
             if (midiOutDevice == null) return;
@@ -349,7 +350,8 @@ namespace Remcoposer64.Core.Player
             n = (midiout == null ? 0 : midiout.FlushMIDI(outChannel));
             maxCount = Math.Max(n, maxCount);
 
-            Thread.Sleep(1000+maxCount * 3);
+            Thread.Sleep(maxCount);// * 5);
+            //Thread.Sleep(1000+maxCount * 3);
         }
 
         protected LinkedListNode<MIDIEvent> PlayEvent(MIDITrack trk, LinkedListNode<MIDIPart> nPrt, LinkedListNode<MIDIEvent> nEvt)

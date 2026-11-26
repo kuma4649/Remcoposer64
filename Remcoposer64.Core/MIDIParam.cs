@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using NAudio.SoundFont;
+using System.Runtime.CompilerServices;
 
 namespace Remcoposer64.Core
 {
@@ -673,11 +674,37 @@ namespace Remcoposer64.Core
             }
         }
 
+        public int waitSysEx = 0;
+
+        public int waitGMReset = 300;
+        public int waitGSReset = 300;
+        public int waitXGReset = 300;
+        public int waitEtcSysEx = 20;
+        public int waitMax = 500;
+
         private void AnalyzeSystemMsg()
         {
-
+            waitSysEx = 0;
             if (msg[0] != 0xf0) return;
-            if (msgInd < 8) return;
+
+            //
+            // GM Reset
+            //
+            if (msgInd >= 5
+                && msg[1] == 0x7e
+                && msg[3] == 0x09
+                && msg[4] == 0x01
+                && msg[5] == 0xf7)
+            {
+                waitSysEx = waitGMReset;
+                return;
+            }
+
+            if (msgInd < 8)
+            {
+                waitSysEx = waitEtcSysEx;
+                return;
+            }
 
             byte manufactureID = msg[1];
             int adr = 0;
@@ -685,9 +712,27 @@ namespace Remcoposer64.Core
 
             if (manufactureID == 0x43)//YAMAHA ID?
             {
-                if ((msg[2] & 0xf0) != 0x10) return;
-                if (msg[3] != 0x4c) return;
+                if ((msg[2] & 0xf0) != 0x10)
+                {
+                    waitSysEx = waitEtcSysEx;
+                    return;
+                }
+                if (msg[3] != 0x4c)
+                {
+                    waitSysEx = waitEtcSysEx;
+                    return;
+                }
+
                 adr = msg[4] * 0x10000 + msg[5] * 0x100 + msg[6];
+
+                if (adr == 0x00007e
+                    && msgInd >= 8
+                    && msg[7] == 0x00)
+                {
+                    waitSysEx = waitXGReset;
+                    return;
+                }
+
                 ptr = 7;
             }
             else if (manufactureID == 0x41)//Roland ID
@@ -695,6 +740,17 @@ namespace Remcoposer64.Core
                 //if (msg[3] != 0x42) return;
                 //if (msg[4] != 0x12) return;
                 adr = msg[5] * 0x10000 + msg[6] * 0x100 + msg[7];
+
+                if (msg[3] == 0x42
+                    && msg[4] == 0x12
+                    && adr == 0x40007f
+                    && msgInd >= 10
+                    && msg[8] == 0x00)
+                {
+                    waitSysEx = waitGSReset;
+                    return;
+                }
+
                 ptr = 8;
             }
             else if (manufactureID == 0x7f)//universal realtime message
@@ -703,8 +759,11 @@ namespace Remcoposer64.Core
                 {
                     MasterVolume = msg[5];
                 }
+                waitSysEx = waitEtcSysEx;
                 return;
             }
+
+            waitSysEx = Math.Min(waitEtcSysEx + (msgInd >> 1), waitMax);
 
             while (ptr < msgInd && msg[ptr] != 0xf7)
             {
